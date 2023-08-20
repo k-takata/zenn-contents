@@ -18,7 +18,7 @@ title: "イントロダクション"
 * [GR-CITRUS-NORMAL](https://akizukidenshi.com/catalog/g/gK-11217/)
 * [WA-MIKAN-NORMAL](https://akizukidenshi.com/catalog/g/gK-11218/)
 
-GR-CITRUSは発売から7年も経っていることもあり、ネット上の情報にはそのまま使えないものも多くなっています。2023年時点の情報をまとめていきたいと思います。
+GR-CITRUSは発売開始から7年も経っていることもあり、ネット上の情報にはそのまま使えないものも多くなっています。2023年時点の情報をまとめていきたいと思います。
 
 
 ## 参考サイト
