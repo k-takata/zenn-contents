@@ -1,0 +1,16 @@
+title: "GR-CITRUS & WA-MIKAN を動かす (2023年版)"
+summary: ""
+topics: ["GR-CITRUS", "WA-MIKAN", "ESP8266", "mruby", "がじぇっとるねさす", "がじぇるね"]
+published: false
+price: 0 # 有料の場合200〜5000
+# 本に含めるチャプターを順番に並べましょう
+chapters:
+  - 01_intro
+  - 02_devenv
+  - 03_i2c_lcd
+  - 04_i2c_aht25
+  - 05_i2c_bme680
+  - 06_wa_mikan_wifi
+  - 07_wa_mikan_microsd
+  - 08_compile_ruby_firmware
+  - 09_wa_mikan_only
