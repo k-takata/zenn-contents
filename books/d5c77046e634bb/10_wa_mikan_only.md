@@ -19,4 +19,9 @@ WA-MIKANにはESP8266というWi-Fiモジュールが搭載されていますが
    [AT Command Set](https://docs.espressif.com/projects/esp-at/en/release-v2.2.0.0_esp8266/AT_Command_Set/index.html)
 2. Arduino IDEを使ってみる
 3. IRremoteESP8266を使って赤外線リモコンの送受信を行う
+   [赤外線リモコン受信モジュールOSRB38C9AA](https://akizukidenshi.com/catalog/g/gI-04659/)
+   [赤外線LED OSI5LA5113A](https://akizukidenshi.com/catalog/g/gI-12612/)
+   If 100mA, Vf 1.35V, Pulse 1000mA
+   If 190mA, Vf 2.3V
+   [2SC2001](https://akizukidenshi.com/catalog/g/gI-13828/)
 4. Wi-Fiを使ってみる (予定)
