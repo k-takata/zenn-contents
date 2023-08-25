@@ -12,5 +12,6 @@ chapters:
   - 05_i2c_bme680
   - 06_wa_mikan_wifi
   - 07_wa_mikan_microsd
-  - 08_compile_ruby_firmware
-  - 09_wa_mikan_only
+  - 08_arduino_like_sketch
+  - 09_compile_ruby_firmware
+  - 10_wa_mikan_only

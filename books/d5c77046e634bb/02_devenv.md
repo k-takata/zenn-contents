@@ -19,9 +19,9 @@ title: "開発環境の整備"
 
 WindowsでGR-CITRUSとmrubyを使うためには以下のソフトウェアが必要です。
 
-* Tera Term
+* [Tera Term](https://ttssh2.osdn.jp/)
 * Visual C++ (2015, 2017, 2019, 2022のいずれか)
-* Ruby 3.x
+* Ruby 3.x ([RubyInstaller](https://rubyinstaller.org/))
 * GNU Bison (Yacc) (CygwinやMSYS2に入っているものでも良い)
 
 
