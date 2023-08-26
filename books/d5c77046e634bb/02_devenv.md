@@ -94,9 +94,9 @@ $ git checkout 1.4.0
 ```
 
 mrubyをコンパイルするにはRubyが必要ですが、Ruby 3.0から関数の引数の扱いが変わったため、このままでは `Rakefile` でエラーが出てしまいます。
-以下のパッチのように、`{ :verbose => $verbose }` をすべて `:verbose => $verbose` に置き換えます。
+[以下のパッチ](https://github.com/k-takata/zenn-contents/tree/master/books/d5c77046e634bb/src/Rakefile.diff)のように、`{ :verbose => $verbose }` をすべて `:verbose => $verbose` に置き換えます。
 
-```diff
+```diff:Rakefile.diff
 --- a/Rakefile
 +++ b/Rakefile
 @@ -37,15 +37,15 @@ load "#{MRUBY_ROOT}/tasks/gitlab.rake"
@@ -188,7 +188,7 @@ C:\msys64\usr\bin\bison.exe
 
 電子工作界隈ではマイコンを動かすときに始めてやることはLEDを点滅させること(Lチカ)だと言われています。早速やってみましょう。
 
-まずは以下の内容を `main.rb` として保存します。
+まずは以下の内容を [`main.rb`](https://github.com/k-takata/zenn-contents/tree/master/books/d5c77046e634bb/src/main.rb) として保存します。
 
 ```ruby:main.rb
 #!mruby
@@ -303,7 +303,7 @@ endif
 
 Lチカの次は、シリアル端末に文字列を表示してみましょう。
 
-(m)rubyでは `puts` 関数を使うことで文字列を表示できますが、GR-CITRUSでも同様に `puts` 関数で文字列を表示できます。
+(m)rubyでは `puts` 関数を使うことで文字列を表示できますが、GR-CITRUSでも同様に `puts` 関数で文字列を表示できます。以下の [`hello.rb`](https://github.com/k-takata/zenn-contents/tree/master/books/d5c77046e634bb/src/hello.rb) を試してみましょう。
 
 ```ruby:hello.rb
 #!mruby
@@ -322,6 +322,7 @@ Hello World!
 ```
 
 Rubyファームウェアv2.50までの `puts` 関数は、mrubyの標準の `puts` 関数とは異なり、2つ以上の引数を渡すことができません。
+以下の [`hello-error.rb`](https://github.com/k-takata/zenn-contents/tree/master/books/d5c77046e634bb/src/hello-error.rb) を見てみましょう。
 
 ```ruby:hello-error.rb
 #!mruby
@@ -330,7 +331,7 @@ board = "GR-CITRUS"
 puts "Hello", board
 ```
 
-`mrbc` コマンドに `-g` オプションを付けて `mrbc -g hello-error.rb` でコンパイルすると、以下のようになります。
+`mrbc` コマンドに `-g` オプションを付けて `mrbc -g hello-error.rb` でコンパイルすると、エラーが起きたときにエラーの箇所が表示されるようになります。これを実行すると以下のようになり、`hello-error.rb` の4行目でエラーになっていることが分かります。
 
 ```
 >X hello-error.mrb 193
@@ -340,10 +341,7 @@ hello-error.mrb(193) Saving..
 hello-error.rb:4: wrong number of arguments (ArgumentError)
 ```
 
-`hello-error.rb` の4行目の `puts` の行でエラーになっていることが分かります。
-
-
-2つ以上の引数を表示したい場合は、代わりに式展開(string interpolation)が使えます。
+2つ以上の引数を表示したい場合は、[`hello-strinterp.rb`](https://github.com/k-takata/zenn-contents/tree/master/books/d5c77046e634bb/src/hello-strinterp.rb) のように代わりに式展開(string interpolation)が使えます。
 
 ```ruby:hello-strinterp.rb
 #!mruby
