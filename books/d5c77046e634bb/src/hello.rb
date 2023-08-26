@@ -1,0 +1,3 @@
+#!mruby
+
+puts "Hello World!"

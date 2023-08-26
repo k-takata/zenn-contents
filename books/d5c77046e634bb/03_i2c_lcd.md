@@ -180,7 +180,7 @@ end
 
 ここまでで、LCD上に文字列を表示するための関数が一通り用意できました。以下のように全部を1つのソースコードにまとめて(LCDクラス内は省略)、コンパイル・実行するとLCD上に "Hello World" と表示されます。
 
-```ruby
+```ruby:lcd-hello.rb
 #!mruby
 
 class LCD
@@ -194,6 +194,8 @@ lcd.init
 lcd.set_cursor(0, 0)  # 0桁, 0行目
 lcd.print("Hello World")
 ```
+
+ソースコード全体は [`lcd-hello.rb`](https://github.com/k-takata/zenn-contents/tree/master/books/d5c77046e634bb/src/lcd-hello.rb) から取得できます。
 
 
 ### 外字
@@ -224,7 +226,7 @@ end
 
 ```
 # Degree symbol
-lcd.set_cgram(0, [0x07, 0x05, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00])
+lcd.set_cgram(0x00, [0x07, 0x05, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00])
 ```
 
 その後以下のようにすれば、"25℃" と表示することができます。

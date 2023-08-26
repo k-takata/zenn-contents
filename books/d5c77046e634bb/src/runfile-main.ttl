@@ -1,0 +1,15 @@
+connect '/C=6'
+if result<>2 then
+	messagebox 'No connection.' 'Error'
+	exit
+endif
+
+filename = 'main.mrb'
+getdir dir
+makepath filename dir filename
+filestat filename size
+basename fname filename
+sprintf2 str 'X %s %d' fname size
+sendln str
+wait 'Waiting'
+sendfile filename 1

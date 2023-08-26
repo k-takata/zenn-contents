@@ -190,8 +190,9 @@ C:\msys64\usr\bin\bison.exe
 
 まずは以下の内容を `main.rb` として保存します。
 
-```ruby
+```ruby:main.rb
 #!mruby
+
 10.times do
   led
   delay 250
@@ -250,9 +251,9 @@ WAKAYAMA.RB Board Ver.CITRUS-2.50(2018/6/7)f4(256KB), mruby 1.4.0 (H [ENTER])
 Tera Termマクロを使って、もっと簡単にmrbファイルを書き込んで実行できるようにしてみましょう。
 
 
-以下のファイルを `runfile-main.ttl` という名前を付けて、`main.rb` や `main.mrb` と同じディレクトリに保存しましょう。
+以下の [`runfile-main.ttl`](https://github.com/k-takata/zenn-contents/tree/master/books/d5c77046e634bb/src/runfile-main.ttl) ファイルを、`main.rb` や `main.mrb` と同じディレクトリに保存しましょう。
 
-```
+```:runfile-mail.ttl
 connect '/C=6'
 if result<>2 then
 	messagebox 'No connection.' 'Error'
@@ -275,7 +276,27 @@ sendfile filename 1
 
 Tera Termのメニューから「コントロール」→「マクロ」を選び、先ほどの `runfile-main.ttl` を選択すると、同じディレクトリにある `main.mrb` の書き込みと実行が行われます。
 
-**注意:** `runfile-main.ttl` はエラーチェックが甘いため、たまに書き込みが上手くいかないことがあります。(例えばEEPROM FileWriterのプロンプトに何かを入力した状態でマクロを実行するなど) その場合は、メニューから「コントロール」→「マクロウィンドウの表示」を選び、「終了」ボタンを押してマクロの実行を中断してから、再度実行してみてください。
+以下の [`runfile.ttl`](https://github.com/k-takata/zenn-contents/tree/master/books/d5c77046e634bb/src/runfile.ttl) を使えば、mrbファイルは固定ではなく、選択画面が表示され、選んだファイルを実行できます。必要に応じて使い分けてください。
+
+```:runfile.ttl
+connect '/C=6'
+if result<>2 then
+	messagebox 'No connection.' 'Error'
+	exit
+endif
+
+filenamebox 'Select mrb file for execution' 0
+if result<>0 then
+	filestat inputstr size
+	basename fname inputstr
+	sprintf2 str 'X %s %d' fname size
+	sendln str
+	wait 'Waiting'
+	sendfile inputstr 1
+endif
+```
+
+**注意:** `runfile-main.ttl` や `runfile.ttl` はエラーチェックが甘いため、たまに書き込みが上手くいかないことがあります。(例えばEEPROM FileWriterのプロンプトに何かを入力した状態でマクロを実行するなど) その場合は、メニューから「コントロール」→「マクロウィンドウの表示」を選び、「終了」ボタンを押してマクロの実行を中断してから、再度実行してみてください。
 
 
 ## シリアル通信でHello World
@@ -284,24 +305,63 @@ Lチカの次は、シリアル端末に文字列を表示してみましょう�
 
 (m)rubyでは `puts` 関数を使うことで文字列を表示できますが、GR-CITRUSでも同様に `puts` 関数で文字列を表示できます。
 
-```ruby
+```ruby:hello.rb
 #!mruby
 
 puts "Hello World!"
 ```
 
-このコードをコンパイルし、実行すると、シリアル端末(Tera Term)上に "Hello World!" と表示されます。
+このコードを `mrbc hello.rb` でコンパイルすると `hello.mrb` ができますので、それを実行すると、以下のようにシリアル端末(Tera Term)上に "Hello World!" と表示されます。
 
-Rubyファームウェアv2.50までの `puts` 関数は、mrubyの標準の `puts` 関数とは異なり、2つ以上の引数を渡すことができません。2つ以上の引数を表示したい場合は、代わりに式展開を使うとよいでしょう。
+```
+>X hello.mrb 102
 
-```ruby
+Waiting  60 59
+hello.mrb(102) Saving..
+Hello World!
+```
+
+Rubyファームウェアv2.50までの `puts` 関数は、mrubyの標準の `puts` 関数とは異なり、2つ以上の引数を渡すことができません。
+
+```ruby:hello-error.rb
 #!mruby
 
 board = "GR-CITRUS"
-puts "Hello #{board}!"
+puts "Hello", board
 ```
 
-このコードを実行すると、"Hello GR-CITRUS!" と表示されます。
+`mrbc` コマンドに `-g` オプションを付けて `mrbc -g hello-error.rb` でコンパイルすると、以下のようになります。
+
+```
+>X hello-error.mrb 193
+
+Waiting  60 59
+hello-error.mrb(193) Saving..
+hello-error.rb:4: wrong number of arguments (ArgumentError)
+```
+
+`hello-error.rb` の4行目の `puts` の行でエラーになっていることが分かります。
+
+
+2つ以上の引数を表示したい場合は、代わりに式展開(string interpolation)が使えます。
+
+```ruby:hello-strinterp.rb
+#!mruby
+
+board = "GR-CITRUS"
+puts "Hello\r\n#{board}"
+```
+
+このコードを実行すると、"Hello" と "GR-CITRUS" が1行ずつ表示されます。
+
+```
+>X hello-strinterp.mrb 147
+
+Waiting  60 59
+hello-strinterp.mrb(147) Saving..
+Hello
+GR-CITRUS
+```
 
 **Tips:** Rubyファームウェアの最新ソースコード(2023年8月16日以降)を取得し、自分でコンパイルするとmruby標準の `puts` と同様に2つ以上の引数を渡して表示することができるようになります。
 
