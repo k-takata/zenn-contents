@@ -197,6 +197,10 @@ lcd.print("Hello World")
 
 ソースコード全体は [`lcd-hello.rb`](https://github.com/k-takata/zenn-contents/tree/master/books/d5c77046e634bb/src/lcd-hello.rb) から取得できます。
 
+ブレッドボード上で動かしてみた様子がこちらです。
+
+[![lcd-hello](https://raw.githubusercontent.com/k-takata/zenn-contents/master/books/d5c77046e634bb/images/lcd-hello-small.jpg)](https://raw.githubusercontent.com/k-takata/zenn-contents/master/books/d5c77046e634bb/images/lcd-hello.jpg)
+
 
 ### 外字
 
