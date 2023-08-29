@@ -3,7 +3,7 @@ title: "開発環境の整備"
 ---
 
 [GR-CITRUSの公式ページ](https://www.renesas.com/jp/ja/products/gadget-renesas/boards/gr-citrus)では、Rubyでプログラミングをするために[Rubicというアプリを使った方法](https://www.renesas.com/jp/ja/products/gadget-renesas/boards/gr-citrus/project-rubic-ruby)を紹介しています。
-しかし残念ながら、2023年8月現在、Rubicは最新のChromeに対応しておらずインストールすることができません。また、同じ作者によるVSCode向けの拡張としてのRubicもありますが、こちらもやはり最新のVSCodeには対応しておらずインストールできません。
+しかし残念ながら、2023年8月現在、Rubicは最新のChromeに対応しておらずインストールすることができません。また、同じ作者によるVS Code向けの拡張としてのRubicもありますが、こちらもやはり最新のVS Codeには対応しておらずインストールできません。
 
 このため、GR-CITRUSリリース当時のように手軽にRubyを使ってボードを動かすという訳にはいきませんが、以下の手順を踏むことで引き続きRubyでプログラミングができます。
 
