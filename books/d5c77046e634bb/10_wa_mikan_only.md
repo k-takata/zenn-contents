@@ -41,8 +41,17 @@ Arduino IDEを使ってWA-MIKANをプログラミングすると、GR-CITRUSか�
 [`AT`](https://docs.espressif.com/projects/esp-at/en/release-v2.2.0.0_esp8266/AT_Command_Set/Basic_AT_Commands.html#cmd-at) [Enter] とだけ打てば、"OK" が返ってきます。[`AT+GMR`](https://docs.espressif.com/projects/esp-at/en/release-v2.2.0.0_esp8266/AT_Command_Set/Basic_AT_Commands.html#cmd-gmr) [Enter] と打てば、ファームウェアのバージョンが返ってきます。
 
 ```
-ATコマンド例
+AT
 
+OK
+```
+
+```
+AT+GMR
+AT version:0.52.0.0(Jan  7 2016 18:44:24)
+SDK version:1.5.1(e67da894)
+compile time:Jan  7 2016 19:03:11
+OK
 ```
 
 ファームウェアのバージョンが確認できたところで、ファームウェアの更新作業に入っていきます。
@@ -62,11 +71,40 @@ JP1のショートを外してリセットボタンを押して、Tera Termと�
 まずは先ほどと同じように、`AT+GMR` コマンドでバージョンを使ってバージョンを確認します。
 
 ```
-バージョン
-
+AT+GMR
+AT version:1.6.2.0(Apr 13 2018 11:10:59)
+SDK version:2.2.1(6ab97e9)
+compile time:Jun  7 2018 19:34:29
+Bin version(Wroom 02):1.6.2
+OK
 ```
 
 次に [`AT+RESTORE`](https://docs.espressif.com/projects/esp-at/en/release-v2.2.0.0_esp8266/AT_Command_Set/Basic_AT_Commands.html#cmd-restore) コマンドを使って、設定を出荷時設定に戻しておきます。
+
+```
+AT+RESTORE
+
+OK
+
+ ets Jan  8 2013,rst cause:2, boot mode:(3,6)
+
+load 0x40100000, len 2408, room 16
+tail 8
+chksum 0xe5
+load 0x3ffe8000, len 776, room 0
+tail 8
+chksum 0x84
+load 0x3ffe8310, len 632, room 0
+tail 8
+chksum 0xd8
+csum 0xd8
+
+2nd boot version : 1.6
+  SPI Speed      : 40MHz
+  SPI Mode       : QIO
+  SPI Flash Size & Map: 32Mbit(512KB+512KB)
+jump to run user1 @ 1000
+```
 
 GR-CITRUSと接続して、今まで通り `WiFi` クラスが動作すれば成功です。
 
