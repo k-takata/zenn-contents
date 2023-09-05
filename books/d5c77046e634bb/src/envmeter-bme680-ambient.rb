@@ -22,9 +22,9 @@ class Ambient
     hash.each {|k, v|
       arr << "\"#{k}\":#{v}"
     }
-    body = "{\"writeKey\":\"#{@writeKey}\",\"data\":[{#{arr.join(',')}}]}"
+    body = "{\"writeKey\":\"#{@writeKey}\",#{arr.join(',')}}"
     puts("body: #{body}")
-    url = "ambidata.io/api/v2/channels/#{@channelId}/dataarray"
+    url = "ambidata.io/api/v2/channels/#{@channelId}/data"
     puts("url: #{url}")
     ret = WiFi.httpPost(url, ['Content-Type: application/json'], body)
     puts("httpPost: #{ret}")
