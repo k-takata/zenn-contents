@@ -38,13 +38,15 @@ Arduino IDEを使ってWA-MIKANをプログラミングすると、GR-CITRUSか�
 | 改行コード (送信) | **CR+LF** |
 
 ここで[ATコマンド](https://docs.espressif.com/projects/esp-at/en/release-v2.2.0.0_esp8266/AT_Command_Set/index.html)を入力すると、ESP8266からの応答が返ってきます。
-[`AT`](https://docs.espressif.com/projects/esp-at/en/release-v2.2.0.0_esp8266/AT_Command_Set/Basic_AT_Commands.html#cmd-at) [Enter] とだけ打てば、"OK" が返ってきます。[`AT+GMR`](https://docs.espressif.com/projects/esp-at/en/release-v2.2.0.0_esp8266/AT_Command_Set/Basic_AT_Commands.html#cmd-gmr) [Enter] と打てば、ファームウェアのバージョンが返ってきます。
+[`AT`](https://docs.espressif.com/projects/esp-at/en/release-v2.2.0.0_esp8266/AT_Command_Set/Basic_AT_Commands.html#cmd-at) [Enter] とだけ打てば、"OK" が返ってきます。
 
 ```
 AT
 
 OK
 ```
+
+[`AT+GMR`](https://docs.espressif.com/projects/esp-at/en/release-v2.2.0.0_esp8266/AT_Command_Set/Basic_AT_Commands.html#cmd-gmr) [Enter] と打てば、ファームウェアのバージョンが返ってきます。
 
 ```
 AT+GMR
