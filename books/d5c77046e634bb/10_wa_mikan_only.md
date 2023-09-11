@@ -237,9 +237,12 @@ void setup() {
 
   setClock();
 }
+
+void loop() {
+}
 ```
 
-`setup()` 関数内の `WiFi.setOutputPower()` でWi-Fiの出力強度を設定しています。0.0 ~ 20.5 dBm の範囲で強度を設定できます。この関数は必須ではありませんが、通信に問題がない範囲で小さい値を指定することでESP8266の消費電力を下げることができます。
+`setup()` 関数内の `WiFi.setOutputPower()` でWi-Fiの出力強度を設定しています。0.0 ~ 20.5 dBm の範囲で強度を設定できます。この設定は必須ではありませんが、通信に問題がない範囲で小さい値を指定することでESP8266の消費電力を下げることができます。
 `WiFi.mode()` でSTA(ステーション)モードに設定し、`WiFi.begin()` でSSIDとパスワードを指定することでWi-Fi接続が開始されます。
 `WiFi.status()` で接続状況が確認できます。
 `WiFi.localIP()` でIPアドレスを知ることができます。
@@ -248,10 +251,13 @@ void setup() {
 `configTzTime()` でタイムゾーンとNTPサーバーを指定すると、NTPサーバーへの接続が試みられます。第1引数でタイムゾーンを指定し、第2引数以降(最大3つまで)でNTPサーバーを指定します。
 RTCが正しく設定されれば、`time()` で現在の時刻を取得することができます。取得した時間は `localtime_r()` でローカルタイムに変換して、`asctime()` で表示可能な文字列に変換することができます。
 
+実行例:
 ```
-実行例
-
-
+........
+WiFi connected
+IP address: 192.168.0.4
+Waiting for NTP time sync: .
+Current time (JST): Mon Sep 11 23:58:20 2023
 ```
 
 
