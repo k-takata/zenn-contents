@@ -116,6 +116,17 @@ GR-CITRUSと接続して、今まで通り `WiFi` クラスが動作すれば成
 まずは[Arduino IDE](https://www.arduino.cc/en/software)をダウンロードしましょう。現時点の最新版は2.1.1です。(`arduino-ide_2.1.1_Windows_64bit.exe`)
 
 
+[ESP8266用コアライブラリ](https://github.com/esp8266/Arduino)をインストールします。
+ドキュメントに記載されている通り、ボードマネージャの追加URLとして、以下のURLを指定します。(ESP8266だけでなく、複数のボードを追加したい場合は、URLをコンマで区切って指定します。)
+
+```
+https://arduino.esp8266.com/stable/package_esp8266com_index.json
+```
+
+これでボードマネージャでESP8266用の環境が選択できるようになるので、それを選択してインストールします。
+
+
+
 参考: [Arduino IDEでWA-MIKAN(和みかん)のESP8266をプログラミングする　環境インストール編 - Qiita](https://qiita.com/tarosay/items/28ba9e0208f41cec492d)
 
 
