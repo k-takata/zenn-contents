@@ -108,7 +108,7 @@ csum 0xd8
 jump to run user1 @ 1000
 ```
 
-GR-CITRUSと接続して、今まで通り `WiFi` クラスが動作すれば成功です。
+GR-CITRUSと接続して、今まで通り `WiFi` クラスが動作すれば成功です。(Tera TermをGR-CITRUSと接続する際は、送信する改行コードの設定を CR に戻しておく必要があります。)
 
 
 ## Arduino IDEを使ってみる
@@ -126,17 +126,147 @@ https://arduino.esp8266.com/stable/package_esp8266com_index.json
 これでボードマネージャでESP8266用の環境が選択できるようになるので、それを選択してインストールします。
 
 
-
 参考: [Arduino IDEでWA-MIKAN(和みかん)のESP8266をプログラミングする　環境インストール編 - Qiita](https://qiita.com/tarosay/items/28ba9e0208f41cec492d)
+この記事が書かれた当時とは異なり、手動でESP8266の環境をダウンロードしたりPython 2.7をインストールする必要はありません。
 
 
 ## IRremoteESP8266を使って赤外線リモコンの送受信を行う
-   [赤外線リモコン受信モジュールOSRB38C9AA](https://akizukidenshi.com/catalog/g/gI-04659/)
-   [赤外線LED OSI5LA5113A](https://akizukidenshi.com/catalog/g/gI-12612/)
-   If 100mA, Vf 1.35V, Pulse 1000mA
-   If 190mA, Vf 2.3V
-   [2SC2001](https://akizukidenshi.com/catalog/g/gI-13828/)
-   [赤外線リモコンの通信フォーマット](http://elm-chan.org/docs/ir_format.html)
-   [ラズパイで外部からエアコンの電源を入れてみる その1](https://bsblog.casareal.co.jp/archives/5010)
 
-## Wi-Fiを使ってみる (予定)
+[IRremoteESP8266](https://github.com/crankyoldgit/IRremoteESP8266)という赤外線リモコン送受信用のライブラリがあります。これを使うと、各種の家電を自分のプログラムで制御することが簡単にできるようになります。
+
+### 作成
+
+赤外線リモコン送受信器を作成するために以下の部品を用意します。
+
+| 部品 | 型番 | 説明 |
+|------|------|------|
+|赤外線リモコン受信モジュール|[OSRB38C9AA](https://akizukidenshi.com/catalog/g/gI-04659/)||
+|赤外線LED|[OSI5LA5113A](https://akizukidenshi.com/catalog/g/gI-12612/)||
+|NPNトランジスター|[2SC2001](https://akizukidenshi.com/catalog/g/gI-13828/)|Ic が 500mA ~ 1A 程度流せるもの|
+|抵抗|5.1Ω||
+|抵抗|680Ω||
+|抵抗|4.7kΩ||
+
+今回使った赤外線LEDは、定常動作でIf 100mA、パルス動作でIf 1000mAとなっています。赤外線リモコンの送信に使う場合はパルス動作で使うことになりますので、それを前提にLEDに流す電流を決めることにします。
+
+とりあえず、Ifとして200mAを流すことを考えてみます。
+データシートのIF-VFグラフを見ると、If=200mAのときのVfは約2.4Vです。この時の電流制限抵抗は、
+
+$$
+(3.3 [V] - 2.4 [V]) / 200 [mA] = 4.5 [Ω]
+$$
+
+と計算できます。
+ここで、たまたま手元に5.1Ω抵抗があったので、これを代わりに使った場合のIfを見積もってみます。
+Vf=2.0Vと仮定すると抵抗に流れる電流は、
+
+$$
+(3.3 - 2.0) / 5.1 = 255 [mA]
+$$
+
+Vf=2.5Vと仮定すると抵抗に流れる電流は、
+
+$$
+(3.3 - 2.5) / 5.1 = 157 [mA]
+$$
+
+ここで、データシートのIF-VFグラフ上に (2.0V, 255mA) - (2.5V, 157mA) の線を引くと、Vf = 2.3V, If = 190mA の辺りが交点となります。したがって、5.1Ωを使うとIf 190mAになると見積もることができます。
+
+
+[赤外線リモコンの通信フォーマット](http://elm-chan.org/docs/ir_format.html)
+[ラズパイで外部からエアコンの電源を入れてみる その1](https://bsblog.casareal.co.jp/archives/5010)
+
+[赤外線リモコンを自作する - その1データ解析編 - Qiita](https://qiita.com/ayakix/items/3ad454f135fb63a92026)
+
+
+### 赤外線受信
+
+
+### 赤外線送信
+
+
+
+## Wi-Fiを使ってみる
+
+
+### NTPでESP8266のRTCを設定する
+
+まずはWi-Fiを使った簡単な例として、NTPを使ってESP8266のRTC (Real Time Clock)を設定してみましょう。
+
+```CPP
+#include <ESP8266WiFi.h>
+#include <time.h>
+
+#define SSID    "**************"
+#define PASSWD  "*************"
+
+// Set the clock using NTP.
+void setClock() {
+  configTzTime("JST-9", "ntp.nict.jp", "ntp.jst.mfeed.ad.jp");
+
+  Serial.print("Waiting for NTP time sync: ");
+  time_t now;
+  while ((now = time(nullptr)) < 8 * 3600 * 2) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println();
+
+  struct tm timeinfo;
+  localtime_r(&now, &timeinfo);
+  Serial.printf("Current time (JST): %s", asctime(&timeinfo));
+}
+
+void setup() {
+  Serial.begin(115200);
+
+  WiFi.setOutputPower(0.0);   // Set to minimum power. (0.0 - 20.5 dBm)
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(SSID, PASSWD);
+
+  Serial.println();
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println();
+
+  Serial.println("WiFi connected");
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
+
+  setClock();
+}
+```
+
+`setup()` 関数内の `WiFi.setOutputPower()` でWi-Fiの出力強度を設定しています。0.0 ~ 20.5 dBm の範囲で強度を設定できます。この関数は必須ではありませんが、通信に問題がない範囲で小さい値を指定することでESP8266の消費電力を下げることができます。
+`WiFi.mode()` でSTA(ステーション)モードに設定し、`WiFi.begin()` でSSIDとパスワードを指定することでWi-Fi接続が開始されます。
+`WiFi.status()` で接続状況が確認できます。
+`WiFi.localIP()` でIPアドレスを知ることができます。
+
+`setClock()` 関数でNTPサーバーとの同期を行います。この関数は[ESP8266のサンプルコード](https://github.com/esp8266/Arduino/blob/7f2deb14a254d0d1b0903e0bb15a87815833f579/libraries/ESP8266WiFi/examples/BearSSL_Validation/BearSSL_Validation.ino#L27-L43)を元にしています。
+`configTzTime()` でタイムゾーンとNTPサーバーを指定すると、NTPサーバーへの接続が試みられます。第1引数でタイムゾーンを指定し、第2引数以降(最大3つまで)でNTPサーバーを指定します。
+RTCが正しく設定されれば、`time()` で現在の時刻を取得することができます。取得した時間は `localtime_r()` でローカルタイムに変換して、`asctime()` で表示可能な文字列に変換することができます。
+
+```
+実行例
+
+
+```
+
+
+### Slackにメッセージを送信する
+
+HTTPS接続
+
+ESP8266でHTTPS接続を行う方法はいくつかあるようですが、今回は[BearSSL WiFi Classes](https://arduino-esp8266.readthedocs.io/en/latest/esp8266wifi/bearssl-client-secure-class.html)を使ってみることにします。
+
+
+
+curlコマンドでメッセージを送信する例
+
+
+
+### Slackからメッセージを受信する
+
+JSON解析
