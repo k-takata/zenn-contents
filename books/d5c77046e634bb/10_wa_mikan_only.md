@@ -193,7 +193,7 @@ $$
 トランジスターのベース抵抗とベース・エミッター間抵抗の計算は、[デジタルトランジスタ（デジトラ）の使い方と抵抗値選定方法 | アナデジ太郎の回路設計](https://ana-dig.com/digi-tra/)が参考になります。
 
 
-[赤外線リモコンの通信フォーマット](http://elm-chan.org/docs/ir_format.html)
+
 [ラズパイで外部からエアコンの電源を入れてみる その1](https://bsblog.casareal.co.jp/archives/5010)
 
 
@@ -209,8 +209,8 @@ IRremoteESP8266のサンプルの1つであるIRrecvDumpV3 (あるいはIRrecvDu
 ファイル > スケッチ例 > IRremoteESP8266 > IRrecvDumpV3
 
 
-`rawData` は赤外線リモコンのパルスが出ている期間（マーク）と出ていない期間（スペース）をμ秒単位で表現した生データです。
-これは[アナログ](https://github.com/crankyoldgit/IRremoteESP8266/wiki/Frequently-Asked-Questions#why-is-the-raw-data-for-a-button-or-ac-state-always-different-for-each-capture)的なデータ表現であるため、同じリモコン操作をしても `rawData` は毎回変わってきます。
+`rawData` は赤外線リモコンのパルスが出ている期間（マーク）と出ていない期間（スペース）をμ秒単位で表現した生データです。（よく使われる赤外線リモコンのプロトコルについては、[赤外線リモコンの通信フォーマット](http://elm-chan.org/docs/ir_format.html)を参照してください。）
+生データは[アナログ的なデータ表現](https://github.com/crankyoldgit/IRremoteESP8266/wiki/Frequently-Asked-Questions#why-is-the-raw-data-for-a-button-or-ac-state-always-different-for-each-capture)であるため、同じリモコン操作をしても `rawData` は毎回変わってきます。
 
 生データを1段階デコードしたものが **state[]**/**integer** フォーマットです。数ビットから数百ビットのデータになります。
 
@@ -220,14 +220,51 @@ IRremoteESP8266のサンプルの1つであるIRrecvDumpV3 (あるいはIRrecvDu
 
 ### 赤外線送信
 
+#### 生データの送信
+
 `sendRaw` 関数を使うと、受信した生データをそのまま送信することができます。
 
+
+#### ベンダーごとの送信関数を使う場合
 
 `IRsend::sendSymphony`
 
 
-`ir_Daikin.h`
 
+#### エアコン制御の例1
+
+`IRac.h` をインクルードすると、各社のエアコン制御を行うことができます。
+
+
+#### エアコン制御の例2
+
+```
+#include <IRac.h>
+
+#define PIN_SEND  12
+
+void setup () {
+}
+
+void loop() {
+  IRDaikinESP irsend(PIN_SEND);
+
+  irsend.begin();
+  irsend.setPower(true);
+  irsend.setMode(kDaikinCool);
+  irsend.setFan(kDaikinFanAuto);
+
+  //irsend.setTemp(28);
+  float temp = 27.5;
+  uint8_t *raw = irsend.getRaw();
+  raw[22] = static_cast<int>(temp * 2);
+  irsend.setRaw(raw);
+
+  irsend.send();
+
+  delay(10 * 1000);
+}
+```
 
 
 ## Wi-Fiを使ってみる
@@ -287,7 +324,7 @@ void loop() {
 }
 ```
 
-`setup()` 関数内の `WiFi.setOutputPower()` でWi-Fiの出力強度を設定しています。0.0 ~ 20.5 dBm の範囲で強度を設定できます。この設定は必須ではありませんが、通信に問題がない範囲で小さい値を指定することでESP8266の消費電力を下げることができます。
+`setup()` 関数内の `WiFi.setOutputPower()` でWi-Fiの出力強度を設定しています。0.0 ~ 20.5 dBm の範囲で強度を設定できます。この設定は必須ではありませんが、通信に問題がない範囲で小さい値を指定することでESP8266の消費電力を下げることができます。ESP8266を電池で動かしたいときには有効でしょう。
 `WiFi.mode()` でSTA(ステーション)モードに設定し、`WiFi.begin()` でSSIDとパスワードを指定することでWi-Fi接続が開始されます。
 `WiFi.status()` で接続状況が確認できます。
 `WiFi.localIP()` でIPアドレスを知ることができます。
@@ -325,12 +362,16 @@ using namespace BearSSL;
 
 BearSSL WiFi Classesを使ったHTTPS接続の例は [`BearSSL_Validation.ino`](https://github.com/esp8266/Arduino/blob/master/libraries/ESP8266WiFi/examples/BearSSL_Validation/BearSSL_Validation.ino) にあります。
 
-`BearSSL::WiFiClientSecure` は、サーバーの証明書の確認方法として4つの方法を提供しています。
+`BearSSL::WiFiClientSecure` は、サーバーの証明書の確認方法としていくつかの方法を提供しています。
 
-* `setInsecure()`
-* `setKnownKey()`
-* `setFingerprint()`
-* `setTrustAnchors()`
+* `setInsecure()`  
+  証明書のチェックを行いません。安全ではありません。
+* `setKnownKey()`  
+  証明書のチェックの代わりに、サーバーの公開鍵のチェックを行います。サーバーが公開鍵を更新した場合は、通信に失敗します。
+* `setFingerprint()`  
+  証明書のチェックの代わりに、証明書のフィンガープリントを使ってチェックを行います。サーバーが証明書を更新した場合は、通信に失敗します。簡易的なチェックであるため、安全性は劣りますが、消費電力は少ないです。
+* `setTrustAnchors()`  
+  指定されたルート証明書を使ってサーバー証明書のチェックを行います。
 
 
 これらの関数を使うために必要なデータは、ESP8266用Arduinoコアライブラリのリポジトリの中にある [`tools/cert.py`](https://github.com/esp8266/Arduino/blob/master/tools/cert.py) というスクリプトで取得できます。
@@ -339,13 +380,69 @@ BearSSL WiFi Classesを使ったHTTPS接続の例は [`BearSSL_Validation.ino`](
 $ cert.py -s slack.com > certs.h
 ```
 
-cryptographyが見つからないというエラーが出た時は、以下のコマンドでインストールできます。
+スクリプトを実行する際に、cryptographyが見つからないというエラーが出た時は、以下のコマンドでインストールできます。
 
 ```shell-session
 $ pip install cryptography
 ```
 
+生成された `certs.h` の中身は以下のようになっています。
 
+```CPP:certs.h
+...
+
+////////////////////////////////////////////////////////////
+// certificate chain for slack.com:443
+
+// CN: slack.com => name: slack_com
+// not valid before: 2023-07-16 04:41:07
+// not valid after:  2023-10-14 04:41:06
+const char fingerprint_slack_com [] PROGMEM = "...";
+const char pubkey_slack_com [] PROGMEM = R"PUBKEY(
+-----BEGIN PUBLIC KEY-----
+...
+-----END PUBLIC KEY-----
+)PUBKEY";
+
+// http://r3.i.lencr.org/
+// CN: R3 => name: R3
+// not valid before: 2020-09-04 00:00:00
+// not valid after:  2025-09-15 16:00:00
+const char cert_R3 [] PROGMEM = R"CERT(
+-----BEGIN CERTIFICATE-----
+...
+-----END CERTIFICATE-----
+)CERT";
+
+// http://x1.i.lencr.org/
+// CN: ISRG Root X1 => name: ISRG_Root_X1
+// not valid before: 2015-06-04 11:04:38
+// not valid after:  2035-06-04 11:04:38
+const char cert_ISRG_Root_X1 [] PROGMEM = R"CERT(
+-----BEGIN CERTIFICATE-----
+...
+-----END CERTIFICATE-----
+)CERT";
+```
+
+フィンガープリント (`fingerprint_slack_com`) やサーバーの公開鍵 (`pubkey_slack_com`) を使う場合は、有効期限が3か月ほどしかないことが分かります。期限が切れた場合は `certs.h` を再生成する必要があります。
+ルート証明書を使う場合は、`cert_ISRG_Root_X1` を指定します。
+
+```CPP
+X509List cert(cert_ISRG_Root_X1);
+
+void loop() {
+  WiFiClientSecure client;
+  HTTPClient https;
+
+  client.setTrustAnchors(&cert);
+
+  ...
+}
+```
+
+
+1つのサーバーに接続するだけならば以上の方法で十分ですが、事前に接続先サーバーのルート証明書を特定できない場合や何十個ものルート証明書を使う必要がある場合は、サンプルの [`BearSSL_CertStore.ino`](https://github.com/esp8266/Arduino/blob/master/libraries/ESP8266WiFi/examples/BearSSL_CertStore/BearSSL_CertStore.ino) にあるように `BearSSL::CertStore` を使うことでメモリ使用量を削減できます。
 
 
 
