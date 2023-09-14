@@ -265,7 +265,18 @@ Current time (JST): Mon Sep 11 23:58:20 2023
 
 HTTPS接続
 
-ESP8266でHTTPS接続を行う方法はいくつかあるようですが、今回は[BearSSL WiFi Classes](https://arduino-esp8266.readthedocs.io/en/latest/esp8266wifi/bearssl-client-secure-class.html)を使ってみることにします。
+ESP8266でHTTPS接続を行うためには[BearSSL WiFi Classes](https://arduino-esp8266.readthedocs.io/en/latest/esp8266wifi/bearssl-client-secure-class.html)を使うことになります。
+ここで出てくる[BearSSL](https://bearssl.org/)とはSSL/TLSライブラリーの1つで、サイズが小さいのが特徴です。
+
+ヘッダーファイルには [`WiFiClientSecure.h`](https://github.com/esp8266/Arduino/blob/master/libraries/ESP8266WiFi/src/WiFiClientSecure.h)と [`WiFiClientSecureBearSSL.h`](https://github.com/esp8266/Arduino/blob/master/libraries/ESP8266WiFi/src/WiFiClientSecureBearSSL.h) の2つがありますが、`WiFiClientSecure.h` の実体は
+
+```c
+#include "WiFiClientSecureBearSSL.h"
+
+using namespace BearSSL;
+```
+
+となっているだけですので、実質的には同じものです。`WiFiClientSecure.h` を使った場合には、シンボルの頭に `BearSSL::` を付ける必要がなくなるという点だけが異なります。
 
 
 
