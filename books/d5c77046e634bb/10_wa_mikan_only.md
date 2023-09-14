@@ -142,8 +142,22 @@ https://arduino.esp8266.com/stable/package_esp8266com_index.json
 
 動作確認のために、シリアル通信で文字を表示するプログラムを動かしてみましょう。
 
+```CPP
+void setup() {
+  Serial.begin(115200);
+  delay(10);
+}
+
+void loop() {
+  Serial.println("Hello World.");
+  delay(1000);
+}
 ```
 
+Arduino IDEからスケッチの書き込みを行い、シリアルモニタを開くと以下の文字列が1秒ごとに表示されます。
+
+```
+Hello World.
 ```
 
 
@@ -220,25 +234,87 @@ IRremoteESP8266のサンプルの1つであるIRrecvDumpV3 (あるいはIRrecvDu
 
 ### 赤外線送信
 
+次に、赤外線送信を行う方法をいくつかのケースに分けて説明します。
+
+
 #### 生データの送信
 
 `sendRaw` 関数を使うと、受信した生データをそのまま送信することができます。
 
+```CPP
+#include <IRremoteESP8266.h>
+#include <IRsend.h>
 
-#### ベンダーごとの送信関数を使う場合
+#define KHZ 38
+#define PIN_SEND 12
+IRsend irsend(PIN_SEND);
 
-`IRsend::sendSymphony`
+// Protocol  : DAIKIN
+// Code      : 0x11DA2700C500401711DA27004200005411DA270000393800A0000000000000C00000E3 (280 Bits)
+// Mesg Desc.: Power: On, Mode: 3 (Cool), Temp: 28C, Fan: 10 (Auto), Powerful: Off, Quiet: Off, Sensor: Off, Mould: Off, Comfort: Off, Swing(H): Off, Swing(V): Off, Clock: 00:00, Day: 0 (UNKNOWN), On Timer: Off, Off Timer: Off, Weekly Timer: On
+uint16_t cmds[583] = {426, 442, ...};
+
+void setup() {
+  irsend.begin();
+}
+
+void loop() {
+  irsend.sendRaw(cmds, sizeof(cmds) / sizeof(cmds[0]), KHZ);
+  delay(10 * 1000);
+}
+
+```
+
+#### 汎用の送信関数を使う場合
 
 
+```CPP
+  irsend.send(SYMPHONY, code, 12);  // 12 bits
+```
 
 #### エアコン制御の例1
 
-`IRac.h` をインクルードすると、各社のエアコン制御を行うことができます。
+`IRac.h` をインクルードし `IRac` クラスを使うと、各社のエアコン制御を行うことができます。
+
+```CPP
+#include <IRac.h>
+
+#define PIN_SEND  12
+
+void setup () {
+}
+
+void loop() {
+  IRac irsend(PIN_SEND);
+
+  irsend.next.protocol = decode_type_t::DAIKIN;
+  irsend.next.power = true;
+  irsend.next.mode = stdAc::opmode_t::kCool;
+  irsend.next.fanspeed = stdAc::fanspeed_t::kAuto;
+  irsend.next.degrees = 28.0;
+
+  irsend.sendAc();
+
+  delay(10 * 1000);
+}
+```
+
+`IRac` クラスの `next` メンバー変数で次に送信すべき状態を保持しています。`sendAc()` を呼び出すことで、`next` の状態が送信されます。
+
+`next.protocol` でエアコンのプロトコルを指定します。ここではダイキン280bitプロトコルを指定しています。
+`next.power` で電源のon/offを指定します。
+`next.mode` でエアコンのモード（暖房冷房等）を指定します。
+`next.fanspeed` でファンのスピードを指定します。
+`next.degrees` で温度を指定します。
+
+それ以外の設定項目は [`IRsend.h`](https://github.com/crankyoldgit/IRremoteESP8266/blob/master/src/IRsend.h) の `state_t` 構造体で確認できます。
 
 
 #### エアコン制御の例2
 
-```
+次に、`IRac` クラスの代わりに、
+
+```CPP
 #include <IRac.h>
 
 #define PIN_SEND  12
