@@ -6,6 +6,13 @@ title: "WA-MIKANを単体で使う"
 
 WA-MIKANにはESP8266というWi-Fiモジュールが搭載されていますが、このモジュール自体がマイクロコントローラーを内蔵しており、単体でプログラムを動かすこともできます。[Arduino IDE](https://www.arduino.cc/en/software)を使えば、簡単にESP8266用のプログラムを作成し、WA-MIKANで動かすことができます。
 
+WA-MIKANを使って以下のようなものを作成していきます。
+
+* Hello World
+* 赤外線リモコン送受信
+* Slackメッセージ送受信
+* Slackを介してエアコンを制御
+
 
 ## ハードウェアの準備
 
@@ -113,6 +120,8 @@ GR-CITRUSと接続して、今まで通り `WiFi` クラスが動作すれば成
 
 ## Arduino IDEを使ってみる
 
+### インストール
+
 まずは[Arduino IDE](https://www.arduino.cc/en/software)をダウンロードしましょう。現時点の最新版は2.1.1です。(`arduino-ide_2.1.1_Windows_64bit.exe`)
 
 
@@ -129,6 +138,14 @@ https://arduino.esp8266.com/stable/package_esp8266com_index.json
 参考: [Arduino IDEでWA-MIKAN(和みかん)のESP8266をプログラミングする　環境インストール編 - Qiita](https://qiita.com/tarosay/items/28ba9e0208f41cec492d)
 この記事が書かれた当時とは異なり、手動でESP8266の環境をダウンロードしたりPython 2.7をインストールする必要はありません。
 
+### Hello World
+
+動作確認のために、シリアル通信で文字を表示するプログラムを動かしてみましょう。
+
+```
+
+```
+
 
 ## IRremoteESP8266を使って赤外線リモコンの送受信を行う
 
@@ -143,9 +160,9 @@ https://arduino.esp8266.com/stable/package_esp8266com_index.json
 |赤外線リモコン受信モジュール|[OSRB38C9AA](https://akizukidenshi.com/catalog/g/gI-04659/)||
 |赤外線LED|[OSI5LA5113A](https://akizukidenshi.com/catalog/g/gI-12612/)||
 |NPNトランジスター|[2SC2001](https://akizukidenshi.com/catalog/g/gI-13828/)|Ic が 500mA ~ 1A 程度流せるもの|
-|抵抗|5.1Ω||
-|抵抗|680Ω||
-|抵抗|4.7kΩ||
+|抵抗|5.1Ω|LED電流制限抵抗|
+|抵抗|680Ω|ベース抵抗|
+|抵抗|4.7kΩ|ベース・エミッター間抵抗|
 
 今回使った赤外線LEDは、定常動作でIf 100mA、パルス動作でIf 1000mAとなっています。赤外線リモコンの送信に使う場合はパルス動作で使うことになりますので、それを前提にLEDに流す電流を決めることにします。
 
@@ -170,7 +187,7 @@ $$
 (3.3 - 2.5) / 5.1 = 157 [mA]
 $$
 
-ここで、データシートのIF-VFグラフ上に (2.0V, 255mA) - (2.5V, 157mA) の線を引くと、Vf = 2.3V, If = 190mA の辺りが交点となります。したがって、5.1Ωを使うとIf 190mAになると見積もることができます。
+ここで、データシートのIF-VFグラフ上に (2.0V, 255mA) - (2.5V, 157mA) の線を引くと、Vf = 2.3V, If = 190mA の辺りが交点となります。したがって、5.1Ωを使うとIf 190mAになると見積もることができます。予定の200mAよりは少し小さい値になりますが、特に問題はないでしょう。
 
 
 トランジスターのベース抵抗とベース・エミッター間抵抗の計算は、[デジタルトランジスタ（デジトラ）の使い方と抵抗値選定方法 | アナデジ太郎の回路設計](https://ana-dig.com/digi-tra/)が参考になります。
@@ -179,18 +196,43 @@ $$
 [赤外線リモコンの通信フォーマット](http://elm-chan.org/docs/ir_format.html)
 [ラズパイで外部からエアコンの電源を入れてみる その1](https://bsblog.casareal.co.jp/archives/5010)
 
-[赤外線リモコンを自作する - その1データ解析編 - Qiita](https://qiita.com/ayakix/items/3ad454f135fb63a92026)
 
 
 ### 赤外線受信
 
+まずは、自分が制御したい家電のリモコンにどのようなプロトコルが使われているかを調べます。
+
+[赤外線リモコンを自作する - その1データ解析編 - Qiita](https://qiita.com/ayakix/items/3ad454f135fb63a92026)が参考になります。
+
+IRremoteESP8266のサンプルの1つであるIRrecvDumpV3 (あるいはIRrecvDumpV2)がそのまま使えます。
+
+ファイル > スケッチ例 > IRremoteESP8266 > IRrecvDumpV3
+
+
+`rawData` は赤外線リモコンのパルスが出ている期間（マーク）と出ていない期間（スペース）をμ秒単位で表現した生データです。
+これは[アナログ](https://github.com/crankyoldgit/IRremoteESP8266/wiki/Frequently-Asked-Questions#why-is-the-raw-data-for-a-button-or-ac-state-always-different-for-each-capture)的なデータ表現であるため、同じリモコン操作をしても `rawData` は毎回変わってきます。
+
+生データを1段階デコードしたものが **state[]**/**integer** フォーマットです。数ビットから数百ビットのデータになります。
+
+さらに、ライブラリが対応していれば **state[]**/**integer** フォーマットをデコードして、リモコンデータの意味を表示してくれます。例えばエアコンであれば、動作モード、温度、風量などのレベルの情報が取得できます。
+
+
 
 ### 赤外線送信
+
+`sendRaw` 関数を使うと、受信した生データをそのまま送信することができます。
+
+
+`IRsend::sendSymphony`
+
+
+`ir_Daikin.h`
 
 
 
 ## Wi-Fiを使ってみる
 
+次はWi-Fiを使ったプログラムをいくつか試してみましょう。
 
 ### NTPでESP8266のRTCを設定する
 
@@ -266,14 +308,14 @@ Current time (JST): Mon Sep 11 23:58:20 2023
 
 ### Slackにメッセージを送信する
 
-HTTPS接続
+#### HTTPS接続
 
-ESP8266でHTTPS接続を行うためには[BearSSL WiFi Classes](https://arduino-esp8266.readthedocs.io/en/latest/esp8266wifi/bearssl-client-secure-class.html)を使うことになります。
+Slackにメッセージを送信するにはHTTPS接続が必要です。ESP8266でHTTPS接続を行うためには[BearSSL WiFi Classes](https://arduino-esp8266.readthedocs.io/en/latest/esp8266wifi/bearssl-client-secure-class.html)を使うことになります。
 ここで出てくる[BearSSL](https://bearssl.org/)とはSSL/TLSライブラリーの1つで、サイズが小さいのが特徴です。(他の有名なSSL/TLSライブラリーとしては[OpenSSL](https://www.openssl.org/)やそのフォークの[LibraSSL](https://www.libressl.org/)などがあります。)
 
 ヘッダーファイルには [`WiFiClientSecure.h`](https://github.com/esp8266/Arduino/blob/master/libraries/ESP8266WiFi/src/WiFiClientSecure.h)と [`WiFiClientSecureBearSSL.h`](https://github.com/esp8266/Arduino/blob/master/libraries/ESP8266WiFi/src/WiFiClientSecureBearSSL.h) の2つがありますが、`WiFiClientSecure.h` の実体は
 
-```c
+```CPP
 #include "WiFiClientSecureBearSSL.h"
 
 using namespace BearSSL;
@@ -281,12 +323,50 @@ using namespace BearSSL;
 
 となっているだけですので、実質的には同じものです。`WiFiClientSecure.h` を使った場合には、シンボルの頭に `BearSSL::` を付ける必要がなくなるという点だけが異なります。
 
+BearSSL WiFi Classesを使ったHTTPS接続の例は [`BearSSL_Validation.ino`](https://github.com/esp8266/Arduino/blob/master/libraries/ESP8266WiFi/examples/BearSSL_Validation/BearSSL_Validation.ino) にあります。
+
+`BearSSL::WiFiClientSecure` は、サーバーの証明書の確認方法として4つの方法を提供しています。
+
+* `setInsecure()`
+* `setKnownKey()`
+* `setFingerprint()`
+* `setTrustAnchors()`
 
 
-curlコマンドでメッセージを送信する例
+これらの関数を使うために必要なデータは、ESP8266用Arduinoコアライブラリのリポジトリの中にある [`tools/cert.py`](https://github.com/esp8266/Arduino/blob/master/tools/cert.py) というスクリプトで取得できます。
+
+```shell-session
+$ cert.py -s slack.com > certs.h
+```
+
+cryptographyが見つからないというエラーが出た時は、以下のコマンドでインストールできます。
+
+```shell-session
+$ pip install cryptography
+```
+
+
+
+
+
+
+
+#### Slackへのアプリの登録
+
+
+slackにアプリが正しく登録できたかを確かめるために、curlコマンドを使ってメッセージを送信してみましょう。
+
+```shell-session
+$ curl -X POST 'https://slack.com/api/chat.postMessage' -d 'token=xoxb-*************-*************-************************' -d 'channel=C**********' -d 'text=Hello+World'
+```
+
+
+#### ESP8266からメッセージを送信する
 
 
 
 ### Slackからメッセージを受信する
 
 JSON解析
+
+
