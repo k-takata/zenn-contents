@@ -239,7 +239,11 @@ IRremoteESP8266のサンプルの1つであるIRrecvDumpV3 (あるいはIRrecvDu
 
 #### 生データの送信
 
-`sendRaw` 関数を使うと、受信した生データをそのまま送信することができます。
+`sendRaw()` 関数を使うと、受信した生データをそのまま送信することができます。
+
+今回、ESP8266の12ピンを出力に使用していますので、`IRsend` クラスのコンストラクタにはこのピン番号を指定します。
+
+IRrecvDumpV3 でダンプしたログをそのままペーストし、`rawData` の要素数と、赤外線リモコンの変調周波数 (kHz単位) を指定して `sendRaw()` を呼び出すことで、送信を行います。
 
 ```CPP
 #include <IRremoteESP8266.h>
@@ -252,17 +256,16 @@ IRsend irsend(PIN_SEND);
 // Protocol  : DAIKIN
 // Code      : 0x11DA2700C500401711DA27004200005411DA270000393800A0000000000000C00000E3 (280 Bits)
 // Mesg Desc.: Power: On, Mode: 3 (Cool), Temp: 28C, Fan: 10 (Auto), Powerful: Off, Quiet: Off, Sensor: Off, Mould: Off, Comfort: Off, Swing(H): Off, Swing(V): Off, Clock: 00:00, Day: 0 (UNKNOWN), On Timer: Off, Off Timer: Off, Weekly Timer: On
-uint16_t cmds[583] = {426, 442, ...};
+uint16_t rawData[583] = {426, 442, ...};
 
 void setup() {
   irsend.begin();
 }
 
 void loop() {
-  irsend.sendRaw(cmds, sizeof(cmds) / sizeof(cmds[0]), KHZ);
+  irsend.sendRaw(rawData, sizeof(rawData) / sizeof(rawData[0]), KHZ);
   delay(10 * 1000);
 }
-
 ```
 
 #### 汎用の送信関数を使う場合
@@ -274,7 +277,7 @@ void loop() {
 
 #### エアコン制御の例1
 
-`IRac.h` をインクルードし `IRac` クラスを使うと、各社のエアコン制御を行うことができます。
+`IRac.h` をインクルードし `IRac` クラスを使うと、各社のエアコンを統一的なインターフェイスで制御することができます。
 
 ```CPP
 #include <IRac.h>
@@ -312,7 +315,12 @@ void loop() {
 
 #### エアコン制御の例2
 
-次に、`IRac` クラスの代わりに、
+次に `IRac` クラスの代わりに、エアコンメーカーごとのクラスを使う場合を見てみます。`IRac` クラスに比べて、より細かな制御ができる場合があります。
+
+ダイキンの280bitプロトコルを使う場合は `IRDaikinESP` クラスを使用します。
+
+ダイキンの280bitプロトコルは0.5℃単位での温度設定が可能ですが、現在 `IRDaikinESP` クラスが提供している `setTemp()` 関数は1℃単位での温度設定しかできません。
+`getRaw()` 関数で送信データを取得し、それを直接書き換えてから `setRaw()` 関数で設定することで、0.5℃単位での温度設定が可能になります。
 
 ```CPP
 #include <IRac.h>
