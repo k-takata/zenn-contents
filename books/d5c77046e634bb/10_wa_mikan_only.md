@@ -312,10 +312,29 @@ void loop() {
 
 それ以外の設定項目は [`IRsend.h`](https://github.com/crankyoldgit/IRremoteESP8266/blob/master/src/IRsend.h) の `state_t` 構造体で確認できます。
 
+ちなみに、コンパイル時に表示されるメモリー使用量は以下のようになっています。
+
+```
+. Variables and constants in RAM (global, static), used 29768 / 80192 bytes (37%)
+║   SEGMENT  BYTES    DESCRIPTION
+╠══ DATA     1496     initialized variables
+╠══ RODATA   2528     constants       
+╚══ BSS      25744    zeroed variables
+. Instruction RAM (IRAM_ATTR, ICACHE_RAM_ATTR), used 60015 / 65536 bytes (91%)
+║   SEGMENT  BYTES    DESCRIPTION
+╠══ ICACHE   32768    reserved space for flash instruction cache
+╚══ IRAM     27247    code in IRAM    
+. Code in flash (default, ICACHE_FLASH_ATTR), used 326772 / 1048576 bytes (31%)
+║   SEGMENT  BYTES    DESCRIPTION
+╚══ IROM     326772   code in flash   
+```
+
+`IRac` クラスを使った場合のコード使用量 (Code in flash) はおよそ330kBです。
+
 
 #### エアコン制御の例2
 
-次に `IRac` クラスの代わりに、エアコンメーカーごとのクラスを使う場合を見てみます。`IRac` クラスに比べて、より細かな制御ができる場合があります。
+次に `IRac` クラスの代わりに、エアコンメーカーごとのクラスを使う場合を見てみます。`IRac` クラスに比べて、より細かな制御ができる場合があります。また、他社向けのコードをリンクせずにすむため、プログラムサイズが小さくなります。
 
 ダイキンの280bitプロトコルを使う場合は `IRDaikinESP` クラスを使用します。
 
@@ -349,6 +368,25 @@ void loop() {
   delay(10 * 1000);
 }
 ```
+
+コンパイル時に表示されるメモリー使用量は以下のようになっています。
+
+```
+. Variables and constants in RAM (global, static), used 28168 / 80192 bytes (35%)
+║   SEGMENT  BYTES    DESCRIPTION
+╠══ DATA     1496     initialized variables
+╠══ RODATA   920      constants       
+╚══ BSS      25752    zeroed variables
+. Instruction RAM (IRAM_ATTR, ICACHE_RAM_ATTR), used 59879 / 65536 bytes (91%)
+║   SEGMENT  BYTES    DESCRIPTION
+╠══ ICACHE   32768    reserved space for flash instruction cache
+╚══ IRAM     27111    code in IRAM    
+. Code in flash (default, ICACHE_FLASH_ATTR), used 237028 / 1048576 bytes (22%)
+║   SEGMENT  BYTES    DESCRIPTION
+╚══ IROM     237028   code in flash   
+```
+
+コード使用量はおよそ240kBとなっており、`IRac` クラスを使った場合のコード使用量である330kBに比べると、90kB程度少なくなっています。`IRac` クラスでは対応していないメーカー固有の機能を操作したい場合や、コードサイズが問題になるような場合は、このようにメーカー固有のクラスを使うと良いでしょう。
 
 
 ## Wi-Fiを使ってみる
