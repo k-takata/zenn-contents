@@ -21,4 +21,4 @@ IDE for GRのインストール先はどこでも構いませんが、トラブ�
 (あとで書く)
 
 
-詳しくはRenesas公式サイトの[IDE for GRでArduinoスケッチ](https://www.renesas.com/jp/ja/products/gadget-renesas/boards/gr-citrus/project-sketch-ide)ページを参照してください。
+詳しくはRenesas公式サイトの「[IDE for GRでArduinoスケッチ](https://www.renesas.com/jp/ja/products/gadget-renesas/boards/gr-citrus/project-sketch-ide)」ページを参照してください。
