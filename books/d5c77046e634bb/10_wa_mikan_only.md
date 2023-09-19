@@ -224,9 +224,32 @@ $$
 「[赤外線リモコンを自作する - その1データ解析編 - Qiita](https://qiita.com/ayakix/items/3ad454f135fb63a92026)」が参考になります。
 
 IRremoteESP8266のサンプルの1つであるIRrecvDumpV3 (あるいはIRrecvDumpV2)がそのまま使えます。
+Arduino IDEのメニューから以下を選択します。
 
 ファイル > スケッチ例 > IRremoteESP8266 > IRrecvDumpV3
 
+スケッチを実行し、赤外線受光器に向けてリモコンのボタンを押すと、以下のようなログが出ます。
+
+ダイキンのエアコンの例:
+```
+Protocol  : DAIKIN
+Code      : 0x11DA2700C500401711DA27004200005411DA270000393800A0000000000000C00000E3 (280 Bits)
+Mesg Desc.: Power: On, Mode: 3 (Cool), Temp: 28C, Fan: 10 (Auto), Powerful: Off, Quiet: Off, Sensor: Off, Mould: Off, Comfort: Off, Swing(H): Off, Swing(V): Off, Clock: 00:00, Day: 0 (UNKNOWN), On Timer: Off, Off Timer: Off, Weekly Timer: On
+uint16_t rawData[583] = {422, 472,  396, 472, ..., 1316,  420};  // DAIKIN
+uint8_t state[35] = {0x11, 0xDA, ..., 0x00, 0xE3};
+```
+
+DAIKIN 280ビットプロトコルを使用していることが分かります。
+
+THREEUPのサーキュレーターの例:
+```
+Protocol  : SYMPHONY
+Code      : 0xD84 (12 Bits)
+uint16_t rawData[119] = {1318, 376,  1314, 378, ..., 1214,  446};  // SYMPHONY D84
+uint64_t data = 0xD84;
+```
+
+SYMPHONY 12ビットプロトコルを使用していることが分かります。
 
 `rawData` は赤外線リモコンのパルスが出ている期間（マーク）と出ていない期間（スペース）をμ秒単位で表現した生データです。（よく使われる赤外線リモコンのプロトコルについては、「[赤外線リモコンの通信フォーマット](http://elm-chan.org/docs/ir_format.html)」を参照してください。）
 生データは[アナログ的なデータ表現](https://github.com/crankyoldgit/IRremoteESP8266/wiki/Frequently-Asked-Questions#why-is-the-raw-data-for-a-button-or-ac-state-always-different-for-each-capture)であるため、同じリモコン操作をしても `rawData` は毎回変わってきます。
