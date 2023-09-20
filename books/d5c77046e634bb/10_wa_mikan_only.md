@@ -327,7 +327,7 @@ void setup() {
 }
 
 void loop() {
-  uint64_t code = 0xD81;
+  uint64_t code = 0xD84;
   irsend.send(SYMPHONY, code, 12);  // 12 bits
   delay(10 * 1000);
 }
