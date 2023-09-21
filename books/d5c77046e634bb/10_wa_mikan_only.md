@@ -665,9 +665,9 @@ ESP8266のIO4とIO5をWA-MIKANのピンと接続するためには、下記の�
 | IO4 | 16 | SDA | J16をショートして使う |
 | IO5 | 14 | SCL | J15をショートして使う |
 
-GR-CITRUSの14ピンと16ピンはA0とA2が割り当てられています。もし、WA-MIKANとGR-CITRUSを再度組み合わせて使いたい場合、GR-CITRUS側で14ピンと16ピンを使うならばJ16とJ15を元に戻す必要があります。
+**注意:** GR-CITRUSの14ピンと16ピンはA0とA2が割り当てられています。もし、再度WA-MIKANとGR-CITRUSを組み合わせて使いたい場合、GR-CITRUS側で14ピンと16ピンを使うならばJ16とJ15を元に戻す必要があります。
 
-3章で実装したmrubyのコードをそのままArduinoのコードに移植してみましょう。
+8章で実装したGR-CITRUS向けのArduinoライクなスケッチがそのままWA-MIKANでも使うことができます。ただし `Wire1` オブジェクトではなく `Wire` オブジェクトを使います。
 
 ```CPP
 class Lcd {
@@ -759,6 +759,40 @@ public:
   }
 };
 ```
+
+WA-MIKAN向けのコンパイラはGR-CITRUS向けのコンパイラより新しいため、配列の渡し方が少し簡単に書けるようになっています。
+GR-CITRUSでは、配列を関数に渡す場合、一度変数に代入する必要がありました。
+
+```CPP
+    uint8_t cmds3[] = {0x38, 0x0C, 0x01};
+    send_seq(cmds3);
+```
+
+一方、WA-MIKANでは以下のように配列を直接関数の引数に書くことができます。
+
+```CPP
+    send_seq({0x38, 0x0C, 0x01});
+```
+
+あとは、GR-CITRUSと同じようにすることでLCDに文字を表示できます。
+
+```CPP
+Lcd lcd;
+
+void setup() {
+  // put your setup code here, to run once:
+  Wire1.begin();
+  lcd.init();
+}
+
+void loop() {
+  // put your main code here, to run repeatedly: 
+  lcd.set_cursor(0, 0);
+  lcd.print("Hello World");  
+}
+```
+
+これでLCDには "Hello World" と表示されます。
 
 
 
