@@ -675,8 +675,8 @@ private:
   const int addr = 0x3E;
 
 public:
-  Lcd() {
-  }
+  Lcd() = default;
+  ~Lcd() = default;
 
   void init() {
     delay(10);
