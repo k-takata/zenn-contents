@@ -165,3 +165,4 @@ void loop() {
 ソースコード全体は [`sketch_citrus_lcd.ino`](https://github.com/k-takata/zenn-contents/tree/master/books/d5c77046e634bb/src/sketch_citrus_lcd.ino) から取得できます。
 
 
+Wire以外のGR-CITRUSで使用可能なライブラリ関数については、「CITRUSスケッチリファレンス | Renesas」を参照してください。
