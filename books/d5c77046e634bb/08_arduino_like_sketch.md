@@ -3,7 +3,7 @@ title: "Arduino風のスケッチを動かす"
 ---
 
 GR-CITRUSは、Rubyを使ったプログラミングだけではなく、[IDE for GR](https://www.renesas.com/jp/ja/products/gadget-renesas/ide-gr)を使って[Arduino](https://www.arduino.cc/)風のスケッチを動かすこともできます。
-Arduinoでは、C言語風のArduino言語を使ってスケッチと呼ばれるプログラムを書くことでプログラミングができます。IDE for GRを使えば、Arduino IDEと同じような感じでスケッチを書いて動かすことができます。
+Arduinoでは、C++を基にしたArduino言語を使ってスケッチと呼ばれるプログラムを書くことでプログラミングができます。IDE for GRを使えば、Arduino IDEと同じような感じでスケッチを書いて動かすことができます。
 
 
 ## IDE for GRのインストール
@@ -22,6 +22,7 @@ IDE for GRのインストール先はどこでも構いませんが、トラブ�
 
 
 詳しくはRenesas公式サイトの「[IDE for GRでArduinoスケッチ](https://www.renesas.com/jp/ja/products/gadget-renesas/boards/gr-citrus/project-sketch-ide)」ページを参照してください。
+
 
 ## LCD表示
 
@@ -73,7 +74,7 @@ public:
 };
 ```
 
-Arduino言語 (C++) では、関数の引数に配列を渡すとポインターとして扱われ、配列の要素数の情報が失われてしまいます。そのため、3章の実装とは異なり、`cmds` の要素数を `cmdlen` として渡し、`data` の要素数を `datalen` として渡すようにしています。
+C++では、関数の引数に配列を渡すとポインターとして扱われ、配列の要素数の情報が失われてしまいます。そのため、3章の実装とは異なり、`cmds` の要素数を `cmdlen` として渡し、`data` の要素数を `datalen` として渡すようにしています。
 
 ただ、これではやはり面倒なので、C++のテンプレートを使って、サイズ情報も自動で渡せるようにしてみます。
 
@@ -98,7 +99,8 @@ Arduino言語 (C++) では、関数の引数に配列を渡すとポインター
   }
 ```
 
-コマンドのみを渡す場合やデータのみを渡す場合など、使用方法に応じていくつかの関数を用意してみました。
+コマンドのみを渡す場合やデータのみを渡す場合など、使用方法に応じていくつかの関数を用意してみました。C++では要素数0の配列を使うことはできませんので、省略する可能性のある引数は依然としてポインターを受け付けるようにし、デフォルト値は `nullptr`、長さのデフォルト値は 0 としています。
+
 これを使えば、例えば3つのコマンドからなるコマンド列を送信するには以下のようにできます。
 
 ```CPP
@@ -165,4 +167,4 @@ void loop() {
 ソースコード全体は [`sketch_citrus_lcd.ino`](https://github.com/k-takata/zenn-contents/tree/master/books/d5c77046e634bb/src/sketch_citrus_lcd.ino) から取得できます。
 
 
-Wire以外のGR-CITRUSで使用可能なライブラリ関数については、「CITRUSスケッチリファレンス | Renesas」を参照してください。
+Wire以外のGR-CITRUSで使用可能なライブラリ関数については、「[CITRUSスケッチリファレンス | Renesas](https://www.renesas.com/jp/ja/products/gadget-renesas/boards/gr-citrus/citrus-sketch)」を参照してください。
