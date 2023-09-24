@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include <Wire.h>
 
 class Lcd {
@@ -41,7 +40,7 @@ public:
       Wire1.write(0x00);       // Command byte: Co=0, RS=0
       for (size_t i = 0; i < cmdlen; ++i) {
         Wire1.write(cmds[i]);  // Command data byte
-      } 
+      }
     } else {
       // Send command words (if any)
       for (size_t i = 0; i < cmdlen; ++i) {
@@ -105,7 +104,7 @@ void setup() {
 }
 
 void loop() {
-  // put your main code here, to run repeatedly: 
+  // put your main code here, to run repeatedly:
   lcd.set_cursor(0, 0);
-  lcd.print("Hello World");  
+  lcd.print("Hello World");
 }

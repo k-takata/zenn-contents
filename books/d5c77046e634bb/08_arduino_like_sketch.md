@@ -33,7 +33,6 @@ I²C通信のためのライブラリは[Wire](https://www.renesas.com/jp/ja/pro
 `send_seq()` 関数を同じように実装してみましょう。
 
 ```CPP
-#include <Arduino.h>
 #include <Wire.h>
 
 class Lcd {
@@ -53,7 +52,7 @@ public:
       Wire1.write(0x00);       // Command byte: Co=0, RS=0
       for (size_t i = 0; i < cmdlen; ++i) {
         Wire1.write(cmds[i]);  // Command data byte
-      } 
+      }
     } else {
       // Send command words (if any)
       for (size_t i = 0; i < cmdlen; ++i) {
@@ -156,9 +155,9 @@ void setup() {
 }
 
 void loop() {
-  // put your main code here, to run repeatedly: 
+  // put your main code here, to run repeatedly:
   lcd.set_cursor(0, 0);
-  lcd.print("Hello World");  
+  lcd.print("Hello World");
 }
 ```
 
@@ -168,3 +167,9 @@ void loop() {
 
 
 Wire以外のGR-CITRUSで使用可能なライブラリ関数については、「[CITRUSスケッチリファレンス | Renesas](https://www.renesas.com/jp/ja/products/gadget-renesas/boards/gr-citrus/citrus-sketch)」を参照してください。
+
+
+## 動かし終わったら
+
+Arduino風のスケッチを動かしたあと、元のようにRubyを使いたい場合には、Rubyファームウェアを書き込んでください。
+GR-CITRUSのリセットボタンを押してUSBメモリーとして認識されたら、そこに `citrus_sketch.bin` をコピーしてください。自動で再起動が掛かり、USBシリアルからmrubyファイルを書き込めるようになります。
