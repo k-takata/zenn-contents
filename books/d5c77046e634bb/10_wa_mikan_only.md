@@ -211,7 +211,11 @@ $$
 (3.3 - 2.5) / 5.1 = 157 [mA]
 $$
 
-ここで、データシートのIF-VFグラフ上に (2.0V, 255mA) - (2.5V, 157mA) の線を引くと、Vf = 2.3V, If = 190mA の辺りが交点となります。したがって、5.1Ωを使うとIf 190mAになると見積もることができます。予定の200mAよりは少し小さい値になりますが、特に問題はないでしょう。
+ここで、データシートのIF-VFグラフ上に (2.0V, 255mA) - (2.5V, 157mA) の線を引くと、Vf = 2.3V, If = 190mA の辺りが交点となります。
+
+[![IF-VF / 5.1Ω](https://raw.githubusercontent.com/k-takata/zenn-contents/master/books/d5c77046e634bb/images/if-vf2.png)](https://raw.githubusercontent.com/k-takata/zenn-contents/master/books/d5c77046e634bb/images/if-vf2.png)
+
+したがって、5.1Ωを使うとIf 190mAになると見積もることができます。予定の200mAよりは少し小さい値になりますが、特に問題はないでしょう。
 
 
 トランジスターのベース抵抗とベース・エミッター間抵抗の計算は、「[デジタルトランジスタ（デジトラ）の使い方と抵抗値選定方法 | アナデジ太郎の回路設計](https://ana-dig.com/digi-tra/)」が参考になります。
