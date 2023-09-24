@@ -12,19 +12,16 @@ public:
     delay(10);
     send_cmd(0x38);
     delay(2);
-    uint8_t cmds1[] = {0x39, 0x14};
-    send_seq(cmds1);
+    send_seq({0x39, 0x14});
 
     uint8_t contrast = 0x20;
-    uint8_t cmds2[] = {
+    send_seq({
       uint8_t(0x70 + (contrast & 0x0F)),
       uint8_t(0x5C + ((contrast >> 4) & 0x03)),
-      0x6C};
-    send_seq(cmds2);
+      0x6C});
     delay(200);
 
-    uint8_t cmds3[] = {0x38, 0x0C, 0x01};
-    send_seq(cmds3);
+    send_seq({0x38, 0x0C, 0x01});
     delay(2);
   }
 
@@ -34,31 +31,30 @@ public:
   }
 
   void send_seq(const uint8_t *cmds, size_t cmdlen, const uint8_t *data=nullptr, size_t datalen=0) {
-    Wire1.beginTransmission(addr);
+    Wire.beginTransmission(addr);
     if (data == nullptr) {
       // Only command data
-      Wire1.write(0x00);       // Command byte: Co=0, RS=0
+      Wire.write(0x00);       // Command byte: Co=0, RS=0
       for (size_t i = 0; i < cmdlen; ++i) {
-        Wire1.write(cmds[i]);  // Command data byte
+        Wire.write(cmds[i]);  // Command data byte
       }
     } else {
       // Send command words (if any)
       for (size_t i = 0; i < cmdlen; ++i) {
-        Wire1.write(0x80);     // Command byte: Co=1, RS=0
-        Wire1.write(cmds[i]);  // Command data byte
+        Wire.write(0x80);     // Command byte: Co=1, RS=0
+        Wire.write(cmds[i]);  // Command data byte
       }
       // Send RAM data bytes
-      Wire1.write(0x40);       // Command byte: Co=0, RS=1
+      Wire.write(0x40);       // Command byte: Co=0, RS=1
       for (size_t i = 0; i < datalen; ++i) {
-        Wire1.write(data[i]);  // RAM data byte
+        Wire.write(data[i]);  // RAM data byte
       }
     }
-    Wire1.endTransmission();
+    Wire.endTransmission();
   }
 
   void send_cmd(const uint8_t cmd) {
-    uint8_t cmds[] = {cmd};
-    send_seq(cmds);
+    send_seq({cmd});
   }
 
   template <size_t datalen>
@@ -89,8 +85,7 @@ public:
   }
 
   void set_cgram(int num, const uint8_t *pat, size_t patlen) {
-    uint8_t cmd[] = {uint8_t(0x40 + num*8)};
-    send_seq(cmd, pat, patlen);
+    send_seq({uint8_t(0x40 + num*8)}, pat, patlen);
   }
 };
 
@@ -98,7 +93,7 @@ Lcd lcd;
 
 void setup() {
   // put your setup code here, to run once:
-  Wire1.begin();
+  Wire.begin();
   lcd.init();
 }
 

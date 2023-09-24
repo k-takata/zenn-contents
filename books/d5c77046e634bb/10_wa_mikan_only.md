@@ -657,7 +657,8 @@ JSONを解析するために、ArduinoJSONというライブラリを使いま�
 次はWA-MIKANでI²C通信を使ってみましょう。
 
 Arduinoでは `Wire` オブジェクトを使うことでI²C通信ができます。
-デフォルト設定では、4ピンと5ピンを使うことになっています。他のピンを使うこともできますが、今回はデフォルトの設定をそのまま使います。
+本家のArduinoのデフォルト設定では、A4ピンとA5ピンをSDAとSCLに使うことになっていますが、ESP8266でも同様にIO4ピンとIO5ピンがデフォルトとなっています。
+他のピンを使うこともできますが、今回はデフォルトの設定をそのまま使います。
 ESP8266のIO4とIO5をWA-MIKANのピンと接続するためには、下記の通り、J16およびJ15をショートして使う必要があります。
 
 | ESP8266ピン番号 | WA-MIKANピン番号 | I²C信号 | 備考 |
@@ -665,7 +666,7 @@ ESP8266のIO4とIO5をWA-MIKANのピンと接続するためには、下記の�
 | IO4 | 16 | SDA | J16をショートして使う |
 | IO5 | 14 | SCL | J15をショートして使う |
 
-**注意:** GR-CITRUSの14ピンと16ピンはA0とA2が割り当てられています。もし、再度WA-MIKANとGR-CITRUSを組み合わせて使いたい場合、GR-CITRUS側で14ピンと16ピンを使うならばJ16とJ15を元に戻す必要があります。
+**注意:** GR-CITRUSの14ピンと16ピンはA0とA2が割り当てられています。もし、再度WA-MIKANとGR-CITRUSを組み合わせて使いたい場合、GR-CITRUS側で14ピンと16ピンを使うならばJ16とJ15のショートを元に戻す必要があります。
 
 8章で実装したGR-CITRUS向けのArduinoライクなスケッチがそのままWA-MIKANでも使うことができます。ただし `Wire1` オブジェクトではなく `Wire` オブジェクトを使います。
 
@@ -707,7 +708,7 @@ public:
       Wire.write(0x00);       // Command byte: Co=0, RS=0
       for (size_t i = 0; i < cmdlen; ++i) {
         Wire.write(cmds[i]);  // Command data byte
-      } 
+      }
     } else {
       // Send command words (if any)
       for (size_t i = 0; i < cmdlen; ++i) {
@@ -786,9 +787,10 @@ void setup() {
 }
 
 void loop() {
-  // put your main code here, to run repeatedly: 
+  // put your main code here, to run repeatedly:
   lcd.set_cursor(0, 0);
-  lcd.print("Hello World");  
+  lcd.print("Hello World");
+  delay(1000);
 }
 ```
 

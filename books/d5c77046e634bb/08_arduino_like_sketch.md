@@ -158,6 +158,7 @@ void loop() {
   // put your main code here, to run repeatedly:
   lcd.set_cursor(0, 0);
   lcd.print("Hello World");
+  delay(1000);
 }
 ```
 
