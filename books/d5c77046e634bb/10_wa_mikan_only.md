@@ -557,8 +557,10 @@ BearSSL WiFi Classesを使ったHTTPS接続の例は [`BearSSL_Validation.ino`](
 * `setTrustAnchors()`  
   指定されたルート証明書を使ってサーバー証明書のチェックを行います。
 
+電力や性能的な問題がなければ、`setTrustAnchors()` を使うやり方が良いでしょう。
 
 これらの関数を使うために必要なデータは、ESP8266用Arduinoコアライブラリのリポジトリの中にある [`tools/cert.py`](https://github.com/esp8266/Arduino/blob/master/tools/cert.py) というスクリプトで取得できます。
+`-s` オプションで、接続したいサーバーを指定します。今回は `slack.com` です。
 
 ```shell-session
 $ cert.py -s slack.com > certs.h
@@ -570,7 +572,7 @@ $ cert.py -s slack.com > certs.h
 $ pip install cryptography
 ```
 
-生成された `certs.h` の中身は以下のようになっています。
+生成された [`certs.h`](https://github.com/k-takata/zenn-contents/tree/master/books/d5c77046e634bb/src/certs.h) の中身は以下のようになっています。
 
 ```CPP:certs.h
 ...
@@ -796,7 +798,7 @@ void loop() {
 
 これでLCDには "Hello World" と表示されます。
 
-
+ソースコード全体は [`sketch_mikan_lcd.ino`](https://github.com/k-takata/zenn-contents/tree/master/books/d5c77046e634bb/src/sketch_mikan_lcd.ino) から取得できます。
 
 
 (あとで書く)
