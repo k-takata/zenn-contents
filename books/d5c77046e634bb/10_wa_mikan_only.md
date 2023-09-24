@@ -137,9 +137,9 @@ https://arduino.esp8266.com/stable/package_esp8266com_index.json
 
 これでボードマネージャでESP8266用の環境が選択できるようになるので、それを選択してインストールします。
 
-
-参考: [Arduino IDEでWA-MIKAN(和みかん)のESP8266をプログラミングする　環境インストール編 - Qiita](https://qiita.com/tarosay/items/28ba9e0208f41cec492d)  
+**参考:** [Arduino IDEでWA-MIKAN(和みかん)のESP8266をプログラミングする　環境インストール編 - Qiita](https://qiita.com/tarosay/items/28ba9e0208f41cec492d)  
 この記事が書かれた当時とは異なり、手動でESP8266の環境をダウンロードしたりPython 2.7をインストールする必要はありません。
+
 
 ### Hello World
 
@@ -163,13 +163,13 @@ Arduino IDEからスケッチの書き込みを行い、シリアルモニタを
 Hello World.
 ```
 
-
-**Tips:** ESP8266の起動時に表示されるログは [74880 bps](https://arduino-esp8266.readthedocs.io/en/3.0.2/ideoptions.html#crystal-frequency) (=115200 * 26 / 40) にすると正しく表示されます。
+**Tips:** WA-MIKANのリセットボタンを押すと、シリアルに何やらゴミが表示されますが、これはシリアル端末の通信速度を [74880 bps](https://arduino-esp8266.readthedocs.io/en/3.0.2/ideoptions.html#crystal-frequency) (=115200 * 26 / 40) にすると正しく表示されます。
 
 
 ## IRremoteESP8266を使って赤外線リモコンの送受信を行う
 
 [IRremoteESP8266](https://github.com/crankyoldgit/IRremoteESP8266)という赤外線リモコン送受信用のライブラリがあります。これを使うと、各種の家電を自分のプログラムで制御することが簡単にできるようになります。
+
 
 ### 作成
 
@@ -187,7 +187,11 @@ Hello World.
 今回使った赤外線LEDは、定常動作でIf 100mA、パルス動作でIf 1000mAとなっています。赤外線リモコンの送信に使う場合はパルス動作で使うことになりますので、それを前提にLEDに流す電流を決めることにします。
 
 とりあえず、Ifとして200mAを流すことを考えてみます。
-データシートのIF-VFグラフを見ると、If=200mAのときのVfは約2.4Vです。この時の電流制限抵抗は、
+データシートのIF-VFグラフを見ると、If=200mAのときのVfは約2.4Vです。
+
+[![IF-VF](https://raw.githubusercontent.com/k-takata/zenn-contents/master/books/d5c77046e634bb/images/if-vf.png)](https://raw.githubusercontent.com/k-takata/zenn-contents/master/books/d5c77046e634bb/images/if-vf.png)
+
+この時の電流制限抵抗は、
 
 $$
 (3.3 [V] - 2.4 [V]) / 200 [mA] = 4.5 [Ω]
@@ -254,10 +258,9 @@ SYMPHONY 12ビットプロトコルを使用していることが分かります
 `rawData` は赤外線リモコンのパルスが出ている期間（マーク）と出ていない期間（スペース）をμ秒単位で表現した生データです。（よく使われる赤外線リモコンのプロトコルについては、「[赤外線リモコンの通信フォーマット](http://elm-chan.org/docs/ir_format.html)」を参照してください。）
 生データは[アナログ的なデータ表現](https://github.com/crankyoldgit/IRremoteESP8266/wiki/Frequently-Asked-Questions#why-is-the-raw-data-for-a-button-or-ac-state-always-different-for-each-capture)であるため、同じリモコン操作をしても `rawData` は毎回変わってきます。
 
-生データを1段階デコードしたものが **state[]**/**integer** フォーマットです。数ビットから数百ビットのデータになります。
+生データを1段階デコードしたものが **state[]**/**integer** フォーマットです。数ビットから数百ビットのデータになります。上記のログであれば、"Code" の行や `uint8_t state[35]`, `uint64_t data` として表示されている情報がそれに当たります。
 
-さらに、ライブラリが対応していれば **state[]**/**integer** フォーマットをデコードして、リモコンデータの意味を表示してくれます。例えばエアコンであれば、動作モード、温度、風量などのレベルの情報が取得できます。
-
+さらに、ライブラリが対応していれば **state[]**/**integer** フォーマットをデコードして、リモコンデータの意味を表示してくれます。例えばエアコンであれば、動作モード、温度、風量などのレベルの情報が取得できます。上記のログであれば、"Mesg Desc." の行に表示されている情報がそれに当たります。
 
 
 ### 赤外線送信
