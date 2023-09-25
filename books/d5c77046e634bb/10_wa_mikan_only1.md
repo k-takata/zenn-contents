@@ -237,7 +237,7 @@ $$
 
 トランジスターのベース抵抗とベース・エミッター間抵抗の計算は、「[デジタルトランジスタ（デジトラ）の使い方と抵抗値選定方法 | アナデジ太郎の回路設計](https://ana-dig.com/digi-tra/)」が参考になります。今回は、このページを参考にしつつ、実験で抵抗値を決めました。
 
-4.7kΩのベース・エミッター間抵抗(R2)は、入力電圧が低いときにLEDが点かないようにするためのものです。実際、この抵抗がない場合、ESP8266が書き込みモードに入っているときなどにLEDがうっすら点いているのが（デジカメなどで）確認できます。今回はLEDが勝手に点灯しない値を実際に試した結果、4.7kΩとなりました。
+4.7kΩのベース・エミッター間抵抗(R2)は、入力電圧が低いときにLEDが点かないようにするためのものです。実際、この抵抗がない場合、ESP8266が書き込みモードに入っているときなどにLEDがうっすら点いているのが（デジカメなどで）確認できます。今回はLEDが勝手に点灯しない範囲でできるだけ大きな抵抗値になるよう実際に試した結果、4.7kΩとなりました。
 
 ベース抵抗(R1)については、ESP8266のGPIOが出力できる電流は12mAとのことなので、それよりも電流が小さくなるように調整する必要があります。今回は余裕を見て4mA程度に抑えることにするため、680Ωを使いました。
 
@@ -249,7 +249,7 @@ $$
 I_{BE} = V_{BE} / R2 = 0.6 [V] / 4.7 [kΩ] = 0.13 [mA]
 $$
 
-つまり、入力電流 $I_{i}$ が 0.13mA 以上にならなければトランジスタはオンにはなりません。
+つまり、入力電流 $I_{i}$ が 0.13mA 以上にならなければトランジスタはオンにはなりません。つまりトランジスタがオンになる入力電圧は $ 0.6 [V] + 0.13 [mA] \times 680 [Ω] = 0.69 [V] $ 以上ということになります。
 
 $$
 I_{B} = I_{i} - I_{BE} = 3.84 [mA]
@@ -513,14 +513,26 @@ ESP8266のIO4とIO5をWA-MIKANのピンと接続するためには、下記の�
 
 8章で実装したGR-CITRUS向けのArduinoライクなスケッチがそのままWA-MIKANでも使うことができます。ただし `Wire1` オブジェクトではなく `Wire` オブジェクトを使います。
 
+それに加え、WA-MIKAN向けのコンパイラはGR-CITRUS向けのコンパイラより新しいため、配列の渡し方が少し簡単に書けるようになっています。
+GR-CITRUSでは、配列を関数に渡す場合、一度変数に代入する必要がありました。
+
+```CPP
+    uint8_t cmds3[] = {0x38, 0x0C, 0x01};
+    send_seq(cmds3);
+```
+
+一方、WA-MIKANでは以下のように配列を直接関数の引数に書くことができます。
+
+```CPP
+    send_seq({0x38, 0x0C, 0x01});
+```
+
+この2点について変更した部分を以下に示します。
+
 ```CPP
 class Lcd {
-private:
-  const int addr = 0x3E;
 
-public:
-  Lcd() = default;
-  ~Lcd() = default;
+  ...
 
   void init() {
     delay(10);
@@ -539,10 +551,7 @@ public:
     delay(2);
   }
 
-  template <size_t cmdlen>
-  void send_seq(const uint8_t (&cmds)[cmdlen], const uint8_t *data=nullptr, size_t datalen=0) {
-    send_seq(cmds, cmdlen, data, datalen);
-  }
+  ...
 
   void send_seq(const uint8_t *cmds, size_t cmdlen, const uint8_t *data=nullptr, size_t datalen=0) {
     Wire.beginTransmission(addr);
@@ -567,65 +576,19 @@ public:
     Wire.endTransmission();
   }
 
-  void send_cmd(const uint8_t cmd) {
-    send_seq({cmd});
-  }
+  ...
 
-  template <size_t datalen>
-  void send_data(const uint8_t (&data)[datalen]) {
-    send_data(data, datalen);
-  }
-
-  void send_data(const uint8_t *data, size_t datalen) {
-    send_seq(nullptr, 0, data, datalen);
-  }
-
-  void set_cursor(int col, int row) {
-    send_cmd(uint8_t(0x80 + 0x40*row + col));
-  }
-
-  void clear() {
-    send_cmd(0x01);
-    delay(2);
-  }
-
-  void print(String s) {
-    send_data(reinterpret_cast<const uint8_t *>(s.c_str()), s.length());
-  }
-
-  template <size_t patlen>
-  void set_cgram(int num, const uint8_t (&pat)[patlen]) {
-    set_cgram(num, pat, patlen);
-  }
-
-  void set_cgram(int num, const uint8_t *pat, size_t patlen) {
-    send_seq({uint8_t(0x40 + num*8)}, pat, patlen);
-  }
 };
 ```
 
-WA-MIKAN向けのコンパイラはGR-CITRUS向けのコンパイラより新しいため、配列の渡し方が少し簡単に書けるようになっています。
-GR-CITRUSでは、配列を関数に渡す場合、一度変数に代入する必要がありました。
-
-```CPP
-    uint8_t cmds3[] = {0x38, 0x0C, 0x01};
-    send_seq(cmds3);
-```
-
-一方、WA-MIKANでは以下のように配列を直接関数の引数に書くことができます。
-
-```CPP
-    send_seq({0x38, 0x0C, 0x01});
-```
-
-あとは、GR-CITRUSと同じようにすることでLCDに文字を表示できます。
+あとは、GR-CITRUSと同じやり方でLCDに文字を表示できます。
 
 ```CPP
 Lcd lcd;
 
 void setup() {
   // put your setup code here, to run once:
-  Wire1.begin();
+  Wire.begin();
   lcd.init();
 }
 
