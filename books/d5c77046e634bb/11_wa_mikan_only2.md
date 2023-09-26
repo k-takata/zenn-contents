@@ -89,6 +89,9 @@ Current time (JST): Mon Sep 11 23:58:20 2023
 
 ### Slackにメッセージを送信する
 
+次はWA-MIKANからSlackにメッセージを送信してみましょう。
+
+
 #### HTTPS接続
 
 Slackにメッセージを送信するにはHTTPS接続が必要です。ESP8266でHTTPS接続を行うためには[BearSSL WiFi Classes](https://arduino-esp8266.readthedocs.io/en/latest/esp8266wifi/bearssl-client-secure-class.html)を使うことになります。
@@ -192,24 +195,207 @@ void loop() {
 
 #### Slackへのアプリの登録
 
-(あとで書く)
+まずは、WA-MIKANとやり取りするためのワークスペースを用意します。
+[Slackのトップページ](https://slack.com/intl/ja-jp/)の「ワークスペースを新規作成」ボタンから新しいワークスペースを作成できます。
 
-slackにアプリが正しく登録できたかを確かめるために、curlコマンドを使ってメッセージを送信してみましょう。
+次に[SlackのAPIページ](https://api.slack.com/)からアプリを登録します。
+ページの右上の[Your apps](https://api.slack.com/apps)をクリックし、"Create New App" ボタンをクリックすると、"Create an app" ダイアログボックスが開きます。
+"From scratch" を選択すると、アプリ名の入力欄とどのワークスペースにアプリを登録するかを選択するドロップダウンリストが表示されます。
+今回はApp Nameはiot-botとし、ワークスペースは今回作成した個人用ワークスペースを指定しました。
+"Create App" ボタンを押すとアプリ（の設定）が作成されて、画面が切り替わります。
+
+次に、アプリのスコープを設定してトークンを発行します。
+左側のリストから "OAuth & Permissions" を選択するか、右側の "Permissions" パネルを選択します。
+ページが切り替わったら、少し下の方に行くと Scope 欄があります。その中に "Bot Token Scopes" と "User Token Scopes" がありますが、"Bot Token Scopes" の "Add an OAuth Scope" ボタンをクリックし、"chat:write" を選択します。(メッセージを送信するには "chat:write" スコープが必要です。)
+ページの上の方に戻り、"Install to Workspace" ボタンをクリックします。「許可する」ボタンをクリックしてワークスペースにアプリをインストールします。
+ワークスペースへのインストールが成功すると、`xoxb-` で始まる Bot User OAuth Token というものが発行されます。APIを使うにはこのトークンが必要となります。
+
+さて、Slackにアプリが正しく登録できたかを確かめるために、curlコマンドを使ってメッセージを送信してみましょう。
+Slackにメッセージを送信するには、[chat.postMessage](https://api.slack.com/methods/chat.postMessage) APIを使います。
+`token=` の部分には先ほど発行されたトークンを指定します。`channel=` の部分にはメッセージを送信する先のチャンネルのIDを指定します。WebブラウザでSlackのチャンネルを開いた際、URLの末尾の "C" で始まるディレクトリ部分がチャンネルのIDになります。
 
 ```shell-session
 $ curl -X POST 'https://slack.com/api/chat.postMessage' -d 'token=xoxb-*************-*************-************************' -d 'channel=C**********' -d 'text=Hello+World'
 ```
 
+うまくいけば、指定したチャンネルに "Hello World" と表示されます。
+メッセージはx-www-form-urlencoded形式で送信しますので、`+` はスペースとして表示される点に注意してください。
+
+curlコマンドで `-d` オプションを複数指定した場合、文字列を `&` でつないで並べたことと同じになります。つまり、以下のように指定しても同じ結果になります。
+
+```shell-session
+$ curl -X POST 'https://slack.com/api/chat.postMessage' -d 'token=xoxb-*************-*************-************************&channel=C**********&text=Hello+World'
+```
+
 
 #### ESP8266からメッセージを送信する
 
-(あとで書く)
+curlコマンドでのメッセージ送信が確認できたら、同じことをESP8266からやってみましょう。
+
+以下のコードを実行すると、1分ごとに指定したチャンネルに "Hello World" というメッセージを送信します。
+
+```CPP
+#include <ESP8266WiFi.h>
+#include <ESP8266HTTPClient.h>
+#include <WiFiClientSecure.h>
+#include <time.h>
+
+// https://github.com/esp8266/Arduino/blob/master/tools/cert.py
+// $ cert.py -s slack.com > certs.h
+#include "certs.h"
+
+X509List cert(cert_ISRG_Root_X1);
+
+#define SSID    "**************"
+#define PASSWD  "*************"
+
+const char* slack_host = "slack.com";
+const uint16_t slack_port = 443;
+
+const char* slack_token = "xoxb-*************-*************-************************";
+const char* slack_channel_id = "C**********";
+
+
+// Set the clock using NTP.
+void setClock() {
+  ...
+}
+
+void setup() {
+  ...
+}
+
+String urlencode(String s) {
+  const char *t = "0123456789ABCDEF";
+  String e = "";
+  for (unsigned int i = 0; i < s.length(); ++i) {
+    char c = s[i];
+    if (isalnum(c) /* || c == '*' || c == '-' || c == '.' || c == '_' */) {
+      e += c;
+    } else if (c == ' ') {
+      e += '+';
+    } else {
+      e += '%';
+      e += t[(c >> 4) & 0xf];
+      e += t[c & 0xf];
+    }
+  }
+  return e;
+}
+
+// Post a message to the slack channel.
+void post_message(String text) {
+  WiFiClientSecure client;
+  HTTPClient https;
+
+  client.setTrustAnchors(&cert);
+
+  if (https.begin(client, slack_host, slack_port, "/api/chat.postMessage")) {  // HTTPS
+    https.addHeader("Content-Type", "application/x-www-form-urlencoded");
+
+    String body = String("token=") + slack_token + "&channel=" + slack_channel_id + "&text=" + urlencode(text);
+    int httpCode = https.POST(body);
+
+    if (httpCode > 0) {
+      Serial.printf("[HTTPS] POST... code: %d\n", httpCode);
+
+      if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
+        String payload = https.getString();
+        Serial.println(payload);
+      }
+    } else {
+      Serial.printf("[HTTPS] POST... failed, error: %s\n", https.errorToString(httpCode).c_str());
+    }
+    https.end();
+  }
+}
+
+void loop() {
+  // wait for WiFi connection
+  if ((WiFi.status() == WL_CONNECTED)) {
+    post_message("Hello World");
+  }
+
+  Serial.println("Wait 1min before next round...");
+  delay(60*1000);
+}
+```
+
+`setClock()` と `loop()` は、前述のNTPのコードと同じですので省略してあります。X.509による証明書の確認のためには現在時刻が正しい必要があるため、NTPによる時刻合わせを行っておく必要があります。
+
+`urlencode()` は送信メッセージをx-www-form-urlencoded形式でエンコードするための関数です。URLエンコードを行うArduino用のライブラリも存在するようですが、大した処理ではないので自前で実装しています。
+
+`post_message()` がメッセージをSlackに送信するための関数です。`https://slack.com:443/api/chat.postMessage` に対して、POSTを発行することでメッセージを送信します。curlを使った場合の2つ目の例と同様に、`token=`, `channel=`, `text=` を `&` でつなげた文字列をPOSTしています。
+
+ソースコード全体は [`sketch_slack_hello.ino`](https://github.com/k-takata/zenn-contents/tree/master/books/d5c77046e634bb/src/sketch_slack_hello.ino) から取得できます。
 
 
 ### Slackからメッセージを受信する
 
-SlackからのデータはJSON形式で返ってきます。
-JSONを解析するために、ArduinoJSONというライブラリを使います。
+Slackからメッセージを受信するにはいくつか方法がありますが、今回は[conversations.history](https://api.slack.com/methods/conversations.history) APIを使用することにします。
+このAPIを使うには "channels:history" スコープが必要です。[SlackのAPIページ](https://api.slack.com/)の[Your apps](https://api.slack.com/apps)ボタンをクリックすると、先ほど作成したアプリが見つかるはずです。そのアプリをクリックし、"Add features and functionality" をクリックすると "Permissions" パネルが出てくるのでそれを選択します。先ほどと同じように "Bot Token Scopes" の "Add an OAuth Scope" ボタンをクリックし、"channels:history" を追加します。アプリを再インストールするように促されますので、再インストールするとconversations.history APIが使えるようになります。
+
+conversations.history APIはいくつかのオプションを持っていますが、`limit` オプションで取得するメッセージ数を指定できます。今回は `limit=1` とすることで、指定したチャンネルの最新のメッセージを1つだけ取得するようにしてみます。
+
+以下のコードを実行すると、1分ごとに最新のメッセージを取得して、レスポンスをそのままシリアルに表示します。
+`setup()` 関数、`setClock()` 関数やグローバル変数などはSlackへのメッセージ送信と同じなので省略します。
+
+```CPP
+// Get the latest message from the slack channel.
+String get_slack_message() {
+  WiFiClientSecure client;
+  HTTPClient https;
+  String payload;
+
+  client.setTrustAnchors(&cert);
+
+  if (https.begin(client, slack_host, slack_port, "/api/conversations.history")) {  // HTTPS
+    https.addHeader("Content-Type", "application/x-www-form-urlencoded");
+
+    String body = String("token=") + slack_token + "&channel=" + slack_channel_id + "&limit=1";
+    int httpCode = https.POST(body);
+
+    if (httpCode > 0) {
+      Serial.printf("[HTTPS] POST... code: %d\n", httpCode);
+
+      if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
+        payload = https.getString();
+      }
+    } else {
+      Serial.printf("[HTTPS] POST... failed, error: %s\n", https.errorToString(httpCode).c_str());
+    }
+    https.end();
+  } else {
+    Serial.printf("[HTTPS] Unable to connect\n");
+  }
+  return payload;
+}
+
+void loop() {
+  // wait for WiFi connection
+  if ((WiFi.status() == WL_CONNECTED)) {
+    String payload = get_slack_message();
+    if (!payload.isEmpty()) {
+      Serial.println(payload);
+      parse_response(payload);
+    }
+  }
+
+  Serial.println("Wait 1min before next round...");
+  delay(60*1000);
+}
+```
+
+ソースコード全体は [`sketch_slack_get_message.ino`](https://github.com/k-takata/zenn-contents/tree/master/books/d5c77046e634bb/src/sketch_slack_get_message.ino) から取得できます。
+
+実行結果は以下のようになります。
+
+```
+
+```
+
+このように、SlackからのデータはJSON形式で返ってきます。
+JSONを解析するには、ArduinoJSONというライブラリを使います。
 
 
 
