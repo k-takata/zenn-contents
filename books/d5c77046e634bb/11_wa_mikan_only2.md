@@ -377,7 +377,6 @@ void loop() {
     String payload = get_slack_message();
     if (!payload.isEmpty()) {
       Serial.println(payload);
-      parse_response(payload);
     }
   }
 
@@ -391,11 +390,15 @@ void loop() {
 実行結果は以下のようになります。
 
 ```
-
+....
+Current time (JST): Wed Sep 27 02:03:07 2023
+[HTTPS] POST... code: 200
+{"ok":true,"messages":[{"bot_id":"B05RG1XH3B2","type":"message","text":"Hello World","user":"U05QKM8J006","ts":"1695747523.687079","app_id":"A05QS7N8K9R","blocks":[{"type":"rich_text","block_id":"B3p","elements":[{"type":"rich_text_section","elements":[{"type":"text","text":"Hello World"}]}]}],"team":"T05PWGWLT1B","bot_profile":{"id":"B05RG1XH3B2","deleted":false,"name":"iot-bot","updated":1693763129,"app_id":"A05QS7N8K9R","icons":{"image_36":"https:\/\/a.slack-edge.com\/80588\/img\/plugins\/app\/bot_36.png","image_48":"https:\/\/a.slack-edge.com\/80588\/img\/plugins\/app\/bot_48.png","image_72":"https:\/\/a.slack-edge.com\/80588\/img\/plugins\/app\/service_72.png"},"team_id":"T05PWGWLT1B"}}],"has_more":true,"pin_count":0,"channel_actions_ts":null,"channel_actions_count":0,"response_metadata":{"next_cursor":"bmV4dF90czoxNjk1NzQ3NDYyMDc0NTI5"}}
+Wait 1min before next round...
 ```
 
 このように、SlackからのデータはJSON形式で返ってきます。
-JSONを解析するには、ArduinoJSONというライブラリを使います。
+JSONを解析するには、ArduinoJSONというライブラリが使えます。
 
 
 
