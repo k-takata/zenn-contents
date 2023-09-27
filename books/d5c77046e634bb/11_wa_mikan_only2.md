@@ -337,7 +337,7 @@ Slackからメッセージを受信するにはいくつか方法があります
 
 conversations.history APIはいくつかのオプションを持っていますが、`limit` オプションで取得するメッセージ数を指定できます。今回は `limit=1` とすることで、指定したチャンネルの最新のメッセージを1つだけ取得するようにしてみます。
 
-以下のコードを実行すると、1分ごとに最新のメッセージを取得して、レスポンスをそのままシリアルに表示します。
+以下のコードを実行すると、1分ごとに最新のメッセージを取得して、Slack APIのレスポンスをそのままシリアルに表示します。
 `setup()` 関数、`setClock()` 関数やグローバル変数などはSlackへのメッセージ送信と同じなので省略します。
 
 ```CPP
@@ -398,11 +398,62 @@ Wait 1min before next round...
 ```
 
 このように、SlackからのデータはJSON形式で返ってきます。
-JSONを解析するには、ArduinoJSONというライブラリが使えます。
+このSlackからのレスポンスを `slack_response.json` というファイルに保存してしたうえでjqコマンドを使えば、以下のようにしてメッセージのテキストを抽出することができます。
 
+```shell-session
+$ cat slack_response.json | jq '.messages[0].text'
+"Hello World"
+```
 
+同様なことをWA-MIKANでやってみましょう。
+ArduinoでJSONを解析するには、ArduinoJSONというライブラリが使えます。
 
-(あとで書く)
+```CPP
+#include <ArduinoJson.h>
+
+// Parse a slack response.
+void parse_response(String payload) {
+  DynamicJsonDocument doc(2048);
+
+  if (deserializeJson(doc, payload)) {
+    Serial.println("JSON parse error.");
+    return;
+  }
+  if (!doc["ok"].as<bool>()) {
+    Serial.println("Slack error.");
+    return;
+  }
+  String type = doc["messages"][0]["type"].as<const char*>();
+  if (type != "message") {
+    Serial.println("Not a message.");
+    return;
+  }
+  String text = doc["messages"][0]["text"].as<const char*>();
+
+  Serial.println(text);
+}
+```
+
+`DynamicJsonDocument` オブジェクトを作成し、`deserializeJson()` 関数を呼び出すことでJSONをパースできます。
+念のため、"ok" が `true` であることを確認し、最新のメッセージの "type" が "message" であることを確認してから `doc["messages"][0]["text"]` でメッセージのテキストを抽出しています。データを抽出する際、型は自動で変換される場合もありますが、型を明示して取り出すには `as<T>()` 関数を呼び出します。
+
+`loop()` 関数を以下のように修正して実行すれば、先ほどの長いJSON形式のレスポンスの代わりに、最新のメッセージのテキスト（今回の場合 "Hello World"）がシリアル端末に表示されます。
+
+```CPP
+void loop() {
+  // wait for WiFi connection
+  if ((WiFi.status() == WL_CONNECTED)) {
+    String payload = get_slack_message();
+    if (!payload.isEmpty()) {
+      //Serial.println(payload); // この行をコメントアウト
+      parse_response(payload);   // この行を追加
+    }
+  }
+
+  Serial.println("Wait 1min before next round...");
+  delay(60*1000);
+}
+```
 
 
 ## エアコン制御システムの作成
