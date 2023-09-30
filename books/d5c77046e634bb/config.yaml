@@ -1,7 +1,7 @@
 title: "GR-CITRUS & WA-MIKANを使いこなす (2023年版)"
 summary: "2023年の梅雨真っ只中、突如秋月電子で大量放出されたGR-CITRUS & WA-MIKAN。発売開始から7年経ったこのボードをどのようにしたら使いこなせるかを見ていきます。"
 topics: ["mruby", "がじぇっとるねさす", "電子工作", "ESP8266"]
-published: false
+published: true
 price: 0 # 有料の場合200〜5000
 # 本に含めるチャプターを順番に並べましょう
 chapters:
