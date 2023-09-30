@@ -184,9 +184,9 @@ Hello World.
 |赤外線リモコン受信モジュール|[OSRB38C9AA](https://akizukidenshi.com/catalog/g/gI-04659/)||
 |赤外線LED|[OSI5LA5113A](https://akizukidenshi.com/catalog/g/gI-12612/)||
 |NPNトランジスター|[2SC2001](https://akizukidenshi.com/catalog/g/gI-13828/)|Ic が 500mA ~ 1A 程度流せるもの|
-|抵抗|5.1Ω|LED電流制限抵抗|
-|抵抗|680Ω|ベース抵抗|
-|抵抗|4.7kΩ|ベース・エミッター間抵抗|
+|抵抗|5.1Ω|LED電流制限抵抗(R3)|
+|抵抗|680Ω|ベース抵抗(R1)|
+|抵抗|4.7kΩ|ベース・エミッター間抵抗(R2)|
 
 
 #### 回路図および接続
