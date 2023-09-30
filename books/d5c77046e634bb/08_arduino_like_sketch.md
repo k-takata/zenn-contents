@@ -17,16 +17,21 @@ IDE for GRのインストール先はどこでも構いませんが、トラブ�
 
 ## Lチカ
 
+Renesas公式サイトの「[IDE for GRでArduinoスケッチ](https://www.renesas.com/jp/ja/products/gadget-renesas/boards/gr-citrus/project-sketch-ide)」ページを参照してLチカをやってみましょう。
 
-(あとで書く)
+メニューから「ファイル」→「スケッチの例」→「03.Analog」を選び、その中から "Fading" を選択します。
+スケッチが開かれたら、`ledPin` の値を `9` から `PIN_LED0` に変更します。
 
+USBケーブルでGR-CITRUSとPCを接続してリセットボタンを押してください。GR-CITRUSがUSBメモリとして認識されたら書き込み準備完了です。
 
-詳しくはRenesas公式サイトの「[IDE for GRでArduinoスケッチ](https://www.renesas.com/jp/ja/products/gadget-renesas/boards/gr-citrus/project-sketch-ide)」ページを参照してください。
+ツールバーの左から2番目にある右向き矢印のアイコンをクリックしたら、ビルドと書き込みが行われます。
+
+LEDが徐々に明るくなったり暗くなったりを繰り返せば成功です。
 
 
 ## LCD表示
 
-3章で行ったLCD表示をArduinoスケッチで同じようにやってみましょう。
+次は3章で行ったLCD表示をArduinoスケッチで同じようにやってみましょう。
 
 I²C通信のためのライブラリは[Wire](https://www.renesas.com/jp/ja/products/gadget-renesas/reference/gr-citrus/library-wire)を使います。3章と同じように0ピンをSCL、1ピンをSDAとして使うには `Wire1` オブジェクトを使います。
 
