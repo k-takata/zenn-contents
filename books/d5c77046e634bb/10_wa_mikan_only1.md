@@ -207,7 +207,7 @@ ESP8266のIO12ピンはWA-MIKANのTP2に接続されています。ここに赤�
 とりあえず、Ifとして200mAを流すことを考えてみます。
 [データシート](https://akizukidenshi.com/download/ds/optosupply/OSI5LA5113A.pdf)のIF-VFグラフを見ると、If=200mAのときのVfは約2.4Vです。
 
-[![IF-VF](https://raw.githubusercontent.com/k-takata/zenn-contents/master/books/d5c77046e634bb/images/if-vf.png)](https://raw.githubusercontent.com/k-takata/zenn-contents/master/books/d5c77046e634bb/images/if-vf.png)
+![IF-VF](https://raw.githubusercontent.com/k-takata/zenn-contents/master/books/d5c77046e634bb/images/if-vf.png)
 
 この時の電流制限抵抗は、
 
@@ -231,7 +231,7 @@ $$
 
 ここで、データシートのIF-VFグラフ上に (2.0V, 255mA) - (2.5V, 157mA) の線を引くと、Vf = 2.3V, If = 190mA の辺りが交点となります。
 
-[![IF-VF / 5.1Ω](https://raw.githubusercontent.com/k-takata/zenn-contents/master/books/d5c77046e634bb/images/if-vf2.png)](https://raw.githubusercontent.com/k-takata/zenn-contents/master/books/d5c77046e634bb/images/if-vf2.png)
+![IF-VF / 5.1Ω](https://raw.githubusercontent.com/k-takata/zenn-contents/master/books/d5c77046e634bb/images/if-vf2.png)
 
 したがって、5.1Ωを使うとIf 190mAになると見積もることができます。予定の200mAよりは少し小さい値になりますが、特に問題はないでしょう。
 
