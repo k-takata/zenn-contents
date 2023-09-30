@@ -215,7 +215,8 @@ Slackにメッセージを送信するには、[chat.postMessage](https://api.sl
 `token=` の部分には先ほど発行されたトークンを指定します。`channel=` の部分にはメッセージを送信する先のチャンネルのIDを指定します。WebブラウザでSlackのチャンネルを開いた際、URLの末尾の "C" で始まるディレクトリ部分がチャンネルのIDになります。
 
 ```shell-session
-$ curl -X POST 'https://slack.com/api/chat.postMessage' -d 'token=xoxb-*************-*************-************************' -d 'channel=C**********' -d 'text=Hello+World'
+$ curl -X POST 'https://slack.com/api/chat.postMessage' \
+  -d 'token=xoxb-*************-*************-************************' -d 'channel=C**********' -d 'text=Hello+World'
 ```
 
 うまくいけば、指定したチャンネルに "Hello World" と表示されます。
@@ -224,7 +225,8 @@ $ curl -X POST 'https://slack.com/api/chat.postMessage' -d 'token=xoxb-*********
 curlコマンドで `-d` オプションを複数指定した場合、文字列を `&` でつないで並べたことと同じになります。つまり、以下のように指定しても同じ結果になります。
 
 ```shell-session
-$ curl -X POST 'https://slack.com/api/chat.postMessage' -d 'token=xoxb-*************-*************-************************&channel=C**********&text=Hello+World'
+$ curl -X POST 'https://slack.com/api/chat.postMessage' \
+  -d 'token=xoxb-*************-*************-************************&channel=C**********&text=Hello+World'
 ```
 
 
@@ -398,7 +400,7 @@ Wait 1min before next round...
 ```
 
 このように、SlackからのデータはJSON形式で返ってきます。
-このSlackからのレスポンスを `slack_response.json` というファイルに保存してしたうえでjqコマンドを使えば、以下のようにしてメッセージのテキストを抽出することができます。
+このSlackからのレスポンスを [`slack_response.json`](https://github.com/k-takata/zenn-contents/tree/master/books/d5c77046e634bb/src/slack_response.json) というファイルに保存してしたうえでjqコマンドを使えば、以下のようにしてメッセージのテキストを抽出することができます。
 
 ```shell-session
 $ cat slack_response.json | jq '.messages[0].text'
@@ -459,21 +461,29 @@ void loop() {
 ## エアコン制御システムの作成
 
 10章からここまでやってきたことを統合して、Slack経由でエアコンを制御するシステムを作成します。
-今回は以下のような仕様とします。
 
-1. 1分ごとに現在の温度湿度を測定し、LDCに表示。
-2. その後、Slackのチャンネルの最新メッセージを取得。
-3. 取得したメッセージが3分以内に送信されたもので、ボット宛 (`@iot_bot`) だったらメッセージを解析。
-4. メッセージの解析結果に応じてエアコンを操作。
-5. 操作内容をSlackに送信するとともに、LCDに表示。
+### 仕様
+
+今回は以下のような仕様とします。処理を行っている関数を括弧内に示しましたので、コードを読む際の参考としてください。
+
+1. 1分ごとに現在の温度湿度を測定し、LDCに表示。(`loop()` 関数)
+2. その後、Slackのチャンネルの最新メッセージを取得。(`get_slack_message()` 関数)
+3. 取得したメッセージが3分以内に送信されたもので、ボット宛 (`@iot_bot`) だったらメッセージを解析。(`parse_response()` 関数、`parse_command()` 関数)
+4. メッセージの解析結果に応じてエアコンを操作。(`parse_command()` 関数、`send_ac()` 関数)
+5. 操作内容をSlackに送信するとともに、LCDに表示。(`parse_command()` 関数、`post_message()` 関数)
+
+### 温度湿度の測定
 
 温度湿度の測定にはAHT25を使います。4章で作成したGR-CITRUS用のAHT25クラスをほぼそのままESP8266に移植します。
 
+### メッセージ解析
+
 メッセージの解析は次のようにします。
 
-1. メッセージは `@iot_bot ` で始まっているものを受け付ける。  
-   `@` を使った指定ユーザーあてのメッセージは、テキストでは `<@U05QKM8J006> ` のように `U` で始まるユーザーIDを使って表記されます。
-2. `@iot_bot ` のあとは、アルファベット1文字以上のコマンドを指定する。コマンドのあとにパラメーターが必要な場合は、スペースを1つ空けてパラメーターを指定する。  
+1. メッセージは `@iot_bot ` で始まっているものを受け付ける。(`parse_response()` 関数)  
+   `@` を使った指定ユーザー宛のメッセージは、テキストでは `<@U05QKM8J006> ` のように `U` で始まるユーザーIDを使って表記されます。
+2. `@iot_bot ` のあとは、アルファベット1文字以上のコマンドを指定する。コマンドのあとにパラメーターが必要な場合は、スペースを1つ空けてパラメーターを指定する。(`parse_command()` 関数)  
+
    サポートするコマンドは以下の通り。
     * `c[ooler] <温度>`  
       指定温度で冷房の電源を入れる。例: `@iot_bot c 28`
@@ -492,7 +502,63 @@ void loop() {
     * `help`  
       このシステムの使い方を表示する。
 
+### エアコン操作
 
-(あとで書く)
+エアコン操作は、ダイキンのエアコンを0.5℃単位で温度設定できるようにするため、`IRDaikinESP` クラスを直接使います。(`send_ac()` 関数)
 
-ソースコード全体は [`sketch_slack_lcd_aht25.ino`](https://github.com/k-takata/zenn-contents/tree/master/books/d5c77046e634bb/src/sketch_slack_lcd_aht25.ino) から取得できます。
+### ディープスリープ
+
+1分ごとの処理には、ディープスリープを使ってみることにします。今回はUSBで電源を供給しているのであまり意味はありませんが、電池で駆動する場合には消費電力を減らすためにディープスリープを使うのが効果的です。
+
+今までは `delay(60*1000)` で1分間の待ちを行っていましたが、ディープスリープを使うには以下のように `ESP.deepSleep()` 関数を使い、マイクロ秒単位で時間を指定します。
+
+```CPP
+  ESP.deepSleep(60*1000*1000);
+  delay(1000);
+```
+
+ディープスリープに入るには少し時間が掛かるようなので、`delay(1000)` を置くことで、次のループに入るのを防ぎます。
+
+`ESP.deepSleep()` 関数で指定した時間が経つとリセットが掛かり、`setup()` 関数から処理が再開されます。この際、JP1が接続されたままになっていると書き込みモードに入ってしまいますので、JP1は開放しておいてください。
+
+ディープスリープからの復帰時に、通常起動と同じように初期化処理を行ってしまうとLCDの初期化処理によりLCD表示が消えてしまいます。ディープスリープからの復帰時にはLCDの初期化処理をスキップして、LCD表示を維持するには以下のようにします。
+
+```CPP
+Lcd lcd;
+Aht25 aht25;
+
+void setup() {
+  Serial.begin(115200);
+
+  Wire.begin();
+  if (ESP.getResetInfoPtr()->reason != REASON_DEEP_SLEEP_AWAKE) {
+    // Don't clear LCD on wake on from deep sleep.
+    lcd.init();
+  }
+  aht25.init();
+
+  ...
+
+}
+```
+
+`ESP.getResetInfoPtr()->reason` でリセット要因が取得できます。これが `REASON_DEEP_SLEEP_AWAKE` であれば、ディープスリープからの復帰であると判定できます。(実際には、手動でリセットボタンを押したときもこの値になりますが、今回は問題にはなりません。)
+
+### ソースコード
+
+できあがったソースコード全体は [`sketch_slack_lcd_aht25.ino`](https://github.com/k-takata/zenn-contents/tree/master/books/d5c77046e634bb/src/sketch_slack_lcd_aht25.ino) から取得できます。ここではコードの全てを解説することはしません。
+
+### 完成品
+
+
+[![slack-ac-controller](https://raw.githubusercontent.com/k-takata/zenn-contents/master/books/d5c77046e634bb/images/slack-ac-controller-small.jpg)](https://raw.githubusercontent.com/k-takata/zenn-contents/master/books/d5c77046e634bb/images/slack-ac-controller.jpg)
+
+### 今後の課題
+
+ここまでで、このSlack経由のエアコン制御システムは一旦完成したと考えて良いでしょう。
+ただ、改良すべき点が残っていない訳ではありません。今後に向けたさらなる改良点としては、次のようなものが挙げられます。
+
+* 電池での駆動  
+  設置場所を自由に決めたい場合には、電池駆動ができるようになっていると良いでしょう。
+* 温度湿度の測定結果との統合  
+  現在は、AHT25で測定した温度湿度はLCDに表示しているだけで、他には全く使っていません。エアコンの制御と統合させて（エアコン本体の自動運転ではなく）自分の好みの自動運転を実現するのも良いでしょう。
