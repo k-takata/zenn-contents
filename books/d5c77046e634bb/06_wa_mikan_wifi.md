@@ -74,7 +74,7 @@ class Ambient
     url = "ambidata.io/api/v2/channels/#{@channelId}/data"
     ret = WiFi.httpPost(url, ['Content-Type: application/json'], body)
   end
-nd
+end
 ```
 
 この `Ambient` クラスを使えば、以下のようなコードでデータを送信できます。(Wi-Fiは別途初期化してあるものとします。)
@@ -102,6 +102,14 @@ Wi-Fiの初期化には時間が掛かるため、3段階に分けて初期化�
 これを動かすと、例えば以下のようにグラフ化が可能です。
 
 [![ambient](https://raw.githubusercontent.com/k-takata/zenn-contents/master/books/d5c77046e634bb/images/ambient.png)](https://raw.githubusercontent.com/k-takata/zenn-contents/master/books/d5c77046e634bb/images/ambient.png)
+
+
+### 完成品
+
+完成品の写真を以下に示します。
+LCDの上段が現在の気温と湿度、下段が気圧と不快指数です。
+
+[![envmeter-bme680](https://raw.githubusercontent.com/k-takata/zenn-contents/master/books/d5c77046e634bb/images/envmeter-bme680-small.jpg)](https://raw.githubusercontent.com/k-takata/zenn-contents/master/books/d5c77046e634bb/images/envmeter-bme680.jpg)
 
 
 ## サーバーとして動かす

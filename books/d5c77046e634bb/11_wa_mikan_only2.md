@@ -174,7 +174,7 @@ const char cert_ISRG_Root_X1 [] PROGMEM = R"CERT(
 )CERT";
 ```
 
-フィンガープリント (`fingerprint_slack_com`) やサーバーの公開鍵 (`pubkey_slack_com`) を使う場合は、有効期限が3か月ほどしかないことが分かります。期限が切れた場合は `certs.h` を再生成する必要があります。
+コメントを見ると、フィンガープリント (`fingerprint_slack_com`) やサーバーの公開鍵 (`pubkey_slack_com`) を使う場合は、有効期限が3か月ほどしかないことが分かります。期限が切れた場合は `certs.h` を再生成する必要があります。
 ルート証明書を使う場合は、`cert_ISRG_Root_X1` を指定します。
 
 ```CPP
@@ -408,7 +408,7 @@ $ cat slack_response.json | jq '.messages[0].text'
 ```
 
 同様なことをWA-MIKANでやってみましょう。
-ArduinoでJSONを解析するには、ArduinoJSONというライブラリが使えます。
+ArduinoでJSONを解析するには、[ArduinoJSON](https://arduinojson.org/)というライブラリが使えます。
 
 ```CPP
 #include <ArduinoJson.h>
@@ -543,6 +543,7 @@ void setup() {
 ```
 
 `ESP.getResetInfoPtr()->reason` でリセット要因が取得できます。これが `REASON_DEEP_SLEEP_AWAKE` であれば、ディープスリープからの復帰であると判定できます。(実際には、手動でリセットボタンを押したときもこの値になりますが、今回は問題にはなりません。)
+それ以外の値は [ESP8266 Non-OS SDK API Reference](https://www.espressif.com/sites/default/files/documentation/2c-esp8266_non_os_sdk_api_reference_en.pdf) の 3.3.34. system_get_rst_info や[ソースコード](https://github.com/esp8266/Arduino/blob/master/tools/sdk/include/user_interface.h)で確認できます。
 
 ### ソースコード
 
@@ -550,13 +551,15 @@ void setup() {
 
 ### 完成品
 
+完成品の写真を以下に示します。
+LCDの上段が現在の気温と湿度、下段がエアコンに最後に送った設定です。
 
 [![slack-ac-controller](https://raw.githubusercontent.com/k-takata/zenn-contents/master/books/d5c77046e634bb/images/slack-ac-controller-small.jpg)](https://raw.githubusercontent.com/k-takata/zenn-contents/master/books/d5c77046e634bb/images/slack-ac-controller.jpg)
 
 ### 今後の課題
 
 ここまでで、このSlack経由のエアコン制御システムは一旦完成したと考えて良いでしょう。
-ただ、改良すべき点が残っていない訳ではありません。今後に向けたさらなる改良点としては、次のようなものが挙げられます。
+ただ、改良すべき点もいくつか考えられます。今後に向けたさらなる改良点としては、次のようなものが挙げられます。
 
 * 電池での駆動  
   設置場所を自由に決めたい場合には、電池駆動ができるようになっていると良いでしょう。
