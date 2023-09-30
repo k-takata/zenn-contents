@@ -191,11 +191,13 @@ Hello World.
 
 #### 回路図および接続
 
-(回路図あとで書く)
+以下に今回の回路図を示します。
+
+[![ac-controller-schema](https://raw.githubusercontent.com/k-takata/zenn-contents/master/books/d5c77046e634bb/images/ac-controller-schema.png)](https://raw.githubusercontent.com/k-takata/zenn-contents/master/books/d5c77046e634bb/images/ac-controller-schema.png)
+
+ESP8266のIO14ピンはWA-MIKANのTP1に接続されています。ここに赤外線リモコンの受信回路を接続します。回路は簡単で、赤外線リモコン受信モジュールに3.3V電源とGNDをつなぎ、出力をTP1につなぐだけです。
 
 ESP8266のIO12ピンはWA-MIKANのTP2に接続されています。ここに赤外線リモコンの送信回路を接続します。
-
-ESP8266のIO14ピンはWA-MIKANのTP1に接続されています。ここに赤外線リモコンの受信回路を接続します。
 
 
 #### 送信部分の回路設計
