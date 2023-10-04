@@ -140,7 +140,9 @@ https://arduino.esp8266.com/stable/package_esp8266com_index.json
 
 これでボードマネージャでESP8266用の環境が選択できるようになるので、それを選択してインストールします。
 
-**参考:** [Arduino IDEでWA-MIKAN(和みかん)のESP8266をプログラミングする　環境インストール編 - Qiita](https://qiita.com/tarosay/items/28ba9e0208f41cec492d) （この記事が書かれた当時とは異なり、手動でESP8266の環境をダウンロードしたりPython 2.7をインストールする必要はありません。）
+:::message
+[Arduino IDEでWA-MIKAN(和みかん)のESP8266をプログラミングする　環境インストール編 - Qiita](https://qiita.com/tarosay/items/28ba9e0208f41cec492d) （この記事が書かれた当時とは異なり、手動でESP8266の環境をダウンロードしたりPython 2.7をインストールする必要はありません。）
+:::
 
 
 ### Hello World
@@ -165,7 +167,9 @@ Arduino IDEからスケッチの書き込みを行い、シリアルモニタを
 Hello World.
 ```
 
-**Tips:** WA-MIKANのリセットボタンを押すと、シリアルに何やらゴミが表示されますが、これはシリアル端末の通信速度を [74880 bps](https://arduino-esp8266.readthedocs.io/en/3.0.2/ideoptions.html#crystal-frequency) (=115200 * 26 / 40) にすると正しく表示されます。
+:::message
+WA-MIKANのリセットボタンを押すと、シリアルに何やらゴミが表示されますが、これはシリアル端末の通信速度を [74880 bps](https://arduino-esp8266.readthedocs.io/en/3.0.2/ideoptions.html#crystal-frequency) (=115200 * 26 / 40) にすると正しく表示されます。
+:::
 
 
 ## IRremoteESP8266を使って赤外線リモコンの送受信を行う
@@ -520,7 +524,9 @@ ESP8266のIO4とIO5をWA-MIKANのピンと接続するためには、下記の�
 | IO4 | 16 | SDA | J16をショートして使う |
 | IO5 | 14 | SCL | J15をショートして使う |
 
-**注意:** GR-CITRUSの14ピンと16ピンはA0とA2が割り当てられています。もし、再度WA-MIKANとGR-CITRUSを組み合わせて使いたい場合、GR-CITRUS側で14ピンと16ピンを使うならばJ16とJ15のショートを元に戻す必要があります。
+:::message alert
+GR-CITRUSの14ピンと16ピンはA0とA2が割り当てられています。もし、再度WA-MIKANとGR-CITRUSを組み合わせて使いたい場合、GR-CITRUS側で14ピンと16ピンを使うならばJ16とJ15のショートを元に戻す必要があります。
+:::
 
 8章で実装したGR-CITRUS向けのArduinoライクなスケッチがそのままWA-MIKANでも使うことができます。ただし `Wire1` オブジェクトではなく `Wire` オブジェクトを使います。
 
