@@ -140,9 +140,7 @@ https://arduino.esp8266.com/stable/package_esp8266com_index.json
 
 これでボードマネージャでESP8266用の環境が選択できるようになるので、それを選択してインストールします。
 
-:::message
-[Arduino IDEでWA-MIKAN(和みかん)のESP8266をプログラミングする　環境インストール編 - Qiita](https://qiita.com/tarosay/items/28ba9e0208f41cec492d) （この記事が書かれた当時とは異なり、手動でESP8266の環境をダウンロードしたりPython 2.7をインストールする必要はありません。）
-:::
+**参考:** [Arduino IDEでWA-MIKAN(和みかん)のESP8266をプログラミングする　環境インストール編 - Qiita](https://qiita.com/tarosay/items/28ba9e0208f41cec492d) （この記事が書かれた当時とは異なり、手動でESP8266の環境をダウンロードしたりPython 2.7をインストールする必要はありません。）
 
 
 ### Hello World
