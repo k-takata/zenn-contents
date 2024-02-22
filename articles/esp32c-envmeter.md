@@ -2,13 +2,13 @@
 title: "ESP32-C3とBME680でIoT環境メーターを作る"
 emoji: "🌡"
 type: "tech" # tech: 技術記事 / idea: アイデア
-topics: ["電子工作", "esp32c3", "bme680"]
+topics: ["電子工作", "esp32", "esp32c3", "bme680"]
 published: false
 ---
 
-以前、[GR-CITRUSとBME680で作ったIoT環境メーター](https://zenn.dev/k_takata/books/d5c77046e634bb/viewer/05_i2c_bme680)を基に、ESP32-C3を使ったIoT環境メーターを作ってみました。
+以前、[GR-CITRUS/WA-MIKANとBME680で作ったIoT環境メーター](https://zenn.dev/k_takata/books/d5c77046e634bb/viewer/06_wa_mikan_wifi)を基に、[ESP32-C3](https://akizukidenshi.com/catalog/g/g117493/)を使ったIoT環境メーターを作ってみました。
 
-GR-CITRUSではBosch純正のBSECライブラリが使用できませんでしたが、BSECが対応しているESP32-C3を使うことで、測定項目が大幅に増えました。
+GR-CITRUSではBosch純正の[BSEC](https://www.bosch-sensortec.com/software-tools/software/bme680-software-bsec/)ライブラリが使用できませんでしたが、今回BSECが対応しているESP32-C3を使うことで、測定項目が大幅に増えました。
 
 
 ## 仕様
@@ -74,7 +74,14 @@ Adafruit_BusIO
 
 ## Ambient
 
-[Ambient_ESP8266_lib](https://github.com/AmbientDataInc/Ambient_ESP8266_lib)
+Ambientにデータを送信するには、Arduino向けの純正ライブラリである[Ambient_ESP8266_lib](https://github.com/AmbientDataInc/Ambient_ESP8266_lib)を使います。
 
+
+
+Arduino IDE 2.2.1でコンパイルしたところ以下のようなエラーが出てしまいました。
+
+```
+error: variable 'inChar' set but not used [-Werror=unused-but-set-variable]
+```
 
 https://github.com/AmbientDataInc/Ambient_ESP8266_lib/pull/5
