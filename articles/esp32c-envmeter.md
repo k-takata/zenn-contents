@@ -38,12 +38,12 @@ GR-CITRUSではBosch純正の[BSEC](https://www.bosch-sensortec.com/software-too
 
 今回はArduino IDE 2.2.1を使って開発を行いました。
 
-ESP32シリーズ用のライブラリを設定する必要があります。
+ESP32-C3を使うには、ESP32シリーズ用のボードマネージャを設定する必要があります。
+[ESP32 Arduino Coreのドキュメント](https://docs.espressif.com/projects/arduino-esp32/en/latest/)に従って、以下のURLをArduino IDEの追加ボードマネージャに設定します。
 
-[Arduino core for the ESP32](https://github.com/espressif/arduino-esp32)
-
+```
 https://espressif.github.io/arduino-esp32/package_esp32_index.json
-
+```
 
 
 ## BSEC
@@ -64,19 +64,25 @@ https://espressif.github.io/arduino-esp32/package_esp32_index.json
 
 [Adafruit-GFX-Library](https://github.com/adafruit/Adafruit-GFX-Library)
 
-Adafruit_BusIO
+[Adafruit_BusIO](https://github.com/adafruit/Adafruit_BusIO)
 
 
 
 ### カスタムフォント使用方法
 
 
+```
+./fontconvert 'Anonymous Pro.ttf' 8 > AnonymousPro8pt7b.h
+```
+
+3,5,6,8,9,m の字形が気に入らなかったので字形を調整することにしました。
+
 
 ## Ambient
 
 Ambientにデータを送信するには、Arduino向けの純正ライブラリである[Ambient_ESP8266_lib](https://github.com/AmbientDataInc/Ambient_ESP8266_lib)を使います。
 
-
+Arduino IDEのライブラリマネージャーで "Ambient_ESP8266_lib" を検索してインストールします。
 
 Arduino IDE 2.2.1でコンパイルしたところ以下のようなエラーが出てしまいました。
 
