@@ -48,10 +48,10 @@ https://espressif.github.io/arduino-esp32/package_esp32_index.json
 
 ## BSEC
 
+[BSEC](https://www.bosch-sensortec.com/software-tools/software/bme680-software-bsec/)ライブラリを使うには、通常、ユーザー登録が必要ですが、Arduino用のライブラリとしても公開されており、それを使えばユーザー登録不要で簡単にBSECの機能を使うことができます。
 
-[Bosch-BSEC2-Library](https://github.com/boschsensortec/Bosch-BSEC2-Library)
-
-[Bosch-BME68x-Library](https://github.com/BoschSensortec/Bosch-BME68x-Library)
+* [Bosch-BSEC2-Library](https://github.com/boschsensortec/Bosch-BSEC2-Library)
+* [Bosch-BME68x-Library](https://github.com/boschsensortec/Bosch-BME68x-Library)
 
 Windowsの場合、`C:\Users\<ユーザー名>\Documents\Arduino\libraries` にライブラリーをインストールします。
 
@@ -60,8 +60,7 @@ git clone https://github.com/boschsensortec/Bosch-BSEC2-Library.git
 git clone https://github.com/BoschSensortec/Bosch-BME68x-Library.git
 ```
 
-
-なお、Arduino IDEのライブラリマネージャーでBSECを検索すると、[BSEC-Arduino-library](https://github.com/boschsensortec/BSEC-Arduino-library)というものが見つかりますが、これにはESP32-C3用のビルド済みライブラリが含まれていないので使えません。
+なお、Arduino IDEのライブラリマネージャー上でBSECで検索すると、[BSEC-Arduino-library](https://github.com/boschsensortec/BSEC-Arduino-library)が見つかりますが、これにはESP32-C3用のビルド済みライブラリが含まれていないので使えません。
 
 
 
@@ -78,23 +77,31 @@ git clone https://github.com/BoschSensortec/Bosch-BME68x-Library.git
 
 ### カスタムフォント使用方法
 
-WSL
+[Adafruit-GFX-Library](https://github.com/adafruit/Adafruit-GFX-Library)の[fontconvert](https://github.com/adafruit/Adafruit-GFX-Library/tree/master/fontconvert)ディレクトリ内にはTTFフォントをこのライブラリで使える形式に変換するプログラムが入っています。
+
+変換プログラムを使うのはUbuntuを使うのが楽です。
+まずは必要なパッケージをインストールします。
 
 ```
-sudo apt install libfreetype6-dev build-essential
+$ sudo apt install build-essential libfreetype6-dev
 ```
 
-```
-cd fontconvert
-make
-```
+変換プログラムをビルドします。
 
 ```
-./fontconvert 'Anonymous Pro.ttf' 8 > AnonymousPro8pt7b.h
+$ cd fontconvert
+$ make
 ```
 
+Anonymous Proを変換してみましょう。サイズは8ポイントにしました。
 
-"°"
+```
+$ ./fontconvert 'Anonymouse Pro.ttf' 8 > AnonymousPro8pt7b.h
+```
+
+これで使えるようになる文字はU+0020からU+007Eのみです。
+
+"℃" の丸の部分(°(U+00B0))を表示できるように、グリフを1つ追加します。
 
 ```
 ./fontconvert 'Anonymous Pro.ttf' 8 126 126 > AnonymousPro8pt7b_0x7e.h
@@ -128,4 +135,4 @@ Arduino IDE 2.2.1でコンパイルしたところ以下のようなエラーが
 error: variable 'inChar' set but not used [-Werror=unused-but-set-variable]
 ```
 
-https://github.com/AmbientDataInc/Ambient_ESP8266_lib/pull/5
+<https://github.com/AmbientDataInc/Ambient_ESP8266_lib/pull/5>
