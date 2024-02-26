@@ -70,12 +70,42 @@ https://espressif.github.io/arduino-esp32/package_esp32_index.json
 
 ### カスタムフォント使用方法
 
+WSL
+
+```
+sudo apt install libfreetype6-dev build-essential
+```
+
+```
+cd fontconvert
+make
+```
 
 ```
 ./fontconvert 'Anonymous Pro.ttf' 8 > AnonymousPro8pt7b.h
 ```
 
+
+"°"
+
+```
+./fontconvert 'Anonymous Pro.ttf' 8 126 126 > AnonymousPro8pt7b_0x7e.h
+```
+
+```
+./fontconvert 'Anonymous Pro.ttf' 8 176 176 > AnonymousPro8pt7b_0xb0.h
+```
+
 3,5,6,8,9,m の字形が気に入らなかったので字形を調整することにしました。
+
+```
+./fontconvert 'Anonymous Pro.ttf' 8 51 51 > AnonymousPro8pt7b_0x33.h
+./fontconvert 'Anonymous Pro.ttf' 8 53 53 > AnonymousPro8pt7b_0x35.h
+./fontconvert 'Anonymous Pro.ttf' 8 54 54 > AnonymousPro8pt7b_0x36.h
+./fontconvert 'Anonymous Pro.ttf' 8 56 56 > AnonymousPro8pt7b_0x38.h
+./fontconvert 'Anonymous Pro.ttf' 8 57 57 > AnonymousPro8pt7b_0x39.h
+./fontconvert 'Anonymous Pro.ttf' 8 109 109 > AnonymousPro8pt7b_0x6d.h
+```
 
 
 ## Ambient
