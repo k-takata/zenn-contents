@@ -48,12 +48,20 @@ https://espressif.github.io/arduino-esp32/package_esp32_index.json
 
 ## BSEC
 
+
 [Bosch-BSEC2-Library](https://github.com/boschsensortec/Bosch-BSEC2-Library)
 
 [Bosch-BME68x-Library](https://github.com/BoschSensortec/Bosch-BME68x-Library)
 
+Windowsの場合、`C:\Users\<ユーザー名>\Documents\Arduino\libraries` にライブラリーをインストールします。
 
-なお、[BSEC-Arduino-library](https://github.com/boschsensortec/BSEC-Arduino-library)にはESP32-C3用のビルド済みライブラリが含まれていないので使えません。
+```
+git clone https://github.com/boschsensortec/Bosch-BSEC2-Library.git
+git clone https://github.com/BoschSensortec/Bosch-BME68x-Library.git
+```
+
+
+なお、Arduino IDEのライブラリマネージャーでBSECを検索すると、[BSEC-Arduino-library](https://github.com/boschsensortec/BSEC-Arduino-library)というものが見つかりますが、これにはESP32-C3用のビルド済みライブラリが含まれていないので使えません。
 
 
 
