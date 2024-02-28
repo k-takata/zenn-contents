@@ -26,7 +26,7 @@ GR-CITRUSではBosch純正の[BSEC](https://www.bosch-sensortec.com/software-too
 * [0.96インチOLED](https://akizukidenshi.com/catalog/g/g112031/)で情報表示
   - 通常表示と詳細表示の切り替え
 * 測定結果を[Ambient](https://ambient.io/)に送信
-  - 1チャンネル当たりのデータは8個までのため、一部測定項目は送信項目から除外
+  - 1チャンネル当たりのデータは8項目までのため、一部測定項目は送信項目から除外
 
 
 ## ハードウェア
@@ -36,7 +36,7 @@ GR-CITRUSではBosch純正の[BSEC](https://www.bosch-sensortec.com/software-too
 
 ## Arduino IDE
 
-今回はArduino IDE 2.2.1を使って開発を行いました。
+今回はArduino IDE 2.2.1(および 2.3.1, 2.3.2)を使って開発を行いました。
 
 ESP32-C3を使うには、ESP32シリーズ用のボードマネージャを設定する必要があります。
 [ESP32 Arduino Coreのドキュメント](https://docs.espressif.com/projects/arduino-esp32/en/latest/)に従って、以下のURLをArduino IDEの追加ボードマネージャに設定します。
@@ -44,6 +44,9 @@ ESP32-C3を使うには、ESP32シリーズ用のボードマネージャを設�
 ```
 https://espressif.github.io/arduino-esp32/package_esp32_index.json
 ```
+
+メニューの「ツール」→「ボード」→「ボードマネージャ」を選び、"esp32" で検索します。"esp32 by Espressif Systems" が見つかりますので、インストールします。
+
 
 
 ## BSEC
@@ -53,11 +56,11 @@ https://espressif.github.io/arduino-esp32/package_esp32_index.json
 * [Bosch-BSEC2-Library](https://github.com/boschsensortec/Bosch-BSEC2-Library)
 * [Bosch-BME68x-Library](https://github.com/boschsensortec/Bosch-BME68x-Library)
 
-Windowsの場合、`C:\Users\<ユーザー名>\Documents\Arduino\libraries` にライブラリーをインストールします。
+Windowsの場合、`C:\Users\<ユーザー名>\Documents\Arduino\libraries` にライブラリーをインストールします。(`libraries` ディレクトリがない時は作成すればよいです。)
 
 ```
-git clone https://github.com/boschsensortec/Bosch-BSEC2-Library.git
-git clone https://github.com/BoschSensortec/Bosch-BME68x-Library.git
+$ git clone https://github.com/boschsensortec/Bosch-BSEC2-Library.git
+$ git clone https://github.com/boschsensortec/Bosch-BME68x-Library.git
 ```
 
 なお、Arduino IDEのライブラリマネージャー上でBSECで検索すると、[BSEC-Arduino-library](https://github.com/boschsensortec/BSEC-Arduino-library)が見つかりますが、これにはESP32-C3用のビルド済みライブラリが含まれていないので使えません。
@@ -68,10 +71,10 @@ git clone https://github.com/BoschSensortec/Bosch-BME68x-Library.git
 ## OLED
 
 [Adafruit_SSD1306](https://github.com/adafruit/Adafruit_SSD1306)ライブラリを使ってOLED表示を行います。
+Arduino IDEのライブラリマネージャー上で "Adafruit SSD1306" で検索し、インストールします。以下の2つのライブラリも依存ライブラリとして表示されますので、併せてインストールします。
 
-[Adafruit-GFX-Library](https://github.com/adafruit/Adafruit-GFX-Library)
-
-[Adafruit_BusIO](https://github.com/adafruit/Adafruit_BusIO)
+* [Adafruit-GFX-Library](https://github.com/adafruit/Adafruit-GFX-Library)
+* [Adafruit_BusIO](https://github.com/adafruit/Adafruit_BusIO)
 
 
 
@@ -104,22 +107,36 @@ $ ./fontconvert 'Anonymouse Pro.ttf' 8 > AnonymousPro8pt7b.h
 "℃" の丸の部分(°(U+00B0))を表示できるように、グリフを1つ追加します。
 
 ```
-./fontconvert 'Anonymous Pro.ttf' 8 126 126 > AnonymousPro8pt7b_0x7e.h
+$ ./fontconvert 'Anonymous Pro.ttf' 8 126 126 > AnonymousPro8pt7b_0x7e.h
 ```
 
 ```
-./fontconvert 'Anonymous Pro.ttf' 8 176 176 > AnonymousPro8pt7b_0xb0.h
+$ ./fontconvert 'Anonymous Pro.ttf' 8 176 176 > AnonymousPro8pt7b_0xb0.h
 ```
 
 3,5,6,8,9,m の字形が気に入らなかったので字形を調整することにしました。
 
 ```
-./fontconvert 'Anonymous Pro.ttf' 8 51 51 > AnonymousPro8pt7b_0x33.h
-./fontconvert 'Anonymous Pro.ttf' 8 53 53 > AnonymousPro8pt7b_0x35.h
-./fontconvert 'Anonymous Pro.ttf' 8 54 54 > AnonymousPro8pt7b_0x36.h
-./fontconvert 'Anonymous Pro.ttf' 8 56 56 > AnonymousPro8pt7b_0x38.h
-./fontconvert 'Anonymous Pro.ttf' 8 57 57 > AnonymousPro8pt7b_0x39.h
-./fontconvert 'Anonymous Pro.ttf' 8 109 109 > AnonymousPro8pt7b_0x6d.h
+$ ./fontconvert 'Anonymous Pro.ttf' 8 51 51 > AnonymousPro8pt7b_0x33.h
+$ ./fontconvert 'Anonymous Pro.ttf' 8 53 53 > AnonymousPro8pt7b_0x35.h
+$ ./fontconvert 'Anonymous Pro.ttf' 8 54 54 > AnonymousPro8pt7b_0x36.h
+$ ./fontconvert 'Anonymous Pro.ttf' 8 56 56 > AnonymousPro8pt7b_0x38.h
+$ ./fontconvert 'Anonymous Pro.ttf' 8 57 57 > AnonymousPro8pt7b_0x39.h
+$ ./fontconvert 'Anonymous Pro.ttf' 8 109 109 > AnonymousPro8pt7b_0x6d.h
+```
+
+簡易表示用に16ポイントのフォントも用意します。
+
+```
+$ ./fontconvert 'Anonymouse Pro.ttf' 16 > AnonymousPro16pt7b.h
+```
+
+```
+$ ./fontconvert 'Anonymous Pro.ttf' 16 126 126 > AnonymousPro16pt7b_0x7e.h
+```
+
+```
+$ ./fontconvert 'Anonymous Pro.ttf' 12 176 176 > AnonymousPro12pt7b_0xb0.h
 ```
 
 
@@ -127,12 +144,25 @@ $ ./fontconvert 'Anonymouse Pro.ttf' 8 > AnonymousPro8pt7b.h
 
 Ambientにデータを送信するには、Arduino向けの純正ライブラリである[Ambient_ESP8266_lib](https://github.com/AmbientDataInc/Ambient_ESP8266_lib)を使います。
 
-Arduino IDEのライブラリマネージャーで "Ambient_ESP8266_lib" を検索してインストールします。
-
-Arduino IDE 2.2.1でコンパイルしたところ以下のようなエラーが出てしまいました。
+本来は、Arduino IDEのライブラリマネージャーで "Ambient_ESP8266_lib" を検索してインストールすればいいのですが、Arduino IDE 2.2.1でコンパイルしたところ以下のようなエラーが出てしまいました。
 
 ```
 error: variable 'inChar' set but not used [-Werror=unused-but-set-variable]
 ```
 
+そこで以下のPRを作成しましたが、2024年2月末時点ではまだマージされていません。
+
 <https://github.com/AmbientDataInc/Ambient_ESP8266_lib/pull/5>
+
+そのため、今回は以下のようにしてインストールします。
+Arduinoのライブラリディレクトリ (Windowsの場合、`C:\Users\<ユーザー名>\Documents\Arduino\libraries`) に行き、以下のコマンドを実行します。
+
+```
+$ git clone https://github.com/AmbientDataInc/Ambient_ESP8266_lib.git
+$ cd Ambient_ESP8266_lib
+$ git remote add k-takata https://github.com/k-takata/Ambient_ESP8266_lib.git
+$ git fetch k-takata
+$ git switch fix-compilation-errors
+```
+
+これで、上記のPRが適用されたコードが使用できます。
