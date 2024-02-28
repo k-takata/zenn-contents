@@ -24,7 +24,7 @@ GR-CITRUSではBosch純正の[BSEC](https://www.bosch-sensortec.com/software-too
   - IAQ精度
   - 推定呼気VOC (Volatile Organic Compounds, 揮発性有機化合物)
 * [0.96インチOLED](https://akizukidenshi.com/catalog/g/g112031/)で情報表示
-  - 通常表示と詳細表示の切り替え
+  - 通常表示・詳細表示・簡易表示の切り替え
 * 測定結果を[Ambient](https://ambient.io/)に送信
   - 1チャンネル当たりのデータは8項目までのため、一部測定項目は送信項目から除外
 
@@ -51,20 +51,21 @@ https://espressif.github.io/arduino-esp32/package_esp32_index.json
 
 ## BSEC
 
-[BSEC](https://www.bosch-sensortec.com/software-tools/software/bme680-software-bsec/)ライブラリを使うには、通常、ユーザー登録が必要ですが、Arduino用のライブラリとしても公開されており、それを使えばユーザー登録不要で簡単にBSECの機能を使うことができます。
+[AE-BME680](https://akizukidenshi.com/catalog/g/g114469/)の全機能を活用するには
+[BSEC](https://www.bosch-sensortec.com/software-tools/software/bme680-software-bsec/)ライブラリが必要ですが、このライブラリを使うには、通常、ユーザー登録が必要です。しかし、BSECはArduino用のライブラリとしても公開されており、それを使えばユーザー登録不要で簡単にBSECの機能を使うことができます。(もちろん、BSECライセンスに同意する必要はありますが。)
 
 * [Bosch-BSEC2-Library](https://github.com/boschsensortec/Bosch-BSEC2-Library)
 * [Bosch-BME68x-Library](https://github.com/boschsensortec/Bosch-BME68x-Library)
 
 Windowsの場合、`C:\Users\<ユーザー名>\Documents\Arduino\libraries` にライブラリーをインストールします。(`libraries` ディレクトリがない時は作成すればよいです。)
+Bosch-BSEC2-Libraryのインストールガイドには、zipファイルをダウンロードしてArduino IDEにインポートするように書かれていますが、`libraries` ディレクトリでgit cloneする方が楽かもしれません。
 
 ```
 $ git clone https://github.com/boschsensortec/Bosch-BSEC2-Library.git
 $ git clone https://github.com/boschsensortec/Bosch-BME68x-Library.git
 ```
 
-なお、Arduino IDEのライブラリマネージャー上でBSECで検索すると、[BSEC-Arduino-library](https://github.com/boschsensortec/BSEC-Arduino-library)が見つかりますが、これにはESP32-C3用のビルド済みライブラリが含まれていないので使えません。
-
+なお、Arduino IDEのライブラリマネージャー上でBSECで検索すると、[BSEC-Arduino-library](https://github.com/boschsensortec/BSEC-Arduino-library)が見つかりますが、これにはESP32-C3用のビルド済みライブラリが含まれていないので今回は使えません。
 
 
 
@@ -80,9 +81,11 @@ Arduino IDEのライブラリマネージャー上で "Adafruit SSD1306" で検�
 
 ### カスタムフォント使用方法
 
-[Adafruit-GFX-Library](https://github.com/adafruit/Adafruit-GFX-Library)の[fontconvert](https://github.com/adafruit/Adafruit-GFX-Library/tree/master/fontconvert)ディレクトリ内にはTTFフォントをこのライブラリで使える形式に変換するプログラムが入っています。
+Adafruit-GFX-Libraryのデフォルトで使われるフォントは、6x8ドットのフォントです。大きな文字を表示したい場合は、`setTextSize()`関数で倍率を指定することができますが、単純に元のフォントを拡大表示するだけなので、きれいな表示にはなりません。そのため、大きな文字を表示するにはカスタムフォントを使うのがよいです。
 
-変換プログラムを使うのはUbuntuを使うのが楽です。
+Adafruit-GFX-Libraryの[fontconvert](https://github.com/adafruit/Adafruit-GFX-Library/tree/master/fontconvert)ディレクトリ内にはTTFフォントをこのライブラリで使える形式に変換するプログラムが入っています。
+
+変換プログラムを使うのはUbuntuを使うのが楽です。Windowsであれば、WSLを使うのがよいでしょう。
 まずは必要なパッケージをインストールします。
 
 ```
@@ -96,12 +99,13 @@ $ cd fontconvert
 $ make
 ```
 
-Anonymous Proを変換してみましょう。サイズは8ポイントにしました。
+[Anonymous Pro](https://www.marksimonson.com/fonts/view/anonymous-pro)を変換してみましょう。サイズは8ポイントにしました。
 
 ```
 $ ./fontconvert 'Anonymouse Pro.ttf' 8 > AnonymousPro8pt7b.h
 ```
 
+このファイルをインクルードして、`setFont()`関数で設定するとこのフォントが使われるようになります。
 これで使えるようになる文字はU+0020からU+007Eのみです。
 
 "℃" の丸の部分(°(U+00B0))を表示できるように、グリフを1つ追加します。
@@ -135,6 +139,7 @@ $ ./fontconvert 'Anonymouse Pro.ttf' 16 > AnonymousPro16pt7b.h
 $ ./fontconvert 'Anonymous Pro.ttf' 16 126 126 > AnonymousPro16pt7b_0x7e.h
 ```
 
+丸のサイズを小さめにするために、12ポイントのグリフを流用します。
 ```
 $ ./fontconvert 'Anonymous Pro.ttf' 12 176 176 > AnonymousPro12pt7b_0xb0.h
 ```
