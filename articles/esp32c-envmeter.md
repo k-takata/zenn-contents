@@ -19,7 +19,7 @@ GR-CITRUSではBosch純正の[BSEC](https://www.bosch-sensortec.com/software-too
   - 気圧
   - 不快指数
   - ガス抵抗値
-  - 推定CO2換算値 (CO2 equivalent)
+  - 推定CO₂換算値 (CO₂ equivalent)
   - 推定IAQ (Indoor Air Quality, 室内空気質)
   - IAQ精度
   - 推定呼気VOC (Volatile Organic Compounds, 揮発性有機化合物)
@@ -27,6 +27,10 @@ GR-CITRUSではBosch純正の[BSEC](https://www.bosch-sensortec.com/software-too
   - 通常表示・詳細表示・簡易表示の切り替え
 * 測定結果を[Ambient](https://ambient.io/)に送信
   - 1チャンネル当たりのデータは8項目までのため、一部測定項目は送信項目から除外
+
+:::message alert
+BME680で測定しているCO₂換算値はあくまで推定値であり、CO₂を直接計測しているわけではありません。2021年に電気通信大学から「[安価で粗悪なCO₂センサの見分け方 ～５千円以下の機種、大半が消毒用アルコールに強く反応～](https://www.uec.ac.jp/about/publicity/news_release/2021/pdf/20210810_2.pdf)」というプレスリリースが出されていますが、指摘の内容はBME680にも当てはまると考えてよいでしょう。
+:::
 
 
 ## ハードウェア
@@ -48,6 +52,30 @@ https://espressif.github.io/arduino-esp32/package_esp32_index.json
 メニューの「ツール」→「ボード」→「ボードマネージャ」を選び、"esp32" で検索します。"esp32 by Espressif Systems" が見つかりますので、インストールします。
 
 
+### 書き込み設定
+
+メニューの「ツール」→「USB CDC On Boot」→「Enabled」を選んでおけば、`Serial.println()`の出力はESP32-C3内蔵のUSBシリアルから出力されるようになります。
+
+:::message
+Arduino IDEのバージョンによっては設定がすぐに反映されず、Arduino IDEの再起動が必要なことがありました。
+:::
+
+それ以外の設定はデフォルトのままで問題ありません。
+
+新品未使用のESP32-C3を接続した場合、USBの接続と切断が繰り返される場合があります。その場合は、Modeボタンを押しながらResetボタンを押し、Resetボタンを離してからModeボタンを離すと書き込みモードに入ることができます。
+
+あるいは、"[Configure ESP32-C3 built-in JTAG Interface - ESP32-C3](https://docs.espressif.com/projects/esp-idf/en/v5.0/esp32c3/api-guides/jtag-debugging/configure-builtin-jtag.html)" にあるように、PowerShellから以下のコマンドでJTAGドライバーをインストールしてもよいようです。
+
+```PowerShell
+Invoke-WebRequest 'https://dl.espressif.com/dl/idf-env/idf-env.exe' -OutFile .\idf-env.exe; .\idf-env.exe driver install --espressif
+```
+
+一度書き込みを行えば、通常は書き込みモードに入らずともそのまま内蔵のUSBシリアル経由で書き込みができるようになります。ただし、Deep sleepモードやLight sleepモードを使った場合は、内蔵USBシリアルが使えなくなりますので、書き込みモードでの起動が必要になります。
+
+:::message
+書き込みモードを使って書き込みを行った場合、書き込みが完了しても自動リセットは掛かりません。プログラムを実行するには、Resetボタンを押して手動でリセットする必要があります。
+:::
+
 
 ## BSEC
 
@@ -65,8 +93,11 @@ $ git clone https://github.com/boschsensortec/Bosch-BSEC2-Library.git
 $ git clone https://github.com/boschsensortec/Bosch-BME68x-Library.git
 ```
 
-なお、Arduino IDEのライブラリマネージャー上でBSECで検索すると、[BSEC-Arduino-library](https://github.com/boschsensortec/BSEC-Arduino-library)が見つかりますが、これにはESP32-C3用のビルド済みライブラリが含まれていないので今回は使えません。
+:::message
+Arduino IDEのライブラリマネージャー上でBSECで検索すると、[BSEC-Arduino-library](https://github.com/boschsensortec/BSEC-Arduino-library)が見つかりますが、これにはESP32-C3用のビルド済みライブラリが含まれていないので今回は使えません。
+:::
 
+サンプルの[basic.ino](https://github.com/boschsensortec/Bosch-BSEC2-Library/blob/master/examples/generic_examples/basic/basic.ino)を使えば、一通りBME680の機能を試すことができます。
 
 
 ## OLED
@@ -78,10 +109,13 @@ Arduino IDEのライブラリマネージャー上で "Adafruit SSD1306" で検�
 * [Adafruit_BusIO](https://github.com/adafruit/Adafruit_BusIO)
 
 
-
 ### カスタムフォント使用方法
 
 Adafruit-GFX-Libraryのデフォルトで使われるフォントは、6x8ドットのフォントです。大きな文字を表示したい場合は、`setTextSize()`関数で倍率を指定することができますが、単純に元のフォントを拡大表示するだけなので、きれいな表示にはなりません。そのため、大きな文字を表示するにはカスタムフォントを使うのがよいです。
+
+:::message
+Adafruit-GFX-Libraryにはデフォルトのフォント以外にもいくつかフォントが含まれていますが、今回は使用しません。
+:::
 
 Adafruit-GFX-Libraryの[fontconvert](https://github.com/adafruit/Adafruit-GFX-Library/tree/master/fontconvert)ディレクトリ内にはTTFフォントをこのライブラリで使える形式に変換するプログラムが入っています。
 
