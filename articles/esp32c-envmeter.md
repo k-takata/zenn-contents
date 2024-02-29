@@ -51,6 +51,8 @@ https://espressif.github.io/arduino-esp32/package_esp32_index.json
 
 メニューの「ツール」→「ボード」→「ボードマネージャ」を選び、"esp32" で検索します。"esp32 by Espressif Systems" が見つかりますので、インストールします。
 
+インストールが終わったら、「ツール」→「ボード」→「esp32」→「ESP32C3 Dev Module」を選択しておきます。
+
 
 ### 書き込み設定
 
