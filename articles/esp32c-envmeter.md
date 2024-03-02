@@ -6,7 +6,7 @@ topics: ["電子工作", "esp32", "esp32c3", "bme680"]
 published: false
 ---
 
-以前、[GR-CITRUS/WA-MIKANとBME680で作ったIoT環境メーター](https://zenn.dev/k_takata/books/d5c77046e634bb/viewer/06_wa_mikan_wifi)を基に、[ESP32-C3](https://akizukidenshi.com/catalog/g/g117493/)を使ったIoT環境メーターを作ってみました。
+以前、作成した[GR-CITRUS + WA-MIKAN + BME680によるIoT環境メーター](https://zenn.dev/k_takata/books/d5c77046e634bb/viewer/06_wa_mikan_wifi)を基に、[ESP32-C3](https://akizukidenshi.com/catalog/g/g117493/)を使ったIoT環境メーターを作ってみました。
 
 GR-CITRUSではBosch純正の[BSEC](https://www.bosch-sensortec.com/software-tools/software/bme680-software-bsec/)ライブラリが使用できませんでしたが、今回BSECが対応しているESP32-C3を使うことで、測定項目が大幅に増えました。
 
@@ -43,7 +43,7 @@ BME680で測定しているCO₂換算値はあくまで推定値であり、CO�
 今回はArduino IDE 2.2.1(および 2.3.1, 2.3.2)を使って開発を行いました。
 
 ESP32-C3を使うには、ESP32シリーズ用のボードマネージャを設定する必要があります。
-[ESP32 Arduino Coreのドキュメント](https://docs.espressif.com/projects/arduino-esp32/en/latest/)に従って、以下のURLをArduino IDEの追加ボードマネージャに設定します。
+[ESP32 Arduino Coreのドキュメント](https://docs.espressif.com/projects/arduino-esp32/en/latest/)の[インストール方法のページ](https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html)に従って、以下のURLをArduino IDEの追加ボードマネージャに設定します。
 
 ```
 https://espressif.github.io/arduino-esp32/package_esp32_index.json
@@ -81,8 +81,7 @@ Invoke-WebRequest 'https://dl.espressif.com/dl/idf-env/idf-env.exe' -OutFile .\i
 
 ## BSEC
 
-[AE-BME680](https://akizukidenshi.com/catalog/g/g114469/)の全機能を活用するには
-[BSEC](https://www.bosch-sensortec.com/software-tools/software/bme680-software-bsec/)ライブラリが必要ですが、このライブラリを使うには、通常、ユーザー登録が必要です。しかし、BSECはArduino用のライブラリとしても公開されており、それを使えばユーザー登録不要で簡単にBSECの機能を使うことができます。(もちろん、BSECライセンスに同意する必要はありますが。)
+[AE-BME680](https://akizukidenshi.com/catalog/g/g114469/)の全機能を活用するには[BSEC](https://www.bosch-sensortec.com/software-tools/software/bme680-software-bsec/)ライブラリが必要ですが、このライブラリを使うには、通常、ユーザー登録が必要です。しかし、BSECはArduino用のライブラリとしても公開されており、それを使えばユーザー登録不要で簡単にBSECの機能を使うことができます。(もちろん、BSECライセンスに同意する必要はあります。)
 
 * [Bosch-BSEC2-Library](https://github.com/boschsensortec/Bosch-BSEC2-Library)
 * [Bosch-BME68x-Library](https://github.com/boschsensortec/Bosch-BME68x-Library)
@@ -100,7 +99,35 @@ Arduino IDEのライブラリマネージャー上でBSECで検索すると、[B
 :::
 
 サンプルの[basic.ino](https://github.com/boschsensortec/Bosch-BSEC2-Library/blob/master/examples/generic_examples/basic/basic.ino)を使えば、一通りBME680の機能を試すことができます。
+basic.inoを使う際は以下の2箇所を変更する必要があります。
 
+まず、LEDのピン番号を9に変更します。
+
+変更前:
+```C
+#define PANIC_LED   LED_BUILTIN
+```
+変更後:
+```C
+#define PANIC_LED   9
+```
+
+次に、I²Cに使うピン番号として、SDAに4、SCLに5を指定します。
+
+変更前:
+```C
+    /* Initialize the communication interfaces */
+    Serial.begin(115200);
+    Wire.begin();
+    pinMode(PANIC_LED, OUTPUT);
+```
+変更後:
+```C
+    /* Initialize the communication interfaces */
+    Serial.begin(115200);
+    Wire.begin(4, 5);
+    pinMode(PANIC_LED, OUTPUT);
+```
 
 ## OLED
 
@@ -111,9 +138,45 @@ Arduino IDEのライブラリマネージャー上で "Adafruit SSD1306" で検�
 * [Adafruit_BusIO](https://github.com/adafruit/Adafruit_BusIO)
 
 
+Arduino IDEのメニューから「ファイル」→「スケッチ例」→「Adafruit SSD1306」→「ssd1306_128x64_i2c」を開きます。これを使って動作確認をしてみましょう。
+
+`SCREEN_ADDRESS` が 0x3D になっていますので 0x3C に書き換えます。
+
+変更前:
+```C
+#define SCREEN_ADDRESS 0x3D ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
+```
+
+変更後:
+```C
+#define SCREEN_ADDRESS 0x3C ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
+```
+
+:::message
+コメントには 0x3D for 128x64 と書かれていますが、秋月電子で売られているOLEDのI²Cアドレスは 0x3C です。
+OLEDの裏面には "IIC ADDRESS SELECT" の記載があり、0x78 と 0x7A のうち、0x78 の方に0Ω抵抗が付いています。0x78 / 2 = 0x3C なので、アドレスは 0x3C です。0Ω抵抗を 0x7A の方に付け替えるとアドレスは 0x3D になります。
+:::
+
+次にI²Cで使用するピンを指定します。`setup()` 関数の先頭部分に `Wire.begin(4, 5);` の呼び出しを追加します。
+
+```C
+void setup() {
+  Serial.begin(9600);
+  Wire.begin(4, 5);    // ←追加
+```
+
+以下はブレッドボードで同じものを動かした例です。
+https://twitter.com/k_takata/status/1751489273549946892
+
+
 ### カスタムフォント使用方法
 
-Adafruit-GFX-Libraryのデフォルトで使われるフォントは、6x8ドットのフォントです。大きな文字を表示したい場合は、`setTextSize()`関数で倍率を指定することができますが、単純に元のフォントを拡大表示するだけなので、きれいな表示にはなりません。そのため、大きな文字を表示するにはカスタムフォントを使うのがよいです。
+Adafruit-GFX-Libraryのデフォルトで使われるフォントは、6x8ドットのフォントです。大きな文字を表示したい場合は、`setTextSize()` 関数で倍率を指定することができますが、単純に元のフォントを拡大表示するだけなので、きれいな表示にはなりません。
+
+下のリプライコメントの左の画像は `setTextSize(2)` で2倍サイズの文字を指定した様子です。右の画像と同じフォントが単純に2倍に拡大されただけであることが分かります。
+https://twitter.com/k_takata/status/1752000392073015385
+
+そのため、大きな文字を表示するにはカスタムフォントを使うのがよいです。
 
 :::message
 Adafruit-GFX-Libraryにはデフォルトのフォント以外にもいくつかフォントが含まれていますが、今回は使用しません。
@@ -135,35 +198,224 @@ $ cd fontconvert
 $ make
 ```
 
-[Anonymous Pro](https://www.marksimonson.com/fonts/view/anonymous-pro)を変換してみましょう。サイズは8ポイントにしました。
+[Anonymous Pro](https://www.marksimonson.com/fonts/view/anonymous-pro)を変換してみましょう。`fontconvert` の第1引数にはフォントファイル名を、第2引数にはポイント数を指定します。今回は8ポイントにしました。
 
 ```
 $ ./fontconvert 'Anonymouse Pro.ttf' 8 > AnonymousPro8pt7b.h
 ```
 
 このファイルをインクルードして、`setFont()`関数で設定するとこのフォントが使われるようになります。
+
+```C
+display.setFont(&Anonymous_Pro8pt7b);
+```
+
 これで使えるようになる文字はU+0020からU+007Eのみです。
 
-"℃" の丸の部分(°(U+00B0))を表示できるように、グリフを1つ追加します。
 
-```
-$ ./fontconvert 'Anonymous Pro.ttf' 8 126 126 > AnonymousPro8pt7b_0x7e.h
-```
+### カスタムフォントの調整 - グリフの追加
+
+次に、"℃" の丸の部分を表示できるように、グリフを1つ追加します。
+"°" のコードはU+00B0ですが、今回は手抜きでU+007Fの位置に丸を追加してみます。
+
+`fontconvert` の第3引数と第4引数で開始と終了の文字コード(10進)を指定することが出来ます。0xB0を10進数で表すと176ですので、以下のようにしてU+00B0のグリフを抽出します。
 
 ```
 $ ./fontconvert 'Anonymous Pro.ttf' 8 176 176 > AnonymousPro8pt7b_0xb0.h
 ```
 
-3,5,6,8,9,m の字形が気に入らなかったので字形を調整することにしました。
+生成されたファイルは以下のようになっています。
+
+```C
+const uint8_t Anonymous_Pro8pt8bBitmaps[] PROGMEM = {
+  0x7B, 0x38, 0x61, 0xCD, 0xE0 };
+
+const GFXglyph Anonymous_Pro8pt8bGlyphs[] PROGMEM = {
+  {     0,   6,   6,   9,    0,  -11 } }; // 0xB0
+
+const GFXfont Anonymous_Pro8pt8b PROGMEM = {
+  (uint8_t  *)Anonymous_Pro8pt8bBitmaps,
+  (GFXglyph *)Anonymous_Pro8pt8bGlyphs,
+  0xB0, 0xB0, 16 };
+
+// Approx. 19 bytes
+```
+
+`Anonymous_Pro8pt8bBitmaps` がビットマップデータ、`Anonymous_Pro8pt8bGlyphs` がグリフのデータです。
+
+`GFXglyph` は `gfxfont.h` の中で以下のように定義されています。
+
+```C
+/// Font data stored PER GLYPH
+typedef struct {
+  uint16_t bitmapOffset; ///< Pointer into GFXfont->bitmap
+  uint8_t width;         ///< Bitmap dimensions in pixels
+  uint8_t height;        ///< Bitmap dimensions in pixels
+  uint8_t xAdvance;      ///< Distance to advance cursor (x axis)
+  int8_t xOffset;        ///< X dist from cursor pos to UL corner
+  int8_t yOffset;        ///< Y dist from cursor pos to UL corner
+} GFXglyph;
+```
+
+ビットマップのサイズが6x6、文字の幅が9、ビットマップを配置する位置は (0, -11) であることが分かります。`yOffset`が負になっているのは、ベースラインの位置が基準となっているためです。
+
+これを `AnonymousPro8pt7b.h` に結合してみます。
+
+まず、元のビットマップは次のようになっています。
+```C
+const uint8_t Anonymous_Pro8pt7bBitmaps[] PROGMEM = {
+    ...
+  0x73, 0x26, 0x30 };
+```
+
+ここに U+00B0 のビットマップデータを結合します。
+
+```C
+const uint8_t Anonymous_Pro8pt7bBitmaps[] PROGMEM = {
+    ...
+  0x73, 0x26, 0x30,
+  0x7B, 0x38, 0x61, 0xCD, 0xE0 };
+```
+
+次に、元のグリフデータは次のようになっています。
+
+```C
+const GFXglyph Anonymous_Pro8pt7bGlyphs[] PROGMEM = {
+    ...
+  {   720,   7,   3,   9,    0,   -4 } }; // 0x7E '~'
+```
+
+ここに U+00B0 のグリフデータを結合したいのですが、`bitmapOffset` をいくつにすべきかが分かりません。そこで、末尾の U+007E のビットマップデータを確認してみます。
+
+```
+$ ./fontconvert 'Anonymous Pro.ttf' 8 126 126 > AnonymousPro8pt7b_0x7e.h
+```
+
+出力された結果を見ると、U+007Eのビットマップのサイズが3バイトであることが分かります。
+
+```C
+const uint8_t Anonymous_Pro8pt7bBitmaps[] PROGMEM = {
+  0x73, 0x26, 0x30 };
+```
+
+そこで、720 + 3 = 723 をオフセットとすればいいことが分かります。
+
+```C
+const GFXglyph Anonymous_Pro8pt7bGlyphs[] PROGMEM = {
+    ...
+  {   720,   7,   3,   9,    0,   -4 },   // 0x7E '~'
+  {   723,   6,   6,   9,    0,  -11 } }; // 0x7F => U+00B0 (Degree Sign)
+```
+
+最後に、フォントデータの最終コードを更新します。
+
+```C
+const GFXfont Anonymous_Pro8pt7b PROGMEM = {
+  (uint8_t  *)Anonymous_Pro8pt7bBitmaps,
+  (GFXglyph *)Anonymous_Pro8pt7bGlyphs,
+  0x20, 0x7E, 16 };
+```
+
+`0x7E` となっているところを `0x7F` に書き換えます。
+
+```C
+const GFXfont Anonymous_Pro8pt7b PROGMEM = {
+  (uint8_t  *)Anonymous_Pro8pt7bBitmaps,
+  (GFXglyph *)Anonymous_Pro8pt7bGlyphs,
+  0x20, 0x7F, 16 };
+```
+
+これで、以下のコードを実行すると、`℃` が表示されます。
+
+```C
+constexpr int baseline_Anonymous_Pro8pt = 11;
+
+display.setFont(&Anonymous_Pro8pt7b);
+display.setCursor(0, baseline_Anonymous_Pro8pt);   // Set baseline
+display.println("\177C");
+```
+
+表示例です。
+https://twitter.com/k_takata/status/1753052848240414977
+
+
+### カスタムフォントの調整 - 字形の調整
+
+一般に、TTFフォントなどのベクトルフォントを小さいサイズで表示しようとすると、表示が崩れる場合があります。
+今回のAnonymous Pro 8ptに関しては、3,5,6,8,9,m の字形が気に入らなかったので字形を調整することにしました。
+
+5の字形を例にします。まずは以下のコマンドで5のグリフ情報を抽出します。
+
+```
+$ ./fontconvert 'Anonymous Pro.ttf' 8 53 53 > AnonymousPro8pt7b_0x35.h
+```
+
+生成されたファイルは以下のようになっています。
+
+```C
+const uint8_t Anonymous_Pro8pt7bBitmaps[] PROGMEM = {
+  0xFC, 0x80, 0x80, 0xBC, 0xC2, 0x01, 0x01, 0x41, 0x23, 0x1E };
+
+const GFXglyph Anonymous_Pro8pt7bGlyphs[] PROGMEM = {
+  {     0,   8,  10,   9,    0,   -9 } }; // 0x35 '5'
+```
+
+グリフのサイズは8x10であることが分かりますので、ビットマップデータを2進数に変換して成形すると以下のようになります。少し左に傾いたような字形になっていることが分かるでしょう。
+
+```
+11111100
+10000000
+10000000
+10111100
+11000010
+00000001
+00000001
+01000001
+00100011
+00011110
+```
+
+そこで、以下のように調整してみます。
+
+```
+11111110
+10000000
+10000000
+10111100
+11000010
+00000001
+00000001
+10000001
+01000010
+00111100
+```
+
+これを16進数に戻すと以下のようになります。
+
+```C
+const uint8_t Anonymous_Pro8pt7bBitmaps[] PROGMEM = {
+  0xFE, 0x80, 0x80, 0xBC, 0xC2, 0x01, 0x01, 0x81, 0x42, 0x3C };
+```
+
+`AnonymousPro8pt7b.h` の `Anonymous_Pro8pt7bBitmaps` の中から、上記の修正前のデータを検索し、それを修正後のデータで置き換えます。
+
+残りの 3,6,8,9,m の字形についても同じように調整します。
 
 ```
 $ ./fontconvert 'Anonymous Pro.ttf' 8 51 51 > AnonymousPro8pt7b_0x33.h
-$ ./fontconvert 'Anonymous Pro.ttf' 8 53 53 > AnonymousPro8pt7b_0x35.h
 $ ./fontconvert 'Anonymous Pro.ttf' 8 54 54 > AnonymousPro8pt7b_0x36.h
 $ ./fontconvert 'Anonymous Pro.ttf' 8 56 56 > AnonymousPro8pt7b_0x38.h
 $ ./fontconvert 'Anonymous Pro.ttf' 8 57 57 > AnonymousPro8pt7b_0x39.h
 $ ./fontconvert 'Anonymous Pro.ttf' 8 109 109 > AnonymousPro8pt7b_0x6d.h
 ```
+
+さらに、上で追加した "℃" の丸も少し小さくして右に寄せることにしました。
+
+以上の調整を行った結果の表示例です。
+https://twitter.com/k_takata/status/1753078515094990864
+
+
+### カスタムフォント - 簡易表示用
 
 簡易表示用に16ポイントのフォントも用意します。
 
@@ -171,14 +423,16 @@ $ ./fontconvert 'Anonymous Pro.ttf' 8 109 109 > AnonymousPro8pt7b_0x6d.h
 $ ./fontconvert 'Anonymouse Pro.ttf' 16 > AnonymousPro16pt7b.h
 ```
 
-```
-$ ./fontconvert 'Anonymous Pro.ttf' 16 126 126 > AnonymousPro16pt7b_0x7e.h
-```
+8ポイントの時と同じように丸をU+007Fに割り当てますが、サイズを小さめにするために、12ポイントのグリフを流用します。
 
-丸のサイズを小さめにするために、12ポイントのグリフを流用します。
 ```
 $ ./fontconvert 'Anonymous Pro.ttf' 12 176 176 > AnonymousPro12pt7b_0xb0.h
 ```
+
+あとは、上記の手順でデータを結合します。16ポイントについては、字形の調整は行いませんでした。
+
+表示例です。
+https://twitter.com/k_takata/status/1762877441364869551
 
 
 ## Ambient
@@ -191,9 +445,9 @@ Ambientにデータを送信するには、Arduino向けの純正ライブラリ
 error: variable 'inChar' set but not used [-Werror=unused-but-set-variable]
 ```
 
-そこで以下のPRを作成しましたが、2024年2月末時点ではまだマージされていません。
+そこで以下のPRを作成しましたが、2024年3月時点ではまだマージされていません。
 
-<https://github.com/AmbientDataInc/Ambient_ESP8266_lib/pull/5>
+https://github.com/AmbientDataInc/Ambient_ESP8266_lib/pull/5
 
 そのため、今回は以下のようにしてインストールします。
 Arduinoのライブラリディレクトリ (Windowsの場合、`C:\Users\<ユーザー名>\Documents\Arduino\libraries`) に行き、以下のコマンドを実行します。
@@ -207,3 +461,6 @@ $ git switch fix-compilation-errors
 ```
 
 これで、上記のPRが適用されたコードが使用できます。
+
+
+[![ambient](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/ambient.png)](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/ambient.png)
