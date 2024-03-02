@@ -98,6 +98,9 @@ $ git clone https://github.com/boschsensortec/Bosch-BME68x-Library.git
 Arduino IDEのライブラリマネージャー上でBSECで検索すると、[BSEC-Arduino-library](https://github.com/boschsensortec/BSEC-Arduino-library)が見つかりますが、これにはESP32-C3用のビルド済みライブラリが含まれていないので今回は使えません。
 :::
 
+
+### 基本動作確認
+
 サンプルの[basic.ino](https://github.com/boschsensortec/Bosch-BSEC2-Library/blob/master/examples/generic_examples/basic/basic.ino)を使えば、一通りBME680の機能を試すことができます。
 basic.inoを使う際は以下の2箇所を変更する必要があります。
 
@@ -128,6 +131,30 @@ basic.inoを使う際は以下の2箇所を変更する必要があります。
     Wire.begin(4, 5);
     pinMode(PANIC_LED, OUTPUT);
 ```
+
+
+### 推定値の校正
+
+推定CO₂換算値や推定IAQについては、動作開始直後は IAQ accuracy = 0 となっており正しい値が出ません。
+数時間から24時間程度動作させると校正が完了し、IAQ accuracy = 3 となり、正しい推定値が出るようになります。
+ボードの電源を落としたりリセットしたりすると、校正は最初からやり直しとなってしまいます。
+
+[basic_config_state.ino](https://github.com/boschsensortec/Bosch-BSEC2-Library/blob/master/examples/generic_examples/basic_config_state/basic_config_state.ino)は、状態を6時間ごとにEEPROMに保存するサンプルとなっており、これを使えば、校正を最初からやり直す必要はなくなります。
+
+
+### 温度補正
+
+（ケースに組み込むなど）何らかの要因により、定常的に温度が実際の値より高い値が出たり低い値が出ることがあります。
+その場合は、`setTemperatureOffset()` 関数で補正値を設定することができます。
+
+例えば、温度が実際より2.0℃高い値が出る場合は、以下のようにします。
+
+```C
+envSensor.setTemperatureOffset(2.0f);
+```
+
+こうしておくと、`BSEC_OUTPUT_SENSOR_HEAT_COMPENSATED_TEMPERATURE` には2.0℃引いて補正された値が返ってきます。
+
 
 ## OLED
 
@@ -462,5 +489,13 @@ $ git switch fix-compilation-errors
 
 これで、上記のPRが適用されたコードが使用できます。
 
-
+Ambientで環境データを表示した例です。
 [![ambient](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/ambient.png)](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/ambient.png)
+
+
+## ソースコード
+
+今回作成したソースコードは以下に格納しています。
+https://github.com/k-takata/zenn-contents/tree/master/articles/files/esp32c-envmeter
+
+`private_settings.example.h` は `private_settings.h` に名前を変更し、Wi-FiやAmbientの認証情報を正しく設定しておくことが必要です。
