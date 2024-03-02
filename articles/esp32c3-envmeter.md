@@ -507,11 +507,11 @@ Ambientで環境データを表示した例です。
 ## ソースコード
 
 今回作成したソースコードは以下に格納しています。
-https://github.com/k-takata/zenn-contents/tree/master/articles/files/esp32c-envmeter
+https://github.com/k-takata/zenn-contents/tree/master/articles/files/esp32c3-envmeter
 
-[`private_settings.example.h`](https://github.com/k-takata/zenn-contents/blob/master/articles/files/esp32c-envmeter/private_settings.example.h) は `private_settings.h` に名前を変更し、Wi-FiやAmbientの認証情報を正しく設定しておくことが必要です。
+[`private_settings.example.h`](https://github.com/k-takata/zenn-contents/blob/master/articles/files/esp32c3-envmeter/private_settings.example.h) は `private_settings.h` に名前を変更し、Wi-FiやAmbientの認証情報を正しく設定しておくことが必要です。
 
-Wi-FiやAmbientを使用せず、単体動作させたい場合は、[`sketch_bme680_ssd1306_esp32c3.ino`](https://github.com/k-takata/zenn-contents/blob/master/articles/files/esp32c-envmeter/sketch_bme680_ssd1306_esp32c3.ino)の先頭部分にある `#define USE_AMBIENT` の行を以下のようにコメントアウトしてください。
+Wi-FiやAmbientを使用せず、単体動作させたい場合は、[`sketch_bme680_ssd1306_esp32c3.ino`](https://github.com/k-takata/zenn-contents/blob/master/articles/files/esp32c3-envmeter/sketch_bme680_ssd1306_esp32c3.ino)の先頭部分にある `#define USE_AMBIENT` の行を以下のようにコメントアウトしてください。
 ```C
 // If defined, send the data to Ambient.
 // If not defined, don't use Wi-Fi and don't send the data to Ambient.
