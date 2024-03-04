@@ -76,3 +76,16 @@ KiCadのプラグイン＆コンテンツ マネージャーで "PCBWay" で検�
 
 
 
+### 共有プロジェクト
+
+PCBWayで面白いと思ったサービスが、[共有プロジェクト](https://www.pcbway.com/project/shareproject/)です。
+自分の作成した基板をオープンソースハードウェアとして公開する場合、それをPCBWayの共有プロジェクトとして登録することができます。あるいは、他の人が設計した基板で気に入ったものがあれば、それを発注することができます。
+誰かが自分のプロジェクトを気に入って基板を発注した場合、その金額の10%が自分に支払われるとのことです。
+
+[Edit Your Project - PCBWay Community](https://www.pcbway.com/project/shareproject/techshare.aspx)
+
+### ポイント
+
+もう一つ面白いと思ったのが、[PCBWayリワード](https://member.pcbway.jp/specials/rewards)という仕組みです。
+PCBWayポイントを貯めることで、1~5%の割引などの特典を受け取ることができるようです。
+また、PCBWay Beansを貯めることで、ギフトやクーポンを引き換えることができるようです。
