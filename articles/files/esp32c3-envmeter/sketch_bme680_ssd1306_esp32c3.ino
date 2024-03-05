@@ -352,7 +352,7 @@ String tostr(double f, bool simple=false)
     dtostrf(f, 5, 1, buf);
   }
   else {
-    dtostrf(f, 6, 1, buf);
+    dtostrf(f, 7, 1, buf);
   }
   return String(buf);
 }
@@ -390,10 +390,10 @@ void updateDisplay(const ParsedOutput& res)
       // Normal mode
       display.setFont(&Anonymous_Pro8pt7b);
       display.setCursor(0, baseline_Anonymous_Pro8pt);   // Set baseline
-      display.println(" " + tostr(res.comptemp) + "\177C");  // U+00B0 (Degree Sign)
-      display.println(" " + tostr(res.comphumi) + " %");
-      display.println(" " + tostr(res.pres) + " hPa");
-      display.println(" " + tostr(res.co2e) + " ppm");
+      display.println(tostr(res.comptemp) + "\177C");  // U+00B0 (Degree Sign)
+      display.println(tostr(res.comphumi) + " %");
+      display.println(tostr(res.pres) + " hPa");
+      display.println(tostr(res.co2e) + " ppm");
       break;
     case 2:
       // Simple mode
@@ -409,18 +409,15 @@ void updateDisplay(const ParsedOutput& res)
 void updateBsecState(Bsec2 bsec)
 {
   static unsigned long lastsave = 0;
-  bool update = false;
 
   if (lastsave == 0) {
     lastsave = millis();
   }
   if (millis() - lastsave > STATE_SAVE_PERIOD) {
-    update = true;
     lastsave = millis();
-  }
-
-  if (update && !saveState(bsec)) {
-    checkBsecStatus(bsec);
+    if (!saveState(bsec)) {
+      checkBsecStatus(bsec);
+    }
   }
 }
 
