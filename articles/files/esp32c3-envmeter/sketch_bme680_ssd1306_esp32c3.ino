@@ -295,6 +295,9 @@ void errLeds()
 ParsedOutput parseOutputs(const bsecOutputs* outputs)
 {
   ParsedOutput res = {0.0};
+  if (outputs == nullptr) {
+    return res;
+  }
   for (uint8_t i = 0; i < outputs->nOutputs; i++) {
     const bsecData& output = outputs->output[i];
     switch (output.sensor_id) {
