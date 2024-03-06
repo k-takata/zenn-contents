@@ -1,14 +1,14 @@
 ---
-title: "ESP32-C3とBME680でIoT環境メーター/スマートリモコンを作る"
+title: "ESP32-C3とBME680でIoT環境メーター/スマートリモコンを作る (その1)"
 emoji: "🌡"
 type: "tech" # tech: 技術記事 / idea: アイデア
-topics: ["電子工作", "esp32", "esp32c3", "bme680"]
+topics: ["電子工作", "esp32", "esp32c3", "bme680", "pcbway"]
 published: false
 ---
 
 ## 概要
 
-前回作成した[IoT環境メーター](https://zenn.dev/k_takata/articles/esp32c3-envmeter)を改良し、Rev. 2としてスマートリモコン機能を追加しました。
+前回作成した[IoT環境メーター](https://zenn.dev/k_takata/articles/esp32c3-envmeter)を改良し、スマートリモコン機能を追加したRev. 2を設計・発注しました。
 スマートリモコン機能は、以下の記事で紹介した内容をWA-MIKAN (ESP8266)からESP32-C3に移植したものとなっており、Slack経由でエアコンを制御できるというものです。
 
 * [WA-MIKANを単体で使う（その1）](https://zenn.dev/k_takata/books/d5c77046e634bb/viewer/10_wa_mikan_only1)
@@ -19,7 +19,9 @@ published: false
 
 前回同様に、[PCB_envmeter_esp32c3](https://github.com/k-takata/PCB_envmeter_esp32c3)で回路図と基板を公開しています。
 
-前回のRev. 1と異なる点は、赤外線送受信部が追加されていることです。
+前回のRev. 1と異なる点は、赤外線送受信部が追加されていることです。赤外線送受信部の回路設計については、[WA-MIKANを単体で使う（その1）](https://zenn.dev/k_takata/books/d5c77046e634bb/viewer/10_wa_mikan_only1)に記載しています。赤外線受信部のピンはIO14の代わりにGPIO10を、赤外線送信部のピンはIO12の代わりにGPIO6を使用しています。
+(スマートリモコン機能を使わない場合は、これらの部品を取り付けず、Rev. 1と同じ使い方をすることもできます。)
+
 また、今回はPCBWay様からのスポンサーの連絡があったため、PCBWay様に基板を発注しています。
 
 
@@ -29,7 +31,10 @@ published: false
 
 ### ガーバーファイルの作成
 
+KiCadでPCBWay用のガーバーファイルを作成するには、専用のプラグインを使うのが楽です。
 KiCadのプラグイン＆コンテンツ マネージャーで "PCBWay" で検索すると、2つのプラグインが見つかります。
+
+![KiCad plugins](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway/kicad-plugins.png)
 
 * PCBWay Plug-in for KiCad  
   ボタン一発で、PCBWay向けのガーバーファイルの作成から、ブラウザで注文画面を開いてガーバーファイルのアップロードまでできてしまいます。ただし、注文画面は英語画面の [pcbway.com](https://www.pcbway.com/orderonline.aspx) が開くようになっており、日本語画面の [pcbway.jp](https://www.pcbway.jp/orderonline.aspx) は開けません。  
@@ -76,22 +81,48 @@ KiCadのプラグイン＆コンテンツ マネージャーで "PCBWay" で検�
 
 全般的に、スタンダード基板で選択できる幅はPCBWayの方が多いです。価格はオプションにもよりますが、ほぼ同じか若干JCLPCBの方が安いように見えます。
 
+![PCBWay order](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway/order.png)
+*PCBWayの注文画面*
+
+
+### 住所入力
+
+pcbway.jpであれば、住所入力欄の説明もほぼ日本語になっており、それほど苦になりません。
+Cityの訳が市や都市ではなく都会になっているのは惜しいです。「都会」欄に市名を入力すると、郵便番号も一覧になって出てくるのですが、郵便番号の絞り込みはできないようで、数十項目の中から目的の郵便番号を選択するのは少し面倒でした。
+![address input](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway/address-input.png)
+
 
 ### 送料
 
-JLCPCBでは、OCS NEPを選択すると1ドル程度、OCS Expressを選択すると2ドル程度の格安送料(6 ~ 8営業日)になりますが、PCBWayにはそのようなものはないようです。
+JLCPCBでは、OCS NEPを選択すると1ドル程度、OCS Expressを選択すると2ドル程度(どちらも6 ~ 8営業日)になりますが、PCBWayには同様のOCSの格安サービスはないようです。
 
-PCBWayでは、担当者にOCSを選択することを推奨されました。今回は2 ~ 3営業日で$13.04と表示されました。OCSよりも安価な業者もいくつかありますが、配送期間とのバランスを考えると推奨通りOCSが一番よさそうです。
+![JLCPCB shipping](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway/shipping-jlcpcb.png)
+*JLCPCBの配送方法*
+
+一方PCBWayでは、担当者にOCSを選択することを強く推奨されました。今回は2 ~ 3営業日で$13.04と表示されました。OCSよりも安価な業者もいくつかありますが、配送期間とのバランスを考えると推奨通りOCSが一番よさそうです。
+
+![PCBWay shipping](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway/shipping.png)
+*PCBWayの配送方法*
 
 
 ### 支払い
 
 今回はPCBWay様のご厚意により、基板製作費と送料を負担していただけることになりました。
 注文画面からガーバーファイルをアップロードし、レジスト色と注文番号の位置指定のオプションを選んでカートに追加すると、製造番号が発行されましたので、それを担当者に連絡したところ、製作費とOCS前提の送料が自分のアカウントの残高として追加されました。
+![message](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway/message.png)
 
 支払い時に、配送業者としてOCSを選択し、クーポン選択欄でAccount Balance (アカウント残高)にチェックを入れたところ、無事$0.0で発注ができました。
+![payment](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway/payment.png)
 
 支払い方法として、PayPalやクレジットカードを使う場合は、PayPal feeやBank feeとして1ドル程度取られるようでした。
+
+
+### 生産追跡
+
+PCBWayも(JLCPCBなどと同様に)生産状況を確認することができます。今回は3/4の昼頃に発注して、3/7の未明に完成しました。黒のレジストを選択したため、元々3 ~ 4日の予定でしたが、思ったより早く完成しました。
+![production tracking](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway/production-tracking.png)
+
+生産追跡画面で再生ボタンを押すと、各工程のビデオを見ることができるはずなのですが、pcbway.jpではビデオの画面が生産追跡画面の後ろに表示されてしまい、見れませんでした。pcbway.comでは正しく表示されるので、改善をお願いしたいです。
 
 
 ### 共有プロジェクト
@@ -100,7 +131,9 @@ PCBWayで面白いと思ったサービスが、[共有プロジェクト](https
 自分の作成した基板をオープンソースハードウェアとして公開する場合、それをPCBWayの共有プロジェクトとして登録することができます。あるいは、他の人が設計した基板で気に入ったものがあれば、それを発注することができます。
 誰かが自分のプロジェクトを気に入って基板を発注した場合、その金額の10%が自分に支払われるとのことです。
 
-[Edit Your Project - PCBWay Community](https://www.pcbway.com/project/shareproject/techshare.aspx)
+![shared projects](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway/shared-projects.png)
+
+注文リスト画面の "Share&Sell" ボタンを押せば、発注済みのプロジェクトを共有することができます。また、[Edit Your Project - PCBWay Community](https://www.pcbway.com/project/shareproject/techshare.aspx)から新規にプロジェクトを共有することもできます。
 
 
 ### ポイント
@@ -109,3 +142,8 @@ PCBWayで面白いと思ったサービスが、[共有プロジェクト](https
 PCBWayポイントを貯めることで、1 ~ 5%の割引などの特典を受け取ることができるようです。
 また、PCBWay Beansを貯めることで、ギフトやクーポンを引き換えることができるようです。
 
+
+## 続き
+
+今回は、IoT環境メーター/スマートリモコン Rev. 2の設計とPCBWayでの発注までをまとめました。
+続きは別記事としてまとめたいと思います。
