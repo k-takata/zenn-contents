@@ -22,7 +22,7 @@ published: false
 前回のRev. 1と異なる点は、赤外線送受信部が追加されていることです。赤外線送受信部の回路設計については、[WA-MIKANを単体で使う（その1）](https://zenn.dev/k_takata/books/d5c77046e634bb/viewer/10_wa_mikan_only1)に記載しています。赤外線受信部のピンはIO14の代わりにGPIO10を、赤外線送信部のピンはIO12の代わりにGPIO6を使用しています。
 (スマートリモコン機能を使わない場合は、これらの部品を取り付けず、Rev. 1と同じ使い方をすることもできます。)
 
-また、今回はPCBWay様からのスポンサーの連絡があったため、PCBWay様に基板を発注しています。
+また、今回は[PCBWay](https://www.pcbway.com/)様からのスポンサーの申し出があったため、PCBWay様に基板を発注しています。
 
 
 ## PCBWayでの発注
@@ -36,10 +36,10 @@ KiCadのプラグイン＆コンテンツ マネージャーで "PCBWay" で検�
 
 ![KiCad plugins](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway/kicad-plugins.png)
 
-* PCBWay Plug-in for KiCad  
+* [PCBWay Plug-in for KiCad](https://www.pcbway.com/blog/News/PCBWay_Plug_In_for_KiCad_3ea6219c.html)  
   ボタン一発で、PCBWay向けのガーバーファイルの作成から、ブラウザで注文画面を開いてガーバーファイルのアップロードまでできてしまいます。ただし、注文画面は英語画面の [pcbway.com](https://www.pcbway.com/orderonline.aspx) が開くようになっており、日本語画面の [pcbway.jp](https://www.pcbway.jp/orderonline.aspx) は開けません。  
   ガーバーファイルは、KiCadプロジェクトディレクトリの直下に作成されます。
-* PCBWay Fabrication Toolkit  
+* [PCBWay Fabrication Toolkit](https://www.pcbway.com/blog/News/PCBWay_Fabrication_Toolkit_for_Kicad_23c41e77.html)  
   ボタン一発でPCBWay向けのガーバーファイルの作成ができます。  
   ガーバーファイルは、KiCadプロジェクトディレクトリの下に `pcbway_production` というディレクトリが作成され、その下に作成されます。
 
@@ -48,6 +48,9 @@ KiCadのプラグイン＆コンテンツ マネージャーで "PCBWay" で検�
 
 
 ### 注文画面
+
+![PCBWay order](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway/order.png)
+*PCBWayの注文画面*
 
 スタンダード基板の注文画面について、PCBWayとJLCPCBで違う点を挙げてみました。
 
@@ -79,10 +82,14 @@ KiCadのプラグイン＆コンテンツ マネージャーで "PCBWay" で検�
   - PCBWay: `WayWayWay`
   - JLCPCB: `JLCJLCJLCJLC`
 
-全般的に、スタンダード基板で選択できる幅はPCBWayの方が多いです。価格はオプションにもよりますが、ほぼ同じか若干JCLPCBの方が安いように見えます。
+注文画面の操作性の違いについては以下の点が挙げられます。
 
-![PCBWay order](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway/order.png)
-*PCBWayの注文画面*
+* リセットボタンがある  
+  JLCPCBとは異なり、リセットボタンがあるので設定を最初からやり直したいときに便利です。
+* ガーバーファイルのアップロードは「クイックオーダー基板」のリンクから  
+  JLCPCBとは異なり、一手間多いです。
+
+全般的に、スタンダード基板で選択できる幅はPCBWayの方が多いです。価格はオプションにもよりますが、ほぼ同じか若干JCLPCBの方が安いように見えます。
 
 
 ### 住所入力
@@ -133,14 +140,16 @@ PCBWayで面白いと思ったサービスが、[共有プロジェクト](https
 
 ![shared projects](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway/shared-projects.png)
 
-注文リスト画面の "Share&Sell" ボタンを押せば、発注済みのプロジェクトを共有することができます。また、[Edit Your Project - PCBWay Community](https://www.pcbway.com/project/shareproject/techshare.aspx)から新規にプロジェクトを共有することもできます。
+注文管理ページの "Share&Sell" ボタンを押せば、発注済みのプロジェクトを共有することができます。また、[Edit Your Project - PCBWay Community](https://www.pcbway.com/project/shareproject/techshare.aspx)から新規にプロジェクトを共有することもできます。
 
 
 ### ポイント
 
 もう一つ面白いと思ったのが、[PCBWayリワード](https://member.pcbway.jp/specials/rewards)という仕組みです。
 PCBWayポイントを貯めることで、1 ~ 5%の割引などの特典を受け取ることができるようです。
-また、PCBWay Beansを貯めることで、ギフトやクーポンを引き換えることができるようです。
+また、PCBWay Beans (豆)を貯めることで、ギフトやクーポンを引き換えることができるようです。
+
+![rewards](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway/rewards.png)
 
 
 ## 続き
