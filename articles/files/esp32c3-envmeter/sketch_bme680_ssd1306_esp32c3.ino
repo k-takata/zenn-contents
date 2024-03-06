@@ -427,25 +427,27 @@ void newDataCallback(const bme68xData data, const bsecOutputs outputs, Bsec2 bse
     return;
   }
 
-  Serial.println("BSEC outputs:");
-  Serial.println("\ttimestamp = "
-      + String((int)(outputs.output[0].time_stamp / INT64_C(1000000))));
-
   ParsedOutput res = parseOutputs(&outputs);
   updateDisplay(res); // Display to OLED
 
-  Serial.println("\ttemperature = " + String(res.temp) + " ℃");
-  Serial.println("\tcompensated temperature = " + String(res.comptemp) + " ℃ (diff = " + diffstr(res.comptemp - res.temp) + ")");
-  Serial.println("\thumidity = " + String(res.humi) + " %");
-  Serial.println("\tcompensated humidity = " + String(res.comphumi) + " % (diff = " + diffstr(res.comphumi - res.humi) + ")");
-  Serial.println("\tpressure = " + String(res.pres) + " hPa");
-  Serial.println("\tDI = " + String(res.di));
-  Serial.println("\tgas resistance = " + String(res.gasr) + " kΩ");
-  Serial.println("\tco2 equivalent = " + String(res.co2e) + " ppm (accuracy = " + String(res.co2eacc) + ")");
-  Serial.println("\tbreath voc equivalent = " + String(res.bvoc) + " ppm (accuracy = " + String(res.bvocacc) + ")");
-  Serial.println("\tiaq = " + String(res.iaq) + " (accuracy = " + String(res.iaqacc) + ")");
-  Serial.println("\tstabilization status = " + String(res.stabstat));
-  Serial.println("\trun in status = " + String(res.runinstat));
+  if (Serial.availableForWrite()) {
+    Serial.println("BSEC outputs:");
+    Serial.println("\ttimestamp = "
+        + String((int)(outputs.output[0].time_stamp / INT64_C(1000000))));
+
+    Serial.println("\ttemperature = " + String(res.temp) + " ℃");
+    Serial.println("\tcompensated temperature = " + String(res.comptemp) + " ℃ (diff = " + diffstr(res.comptemp - res.temp) + ")");
+    Serial.println("\thumidity = " + String(res.humi) + " %");
+    Serial.println("\tcompensated humidity = " + String(res.comphumi) + " % (diff = " + diffstr(res.comphumi - res.humi) + ")");
+    Serial.println("\tpressure = " + String(res.pres) + " hPa");
+    Serial.println("\tDI = " + String(res.di));
+    Serial.println("\tgas resistance = " + String(res.gasr) + " kΩ");
+    Serial.println("\tco2 equivalent = " + String(res.co2e) + " ppm (accuracy = " + String(res.co2eacc) + ")");
+    Serial.println("\tbreath voc equivalent = " + String(res.bvoc) + " ppm (accuracy = " + String(res.bvocacc) + ")");
+    Serial.println("\tiaq = " + String(res.iaq) + " (accuracy = " + String(res.iaqacc) + ")");
+    Serial.println("\tstabilization status = " + String(res.stabstat));
+    Serial.println("\trun in status = " + String(res.runinstat));
+  }
 
 #ifdef USE_AMBIENT
   // Send to Ambient
