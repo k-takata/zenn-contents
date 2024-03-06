@@ -506,6 +506,76 @@ Ambientで環境データを表示した例です。
 [![ambient](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/ambient.png)](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/ambient.png)
 
 
+## 表示モードの切り替え
+
+今回、表示モードの切り替えには、GPIO9に接続したModeスイッチを使いました。このスイッチは起動時に書き込みモードに入るためのスイッチと兼用しています。
+
+### チャタリング除去
+
+機械式スイッチを使う場合、スイッチのオンオフを切り替える際に、接点が細かく振動することで高速にオンとオフが繰り返される現象が発生します。これをチャタリングと呼びます。（英語では chattering よりも bounce と呼ぶことが多いようです。）
+
+チャタリングを除去する（英語では debounce）ために、今回は最初にボタンが押されてから50ms立った時点で、ボタンの状態を確認し、ボタンが押されていれば実際の処理を行うようにしました。
+
+`setup()`関数で、GPIO9をプルアップありの入力ピンとして設定し、立ち下がりで割り込み関数`buttonPushed()`が呼ばれるように設定します。
+
+```C
+#define INTERRUPT_PIN  9
+
+setup()
+{
+  pinMode(INTERRUPT_PIN, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN), buttonPushed, FALLING);
+}
+
+```
+
+割り込みが発生すると、発生時刻を`pushed_time`に保存し、`button_pushed`をtrueに設定します。もし`button_pushed`が既にtrueであれば何もしません。
+
+```C
+unsigned long pushed_time = 0;
+bool button_pushed = false;
+
+void buttonPushed()
+{
+  if (!button_pushed) {
+    pushed_time = millis();
+    button_pushed = true;
+  }
+}
+```
+
+`loop()`関数では10msごとに`checkButtonStatus()`関数を呼び出し、ボタンの状態をチェックします。
+割り込み発生から50ms以上経っていれば`digitalRead()`でボタンの状態をチェックします。LOWであればボタンが押されたと判断し、HIGHであれば無視します。その後、`button_pushed`をfalseに戻します。
+
+```C
+constexpr int debounceDelay = 50; // [ms]
+
+void checkButtonStatus()
+{
+  if (button_pushed) {
+    if (millis() - pushed_time >= debounceDelay) {
+      if (digitalRead(INTERRUPT_PIN) == LOW) {
+        //Serial.println("button pushed");
+        disp_mode = (disp_mode + 1) % 3;
+        // Update OLED
+        ParsedOutput res = parseOutputs(envSensor.getOutputs());
+        updateDisplay(res);
+      }
+      button_pushed = false;
+    }
+  }
+}
+
+void loop()
+{
+  checkButtonStatus();
+  delay(10);
+}
+```
+
+以上の処理により、50ms未満の細かなオンオフはチャタリングとして無視されます。ボタンを押している時間が50msに満たなかった場合も無視されてしまいますが、通常は問題ないでしょう。
+
+
 ## ソースコード
 
 今回作成したソースコードは以下に格納しています。
