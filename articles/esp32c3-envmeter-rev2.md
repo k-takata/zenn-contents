@@ -1,6 +1,6 @@
 ---
 title: "ESP32-C3とBME680でIoT環境メーター/スマートリモコンを作る (その1)"
-emoji: "🌡"
+emoji: "🎚️"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["電子工作", "esp32", "esp32c3", "bme680", "pcbway"]
 published: false
