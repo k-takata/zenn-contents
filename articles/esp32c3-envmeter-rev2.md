@@ -37,13 +37,13 @@ KiCadのプラグイン＆コンテンツ マネージャーで "PCBWay" で検�
 ![KiCad plugins](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway/kicad-plugins.png)
 
 * [PCBWay Plug-in for KiCad](https://www.pcbway.com/blog/News/PCBWay_Plug_In_for_KiCad_3ea6219c.html)  
-  ボタン一発で、PCBWay向けのガーバーファイルの作成から、ブラウザで注文画面を開いてガーバーファイルのアップロードまでできてしまいます。ただし、注文画面は英語画面の [pcbway.com](https://www.pcbway.com/orderonline.aspx) が開くようになっており、日本語画面の [pcbway.jp](https://www.pcbway.jp/orderonline.aspx) は開けません。  
+  ボタン一発で、PCBWay向けのガーバーファイルの作成から、ブラウザで注文画面を開いてガーバーファイルのアップロードまでできてしまいます。ただし、注文画面は[英語画面](https://www.pcbway.com/orderonline.aspx)が開くようになっており、[日本語画面](https://www.pcbway.jp/orderonline.aspx)は開けません。  
   ガーバーファイルは、KiCadプロジェクトディレクトリの直下に作成されます。
 * [PCBWay Fabrication Toolkit](https://www.pcbway.com/blog/News/PCBWay_Fabrication_Toolkit_for_Kicad_23c41e77.html)  
   ボタン一発でPCBWay向けのガーバーファイルの作成ができます。  
   ガーバーファイルは、KiCadプロジェクトディレクトリの下に `pcbway_production` というディレクトリが作成され、その下に作成されます。
 
-ボタン一発で注文画面まで行きたく英語も苦にならない場合は、前者がよいでしょう。
+ボタン一発で注文画面まで行けるのがよく、英語も苦にならない場合は、前者がよいでしょう。
 一方、発注前にガーバーファイルの内容を確認したい場合や、日本語画面から注文したい場合は後者がよいでしょう。
 
 
@@ -52,7 +52,7 @@ KiCadのプラグイン＆コンテンツ マネージャーで "PCBWay" で検�
 ![PCBWay order](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway/order.png)
 *PCBWayの注文画面*
 
-スタンダード基板の注文画面について、PCBWayとJLCPCBで違う点を挙げてみました。
+スタンダード基板の注文画面で選択できる項目について、PCBWayとJLCPCBで違う点を挙げてみました。
 
 * 5枚と10枚で値段が変わらない
   - PCBWay: 5 ~ 10枚で$5.00
@@ -82,14 +82,14 @@ KiCadのプラグイン＆コンテンツ マネージャーで "PCBWay" で検�
   - PCBWay: `WayWayWay`
   - JLCPCB: `JLCJLCJLCJLC`
 
+全般的に、スタンダード基板で選択できる幅はPCBWayの方が多いです。価格はオプションにもよりますが、ほぼ同じか若干JCLPCBの方が安いように見えます。
+
 注文画面の操作性の違いについては以下の点が挙げられます。
 
 * リセットボタンがある  
   JLCPCBとは異なり、リセットボタンがあるので設定を最初からやり直したいときに便利です。
 * ガーバーファイルのアップロードは「クイックオーダー基板」のリンクから  
   JLCPCBとは異なり、一手間多いです。
-
-全般的に、スタンダード基板で選択できる幅はPCBWayの方が多いです。価格はオプションにもよりますが、ほぼ同じか若干JCLPCBの方が安いように見えます。
 
 
 ### 住所入力
