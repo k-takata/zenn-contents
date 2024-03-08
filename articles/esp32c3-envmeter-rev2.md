@@ -9,7 +9,7 @@ published: false
 ## 概要
 
 前回作成した[IoT環境メーター](https://zenn.dev/k_takata/articles/esp32c3-envmeter)を改良し、スマートリモコン機能を追加したRev. 2を設計・発注しました。
-スマートリモコン機能は、以下の記事で紹介した内容をWA-MIKAN (ESP8266)からESP32-C3に移植したものとなっており、Slack経由でエアコンを制御できるというものです。
+スマートリモコン機能は、以下の記事で紹介した内容を[WA-MIKAN](https://akizukidenshi.com/catalog/g/g111218/) (ESP8266)から[ESP32-C3](https://akizukidenshi.com/catalog/g/g117493/)に移植したものとなっており、Slack経由でエアコンを制御できるというものです。
 
 * [WA-MIKANを単体で使う（その1）](https://zenn.dev/k_takata/books/d5c77046e634bb/viewer/10_wa_mikan_only1)
 * [WA-MIKANを単体で使う（その2）](https://zenn.dev/k_takata/books/d5c77046e634bb/viewer/11_wa_mikan_only2)
