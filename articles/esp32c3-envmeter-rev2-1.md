@@ -152,6 +152,12 @@ PCBWayポイントを貯めることで、1 ~ 5%の割引などの特典を受�
 ![rewards](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway/rewards.png)
 
 
+### クーポン
+
+![coupon](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway/coupon.png)
+
+
+
 ## 続き
 
 今回は、IoT環境メーター/スマートリモコン Rev. 2の設計とPCBWayでの発注までをまとめました。
