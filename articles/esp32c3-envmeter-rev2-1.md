@@ -154,8 +154,24 @@ PCBWayポイントを貯めることで、1 ~ 5%の割引などの特典を受�
 
 ### クーポン
 
+PCBWayの初回登録時には、$5以上の注文で$5の割引となるクーポンがもらえます。
+それに加えて、いくつかクーポンをもらうことができます。画面の左側を見ると、いくつかクーポンのマークがついている項目があります。
+
 ![coupon](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway/coupon.png)
 
+* 紹介プログラム  
+  友達を紹介するとクーポンがもらえます。
+* 共有プロジェクト  
+  (クーポンマークがついていますが、どういう条件でもらえるのか分かりません。)
+* アカウント設定  
+  プロフィールを設定すると記入した項目数に応じて最大で$35のクーポンがもらえます。
+* A5  
+  アンケートに回答すると抽選で最大$100のクーポンがもらえます。
+
+今回、「アカウント設定」→「Edit Profile」から電話番号と誕生日以外すべて（アイコンも含む）記入したところ、$34のクーポンをもらえました。（ただ、使える条件がそこそこ厳しいので、そのまま失効しそうです。）
+Edit Profileで入力した情報の一部（少なくとも名前とアイコン）は、公開されますので注意してください。
+
+![coupon by profile](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway/coupon-by-prof.png)
 
 
 ## 続き
