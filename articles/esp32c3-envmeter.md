@@ -39,6 +39,8 @@ BME680で測定しているCO₂換算値はあくまで推定値であり、CO�
 
 [PCB_envmeter_esp32c3](https://github.com/k-takata/PCB_envmeter_esp32c3)で回路図と基板を公開しています。
 
+ESP32-C3-WROOM-02-N4のシンボルやフットプリントは、Espressif公式の[Espressif KiCad Library](https://github.com/espressif/kicad-libraries)を使用しました。公式なだけあって、しっかり3Dモデルも含まれており、完成予想図の確認に便利です。
+
 
 ## Arduino IDE
 
