@@ -179,6 +179,4 @@ Edit Profileで入力した情報の一部（少なくとも名前とアイコ�
 今回は、IoT環境メーター/スマートリモコン Rev. 2の設計とPCBWayでの発注までをまとめました。
 続きは別記事としてまとめたいと思います。
 
-<!--
-* [ESP32-C3とBME680でIoT環境メーター/スマートリモコンを作る (その2)](https://zenn.dev/k_takata/articles/esp32c3-envmeter-rev2-2)
--->
+<!-- [ESP32-C3とBME680でIoT環境メーター/スマートリモコンを作る (その2)](https://zenn.dev/k_takata/articles/esp32c3-envmeter-rev2-2) -->
