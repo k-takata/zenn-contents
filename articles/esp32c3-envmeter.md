@@ -616,3 +616,13 @@ Wi-FiやAmbientを使用せず、単体動作させたい場合は、[`sketch_bm
 // If defined, temperature will be adjusted by subtracting this value.
 #define TEMPERATURE_OFFSET  1.5f
 ```
+
+
+## 続き
+
+スマートリモコン機能を追加したRev. 2を設計・発注しました。
+
+* [ESP32-C3とBME680でIoT環境メーター/スマートリモコンを作る (その1)](https://zenn.dev/k_takata/articles/esp32c3-envmeter-rev2-1)
+<!--
+* [ESP32-C3とBME680でIoT環境メーター/スマートリモコンを作る (その2)](https://zenn.dev/k_takata/articles/esp32c3-envmeter-rev2-2)
+-->
