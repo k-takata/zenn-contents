@@ -1,6 +1,5 @@
 ---
 title: "ESP32-C3とBME680でIoT環境メーター/スマートリモコンを作る (その2)"
-
 emoji: "🎚️"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["電子工作", "esp32", "esp32c3", "bme680", "pcbway"]
@@ -37,10 +36,13 @@ PCBWayの注文リストを見ると、基板が到着したのに配達状態�
 
 ![confirm received](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway/confirm-received.png)
 
+さらに、受領確認を行ったことで、[PCBWayリワード画面](https://member.pcbway.jp/specials/rewards)でポイントとBeansが加算されていることが確認できました。
+1回の注文ごとに10ポイント、さらに$1の支払いにつき1ポイントで、合計28ポイント加算されていました。
+
 
 ### フィードバックを残す
 
-「フィードバックを残す」ボタンを押すと、以下のような画面になりました。
+「受け確認」ボタンの下にあった「フィードバックを残す」ボタンを押すと、以下のような画面になりました。
 
 ![feedback](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway/feedback.png)
 
