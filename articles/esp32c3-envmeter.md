@@ -70,7 +70,8 @@ Arduino IDEのバージョンによっては設定がすぐに反映されず、
 
 新品未使用のESP32-C3を接続した場合、USBの接続と切断が繰り返される場合があります。その場合は、Modeボタンを押しながらResetボタンを押し、Resetボタンを離してからModeボタンを離すと書き込みモードに入ることができます。
 
-あるいは、"[Configure ESP32-C3 built-in JTAG Interface - ESP32-C3](https://docs.espressif.com/projects/esp-idf/en/v5.0/esp32c3/api-guides/jtag-debugging/configure-builtin-jtag.html)" にあるように、PowerShellから以下のコマンドでJTAGドライバーをインストールしてもよいようです。
+~~あるいは、"[Configure ESP32-C3 built-in JTAG Interface - ESP32-C3](https://docs.espressif.com/projects/esp-idf/en/v5.0/esp32c3/api-guides/jtag-debugging/configure-builtin-jtag.html)" にあるように、PowerShellから以下のコマンドでJTAGドライバーをインストールしてもよいようです。~~
+(この方法は上手くいきませんでした。)
 
 ```PowerShell
 Invoke-WebRequest 'https://dl.espressif.com/dl/idf-env/idf-env.exe' -OutFile .\idf-env.exe; .\idf-env.exe driver install --espressif
