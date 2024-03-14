@@ -77,3 +77,38 @@ J4は、OLEDが斜めにならないように気を付けて取り付ける必�
 赤外線受信機能を使わない場合は、U4を取り付ける必要はありません。
 
 赤外線送信機能を使わない場合は、D2, Q1, R7, R8, R9を取り付ける必要はありません。
+
+
+## 動作確認
+
+### 赤外線受信機能
+
+[WA-MIKANの時](https://zenn.dev/k_takata/books/d5c77046e634bb/viewer/10_wa_mikan_only1)と同様に、[IRremoteESP8266](https://github.com/crankyoldgit/IRremoteESP8266)のサンプルの1つである[IRrecvDumpV3](https://github.com/crankyoldgit/IRremoteESP8266/tree/master/examples/IRrecvDumpV3)がほぼそのまま使えます。
+Arduino IDEのメニューから以下を選択します。
+
+ファイル > スケッチ例 > IRremoteESP8266 > IRrecvDumpV3
+
+赤外線受信モジュールからの入力はGPIO10に接続していますので、`kRecvPin`の設定はそのまま使えます。
+`setup()`関数の先頭部分の`Serial.begin()`の呼び出しは以下のようになっています。
+
+```C
+#if defined(ESP8266)
+  Serial.begin(kBaudRate, SERIAL_8N1, SERIAL_TX_ONLY);
+#else  // ESP8266
+  Serial.begin(kBaudRate, SERIAL_8N1);
+#endif  // ESP8266
+```
+
+ESP32-C3の内蔵USBシリアルを使用する場合、このままではコンパイルエラーになってしまいますので、以下のように修正します。
+
+```C
+#if defined(ESP8266)
+  Serial.begin(kBaudRate, SERIAL_8N1, SERIAL_TX_ONLY);
+#elif ARDUINO_USB_CDC_ON_BOOT
+  Serial.begin();
+#else
+  Serial.begin(kBaudRate, SERIAL_8N1);
+#endif  // ESP8266
+```
+
+ESP32-C3の内蔵USBシリアルを使用する場合、`ARDUINO_USB_CDC_ON_BOOT`が定義され、`Serial.begin()`の実体は`USBSerial.begin()`となります。この関数は0個または1個の引数しか取りません。修正前のコードでは引数が2個になっているためコンパイルエラーになってしまっていました。第1引数はボーレートですが、指定しても無視されるため、指定は不要です。
