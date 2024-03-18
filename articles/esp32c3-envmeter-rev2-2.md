@@ -113,6 +113,10 @@ ESP32-C3の内蔵USBシリアルを使用する場合、このままではコン
 
 ESP32-C3の内蔵USBシリアルを使用する場合、`ARDUINO_USB_CDC_ON_BOOT`が定義され、`Serial.begin()`の実体は`USBSerial.begin()`となります。この関数は0個または1個の引数しか取りません。修正前のコードでは引数が2個になっているためコンパイルエラーになってしまっていました。第1引数はボーレートですが、指定しても無視されるため、指定してもしなくてもどちらでも問題ありません。
 
+なお、この変更は以下のPRを作成して取り込まれましたので、IRremoteESP8266の次のリリースからは自分で修正する必要はなくなる見込みです。
+
+https://github.com/crankyoldgit/IRremoteESP8266/pull/2080
+
 
 ### 赤外線送信機能
 
@@ -123,23 +127,22 @@ WA-MIKANの時の[赤外線送信](https://zenn.dev/k_takata/books/d5c77046e634b
 ### HTTPS接続
 
 [WA-MIKANを単体で使う（その2）](https://zenn.dev/k_takata/books/d5c77046e634bb/viewer/11_wa_mikan_only2)と同様のコードでHTTPS接続ができます。
-
-ただ、ESP8266ではBearSSLが使われていましたが、ESP32では違うSSL/TLSライブラリーが使われているため、少し使い方が異なります。
+ただ、ESP8266ではSSL/TLSライブラリーとしてBearSSLが使われていましたが、ESP32では[Mbed TLS](https://github.com/Mbed-TLS/mbedtls)という別のライブラリーが使われていることもあり、少し使い方が異なります。
 
 * ヘッダーファイル  
   ファイル名が少し異なります。
   - ESP8266: `ESP8266WiFi.h`, `ESP8266HTTPClient.h`
   - ESP32: `WiFi.h`, `HTTPClient.h`
 * ルートCA設定方法  
-  使う関数名と、引数が少し異なります。`cert_Root_Certificate`はpem形式のルート証明書で、[`tools/cert.py`](https://github.com/esp8266/Arduino/tree/master/tools)で取得できます。
+  使う関数名と、引数が少し異なります。`cert_Root_xxxx`はpem形式のルート証明書で、[`tools/cert.py`](https://github.com/esp8266/Arduino/tree/master/tools)で取得できます。（あるいは、Webブラウザーから手動で取得する方法もあります。）
   - ESP8266:
     ```C
-    X509List cert(cert_Root_Certificate);
+    X509List cert(cert_Root_xxxx);
     client.setTrustAnchors(&cert);
     ```
   - ESP32:
     ```C
-    client.setCACert(cert_Root_Certificate);
+    client.setCACert(cert_Root_xxxx);
     ```
 
-具体的な使用方法はESP32のサンプルの1つである[BasicHttpsClient.ino](https://github.com/espressif/arduino-esp32/blob/master/libraries/HTTPClient/examples/BasicHttpsClient/BasicHttpsClient.ino)が参考になります。
+具体的な使用方法はESP32の[WiFiClientSecure](https://github.com/espressif/arduino-esp32/tree/master/libraries/WiFiClientSecure)のREADMEや、ESP32のサンプルの1つである[BasicHttpsClient.ino](https://github.com/espressif/arduino-esp32/blob/master/libraries/HTTPClient/examples/BasicHttpsClient/BasicHttpsClient.ino)が参考になります。
