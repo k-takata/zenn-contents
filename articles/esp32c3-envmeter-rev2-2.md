@@ -122,7 +122,24 @@ WA-MIKANの時の[赤外線送信](https://zenn.dev/k_takata/books/d5c77046e634b
 
 ### HTTPS接続
 
-[WA-MIKANを単体で使う（その2）](https://zenn.dev/k_takata/books/d5c77046e634bb/viewer/11_wa_mikan_only2)とよく似たコードでHTTPS接続ができます。
+[WA-MIKANを単体で使う（その2）](https://zenn.dev/k_takata/books/d5c77046e634bb/viewer/11_wa_mikan_only2)と同様のコードでHTTPS接続ができます。
 
 ただ、ESP8266ではBearSSLが使われていましたが、ESP32では違うSSL/TLSライブラリーが使われているため、少し使い方が異なります。
 
+* ヘッダーファイル  
+  ファイル名が少し異なります。
+  - ESP8266: `ESP8266WiFi.h`, `ESP8266HTTPClient.h`
+  - ESP32: `WiFi.h`, `HTTPClient.h`
+* ルートCA設定方法  
+  使う関数名と、引数が少し異なります。`cert_Root_Certificate`はpem形式のルート証明書で、[`tools/cert.py`](https://github.com/esp8266/Arduino/tree/master/tools)で取得できます。
+  - ESP8266:
+    ```C
+    X509List cert(cert_Root_Certificate);
+    client.setTrustAnchors(&cert);
+    ```
+  - ESP32:
+    ```C
+    client.setCACert(cert_Root_Certificate);
+    ```
+
+具体的な使用方法はESP32のサンプルの1つである[BasicHttpsClient.ino](https://github.com/espressif/arduino-esp32/blob/master/libraries/HTTPClient/examples/BasicHttpsClient/BasicHttpsClient.ino)が参考になります。
