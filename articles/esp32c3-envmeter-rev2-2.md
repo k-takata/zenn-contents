@@ -106,9 +106,23 @@ ESP32-C3の内蔵USBシリアルを使用する場合、このままではコン
   Serial.begin(kBaudRate, SERIAL_8N1, SERIAL_TX_ONLY);
 #elif ARDUINO_USB_CDC_ON_BOOT
   Serial.begin();
-#else
+#else  // ESP8266
   Serial.begin(kBaudRate, SERIAL_8N1);
 #endif  // ESP8266
 ```
 
-ESP32-C3の内蔵USBシリアルを使用する場合、`ARDUINO_USB_CDC_ON_BOOT`が定義され、`Serial.begin()`の実体は`USBSerial.begin()`となります。この関数は0個または1個の引数しか取りません。修正前のコードでは引数が2個になっているためコンパイルエラーになってしまっていました。第1引数はボーレートですが、指定しても無視されるため、指定は不要です。
+ESP32-C3の内蔵USBシリアルを使用する場合、`ARDUINO_USB_CDC_ON_BOOT`が定義され、`Serial.begin()`の実体は`USBSerial.begin()`となります。この関数は0個または1個の引数しか取りません。修正前のコードでは引数が2個になっているためコンパイルエラーになってしまっていました。第1引数はボーレートですが、指定しても無視されるため、指定してもしなくてもどちらでも問題ありません。
+
+
+### 赤外線送信機能
+
+WA-MIKANの時の[赤外線送信](https://zenn.dev/k_takata/books/d5c77046e634bb/viewer/10_wa_mikan_only1#%E8%B5%A4%E5%A4%96%E7%B7%9A%E9%80%81%E4%BF%A1)の部分で説明したコードがほぼそのまま使えます。
+ただし、赤外線送信のピンにはGPIO6を使用していますので、ピン番号の定義だけは12から6に変更しておく必要があります。
+
+
+### HTTPS接続
+
+[WA-MIKANを単体で使う（その2）](https://zenn.dev/k_takata/books/d5c77046e634bb/viewer/11_wa_mikan_only2)とよく似たコードでHTTPS接続ができます。
+
+ただ、ESP8266ではBearSSLが使われていましたが、ESP32では違うSSL/TLSライブラリーが使われているため、少し使い方が異なります。
+
