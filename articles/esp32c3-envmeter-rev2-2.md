@@ -129,10 +129,10 @@ WA-MIKANの時の[赤外線送信](https://zenn.dev/k_takata/books/d5c77046e634b
 ただし、赤外線送信のピンにはGPIO6を使用していますので、ピン番号の定義だけは12から6に変更しておく必要があります。
 
 
-### HTTPS接続
+### HTTPS接続、Slackメッセージ送受信
 
 [WA-MIKANを単体で使う（その2）](https://zenn.dev/k_takata/books/d5c77046e634bb/viewer/11_wa_mikan_only2)と同様のコードでHTTPS接続ができます。
-ただ、ESP8266ではSSL/TLSライブラリーとしてBearSSLが使われていましたが、ESP32では[Mbed TLS](https://github.com/Mbed-TLS/mbedtls)という別のライブラリーが使われていることもあり、少し使い方が異なります。
+ただ、ESP8266ではSSL/TLSライブラリーとして[BearSSL](https://bearssl.org/)が使われていましたが、ESP32では[Mbed TLS](https://github.com/Mbed-TLS/mbedtls)という別のライブラリーが使われていることもあり、少し使い方が異なります。
 
 * ヘッダーファイル  
   ファイル名が少し異なります。
@@ -152,8 +152,36 @@ WA-MIKANの時の[赤外線送信](https://zenn.dev/k_takata/books/d5c77046e634b
 
 具体的な使用方法はESP32の[WiFiClientSecure](https://github.com/espressif/arduino-esp32/tree/master/libraries/WiFiClientSecure)のREADMEや、ESP32のサンプルの1つである[BasicHttpsClient.ino](https://github.com/espressif/arduino-esp32/blob/master/libraries/HTTPClient/examples/BasicHttpsClient/BasicHttpsClient.ino)が参考になります。
 
+以上の変更を行えば、Slackのメッセージ送受信も同じ方法で動作します。
+
 
 ## 統合動作
 
-IoT環境メーター機能と赤外線送信機能を統合し、1つのソフトウェアで動作させたいと思います。
+IoT環境メーター機能と[WA-MIKANを単体で使う（その2）](https://zenn.dev/k_takata/books/d5c77046e634bb/viewer/11_wa_mikan_only2)で作成したSlack経由のエアコン制御機能を統合し、1つのソフトウェアで動作させたいと思います。
 （赤外線受信機能の使用頻度は低いので、この機能は統合しません。）
+
+前述の修正を加えた後は、ソースコードをほぼそのまま統合した後、いくつか細かい変更を加えています。
+
+* 半自動モードの追加  
+  `@iot_bot 20`などのように温度を指定するだけで、現在の気温から冷房・暖房を判断して電源を入れる機能を追加しました。
+* 設定のLCD表示を削除  
+  最後にエアコンに送信したコマンドをLCDに表示するようにしていましたが、OLEDの表示スペースの関係から表示は取りやめました。（modeボタンを押すことで、設定を表示するようにしてもよいかもしれませんが。）
+* ディープスリープモードの削除  
+  IoT環境メーター機能は常に動作しているため、ディープスリープモードを使うのはやめました。
+
+今回作成したソースコードは以下に格納しています。
+https://github.com/k-takata/zenn-contents/tree/master/articles/files/esp32c3-envmeter-rev2
+
+
+## 完成品
+
+https://twitter.com/k_takata/status/1769706615425409257
+
+
+## まとめ
+
+今回は、IoT環境メーター/スマートリモコン Rev. 2について、PCBWayに発注した基板の受け取りから、組み立て、ESP8266向けソフトウェアからの変更点、全体を統合したソフトウェアの作成までをまとめました。
+
+今までは、IoT環境メーターとスマートリモコン機能を動かすのに2個のボードが必要でしたが、これでボードが1個で済むようになりました。
+今後は余ったボードの活用方法なども考えていきたいです。
+https://twitter.com/k_takata/status/1769707334618513517
