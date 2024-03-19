@@ -79,7 +79,12 @@ J4は、OLEDが斜めにならないように気を付けて取り付ける必�
 赤外線送信機能を使わない場合は、D2, Q1, R7, R8, R9を取り付ける必要はありません。
 
 
-## 動作確認
+## 基本動作確認
+
+### IoT環境メーター機能
+
+IoT環境メーター機能は[Rev. 1](https://zenn.dev/k_takata/articles/esp32c3-envmeter)から変更ありませんので、[Rev. 1のソフトウェア](https://github.com/k-takata/zenn-contents/tree/master/articles/files/esp32c3-envmeter)を書き込めばまったく同じように動作します。
+
 
 ### 赤外線受信機能
 
@@ -146,3 +151,9 @@ WA-MIKANの時の[赤外線送信](https://zenn.dev/k_takata/books/d5c77046e634b
     ```
 
 具体的な使用方法はESP32の[WiFiClientSecure](https://github.com/espressif/arduino-esp32/tree/master/libraries/WiFiClientSecure)のREADMEや、ESP32のサンプルの1つである[BasicHttpsClient.ino](https://github.com/espressif/arduino-esp32/blob/master/libraries/HTTPClient/examples/BasicHttpsClient/BasicHttpsClient.ino)が参考になります。
+
+
+## 統合動作
+
+IoT環境メーター機能と赤外線送信機能を統合し、1つのソフトウェアで動作させたいと思います。
+（赤外線受信機能の使用頻度は低いので、この機能は統合しません。）
