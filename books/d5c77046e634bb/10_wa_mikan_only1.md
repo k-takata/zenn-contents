@@ -183,9 +183,9 @@ WA-MIKANのリセットボタンを押すと、シリアルに何やらゴミが
 
 | 部品 | 型番 | 説明 |
 |------|------|------|
-|赤外線リモコン受信モジュール|[OSRB38C9AA](https://akizukidenshi.com/catalog/g/gI-04659/)||
-|赤外線LED|[OSI5LA5113A](https://akizukidenshi.com/catalog/g/gI-12612/)||
-|NPNトランジスター|[2SC2001](https://akizukidenshi.com/catalog/g/gI-13828/)|Ic が 500mA ~ 1A 程度流せるもの|
+|赤外線リモコン受信モジュール|[OSRB38C9AA](https://akizukidenshi.com/catalog/g/g104659/)||
+|赤外線LED|[OSI5LA5113A](https://akizukidenshi.com/catalog/g/g112612/)||
+|NPNトランジスター|[2SC2001](https://akizukidenshi.com/catalog/g/g113828/)|Ic が 500mA ~ 1A 程度流せるもの|
 |抵抗|5.1Ω|LED電流制限抵抗(R3)|
 |抵抗|680Ω|ベース抵抗(R1)|
 |抵抗|4.7kΩ|ベース・エミッター間抵抗(R2)|
@@ -207,7 +207,7 @@ ESP8266のIO12ピンはWA-MIKANのTP2に接続されています。ここに赤�
 今回使った赤外線LEDは、定常動作でIf 100mA、パルス動作でIf 1000mAとなっています。赤外線リモコンの送信に使う場合はパルス動作で使うことになりますので、それを前提にLEDに流す電流を決めることにします。
 
 とりあえず、Ifとして200mAを流すことを考えてみます。
-[データシート](https://akizukidenshi.com/download/ds/optosupply/OSI5LA5113A.pdf)のIF-VFグラフを見ると、If=200mAのときのVfは約2.4Vです。
+[データシート](https://akizukidenshi.com/goodsaffix/OSI5LA5113A.pdf)のIF-VFグラフを見ると、If=200mAのときのVfは約2.4Vです。
 
 ![IF-VF](https://raw.githubusercontent.com/k-takata/zenn-contents/master/books/d5c77046e634bb/images/if-vf.png)
 

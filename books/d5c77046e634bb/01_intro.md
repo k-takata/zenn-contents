@@ -15,8 +15,8 @@ title: "イントロダクション"
 
 2023年8月時点では、CITRUS&MIKANフルフルセットは売り切れてしまいましたが、コネクタ無しのノーマル版の単体販売はまだ継続されているようです。
 
-* [GR-CITRUS-NORMAL](https://akizukidenshi.com/catalog/g/gK-11217/)
-* [WA-MIKAN-NORMAL](https://akizukidenshi.com/catalog/g/gK-11218/)
+* [GR-CITRUS-NORMAL](https://akizukidenshi.com/catalog/g/g111217/)
+* [WA-MIKAN-NORMAL](https://akizukidenshi.com/catalog/g/g111218/)
 
 GR-CITRUSは発売開始から7年も経っていることもあり、ネット上の情報にはそのまま使えないものも多くなっています。2023年時点の情報をまとめていきたいと思います。
 

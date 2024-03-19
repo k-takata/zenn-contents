@@ -9,17 +9,17 @@ title: "I²Cを使う (LCD表示編)"
 [秋月電子](https://akizukidenshi.com/)で売られているLCDモジュールは何種類もありますが、その中でAQM1602Yという16×2行のLCDモジュールを使って文字を表示してみましょう。
 AQM1602Yにもバックライトの有無や表示色の違いで何種類かありますが、今回は以下の2つを試してみたいと思います。
 
-* [AQM1602Y-RN-GBW](https://akizukidenshi.com/catalog/g/gP-11916/) (バックライト無し、コンデンサ付き)
-* [AQM1602Y-FLW-FBW](https://akizukidenshi.com/catalog/g/gP-12619/) (白色バックライト付き)
+* [AQM1602Y-RN-GBW](https://akizukidenshi.com/catalog/g/g111916/) (バックライト無し、コンデンサ付き)
+* [AQM1602Y-FLW-FBW](https://akizukidenshi.com/catalog/g/g112619/) (白色バックライト付き)
 
 AQM1602Y-RN-GBWはバックライトがない分安価です。また動作に必要な1μFの積層セラミックコンデンサも付属しています。バックライトが不要であればこちらの方がよいでしょう。
-さらにAQM1602Y-RN-GBWには[日本語マニュアル](https://akizukidenshi.com/download/ds/akizuki/AQM1602Y-RN-GBW_akizuki.pdf)も付いています。他のAQM1602Yシリーズを使う場合でも、こちらにも目を通しておくとよいでしょう。
+さらにAQM1602Y-RN-GBWには[日本語マニュアル](https://akizukidenshi.com/goodsaffix/AQM1602Y-RN-GBW_akizuki.pdf)も付いています。他のAQM1602Yシリーズを使う場合でも、こちらにも目を通しておくとよいでしょう。
 
 
 ## GR-CITRUSとの接続
 
-AQM1602Yのピンは比較的細いので、ブレッドボード上で試す場合は[丸ピンICソケット 1x9P](https://akizukidenshi.com/catalog/g/gP-01016/)などを間に挟むとよいでしょう。
-特にAQM1602Y-FLW-FBWはバックライト用の端子があるため、そのままではブレッドボードには刺さりません。バックライトの重さもあるので、[丸ピンICソケット 18P](https://akizukidenshi.com/catalog/g/gP-00030/)などの方が安定するでしょう。
+AQM1602Yのピンは比較的細いので、ブレッドボード上で試す場合は[丸ピンICソケット 1x9P](https://akizukidenshi.com/catalog/g/g101016/)などを間に挟むとよいでしょう。
+特にAQM1602Y-FLW-FBWはバックライト用の端子があるため、そのままではブレッドボードには刺さりません。バックライトの重さもあるので、[丸ピンICソケット 18P](https://akizukidenshi.com/catalog/g/g100030/)などの方が安定するでしょう。
 
 GR-CITRUSとは上記の日本語マニュアルを参照し、以下のようにつなぎます。
 
@@ -38,7 +38,7 @@ GR-CITRUSとは上記の日本語マニュアルを参照し、以下のよう�
 9ピンのリセット端子は通常はVDDと直結で問題ありませんが、GR-CITRUSからリセット制御を行いたい場合は、10kΩ抵抗などでプルアップし、GR-CITRUSの適当な出力ピンにつなぎます。今回はリセット制御は行いません。
 
 AQM1602Y-FLW-FBWのバックライトは、1ピン側にあるA端子に3.3Vをつなぎ、9ピン側のK端子にGNDをつなぎます。バックライトが明るすぎる場合は3.3VとA端子の間に適当な抵抗をつなぎます。私の場合は680Ωをつなぎ、うっすらと光る程度の明るさにしました。
-ブレッドボードを使う場合は、[みの虫クリップ&ジャンパーワイヤ](https://akizukidenshi.com/catalog/g/gC-08916/)のようなものが使えます。
+ブレッドボードを使う場合は、[みの虫クリップ&ジャンパーワイヤ](https://akizukidenshi.com/catalog/g/g108916/)のようなものが使えます。
 
 
 ## プログラム
@@ -69,7 +69,7 @@ end
 
 AQM1602Yは1回のI²C通信で、複数のコマンドやRAMデータを送信することができます。
 
-[LCDコントローラのデータシート](https://akizukidenshi.com/download/ds/sitronix/st7032.pdf)の "I2C Interface protocol" の部分に、プロトコルの説明と図が載っています。これに従うことで、以下のような使い方ができます。
+[LCDコントローラのデータシート](https://akizukidenshi.com/goodsaffix/st7032.pdf)の "I2C Interface protocol" の部分に、プロトコルの説明と図が載っています。これに従うことで、以下のような使い方ができます。
 
 * 複数のコマンドを連続送信する。
   1. コントロールバイトを Co=0, RS=0 で送信し、その後コマンドを1バイトずつ送信する。
