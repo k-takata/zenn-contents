@@ -77,6 +77,9 @@ constexpr int send_cycle = 600;   // 10 min
 constexpr int initial_wait = 180; // 3 min
 #endif
 
+#define LOG_INFOF(...)  do { if (Serial.availableForWrite()) { Serial.printf(__VA_ARGS__); } } while (0)
+#define LOG_INFO(...)   do { if (Serial.availableForWrite()) { Serial.print(__VA_ARGS__); } } while (0)
+#define LOG_INFOLN(...) do { if (Serial.availableForWrite()) { Serial.println(__VA_ARGS__); } } while (0)
 
 // Helper functions declarations
 void errLeds();
@@ -102,9 +105,8 @@ bool checkWiFi()
   if (WiFi.status() != WL_CONNECTED) {
     return false;
   }
-  Serial.println("WiFi connected");
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
+  LOG_INFOLN("WiFi connected");
+  LOG_INFOF("IP address: %s\n", WiFi.localIP().toString().c_str());
   return true;
 }
 
@@ -119,14 +121,14 @@ bool checkClock()
   if (sntp_get_sync_status() != SNTP_SYNC_STATUS_COMPLETED) {
     return false;
   }
-  Serial.println("Clock sync'ed.");
+  LOG_INFOLN("Clock sync'ed.");
   time_t now = time(nullptr);
 
   struct tm timeinfo;
   //gmtime_r(&now, &timeinfo);
-  //Serial.printf("Current time (UTC): %s", asctime(&timeinfo));
+  //LOG_INFOF("Current time (UTC): %s", asctime(&timeinfo));
   localtime_r(&now, &timeinfo);
-  Serial.printf("Current time (JST): %s", asctime(&timeinfo));
+  LOG_INFOF("Current time (JST): %s", asctime(&timeinfo));
   return true;
 }
 
@@ -228,7 +230,7 @@ void setup()
   // Whenever new data is available call the newDataCallback function
   envSensor.attachCallback(newDataCallback);
 
-  Serial.println("BSEC library version "
+  LOG_INFOLN("BSEC library version "
           + String(envSensor.version.major) + "."
           + String(envSensor.version.minor) + "."
           + String(envSensor.version.major_bugfix) + "."
@@ -273,8 +275,8 @@ void loop()
 
   checkButtonStatus();
 
-  // Call the run function often so that the library can 
-  // check if it is time to read new data from the sensor  
+  // Call the run function often so that the library can
+  // check if it is time to read new data from the sensor
   // and process it.
   if (!envSensor.run()) {
     checkBsecStatus(envSensor);
@@ -390,7 +392,7 @@ void updateDisplay(const ParsedOutput& res)
       // Normal mode
       display.setFont(&Anonymous_Pro8pt7b);
       display.setCursor(0, baseline_Anonymous_Pro8pt);   // Set baseline
-      display.println(tostr(res.comptemp) + "\177C");  // U+00B0 (Degree Sign)
+      display.println(tostr(res.comptemp) + "\177C");  // U+00B0 => 0x7F (Degree Sign)
       display.println(tostr(res.comphumi) + " %");
       display.println(tostr(res.pres) + " hPa");
       display.println(tostr(res.co2e) + " ppm");
@@ -399,7 +401,7 @@ void updateDisplay(const ParsedOutput& res)
       // Simple mode
       display.setFont(&Anonymous_Pro16pt7b);
       display.setCursor(0, baseline_Anonymous_Pro16pt + 4);   // Set baseline
-      display.println(tostr(res.comptemp, true) + "\177C");  // U+00B0 (Degree Sign)
+      display.println(tostr(res.comptemp, true) + "\177C");  // U+00B0 => 0x7F (Degree Sign)
       display.println(tostr(res.comphumi, true) + " %");
       break;
   }
@@ -451,20 +453,22 @@ void newDataCallback(const bme68xData data, const bsecOutputs outputs, Bsec2 bse
 
 #ifdef USE_AMBIENT
   // Send to Ambient
-  time_t now = time(nullptr);
-  if (clock_started && (now - lastsent >= send_cycle)) {
-    ambient.set(1, res.temp);
-    ambient.set(2, res.humi);
-    ambient.set(3, res.pres);
-    ambient.set(4, res.di);
-    ambient.set(5, res.gasr);
-    ambient.set(6, res.co2e);
-    ambient.set(7, res.iaq);
-    ambient.set(8, res.iaqacc);
-    if (!ambient.send()) {
-      Serial.println("Failed to send to Ambient.");
+  if (clock_started) {
+    time_t now = time(nullptr);
+    if (now - lastsent >= send_cycle) {
+      ambient.set(1, res.temp);
+      ambient.set(2, res.humi);
+      ambient.set(3, res.pres);
+      ambient.set(4, res.di);
+      ambient.set(5, res.gasr);
+      ambient.set(6, res.co2e);
+      ambient.set(7, res.iaq);
+      ambient.set(8, res.iaqacc);
+      if (!ambient.send()) {
+        Serial.println("Failed to send to Ambient.");
+      }
+      lastsent = now;
     }
-    lastsent = now;
   }
 #endif
 
@@ -500,13 +504,13 @@ bool loadState(Bsec2 bsec)
 #ifdef USE_EEPROM
   if (EEPROM.read(0) == BSEC_MAX_STATE_BLOB_SIZE) {
     // Existing state in EEPROM
-    Serial.println("Reading state from EEPROM");
-    Serial.print("State file: ");
+    LOG_INFOLN("Reading state from EEPROM");
+    LOG_INFO("State file: ");
     for (uint8_t i = 0; i < BSEC_MAX_STATE_BLOB_SIZE; i++) {
       bsecState[i] = EEPROM.read(i + 1);
-      Serial.print(String(bsecState[i], HEX) + ", ");
+      LOG_INFO(String(bsecState[i], HEX) + ", ");
     }
-    Serial.println();
+    LOG_INFOLN();
 
     if (!bsec.setState(bsecState)) {
       return false;
@@ -514,7 +518,7 @@ bool loadState(Bsec2 bsec)
   }
   else {
     // Erase the EEPROM with zeroes
-    Serial.println("Erasing EEPROM");
+    LOG_INFOLN("Erasing EEPROM");
     for (uint8_t i = 0; i <= BSEC_MAX_STATE_BLOB_SIZE; i++) {
       EEPROM.write(i, 0);
     }
@@ -531,14 +535,14 @@ bool saveState(Bsec2 bsec)
     return false;
   }
 
-  Serial.println("Writing state to EEPROM");
-  Serial.print("State file: ");
+  LOG_INFOLN("Writing state to EEPROM");
+  LOG_INFO("State file: ");
 
   for (uint8_t i = 0; i < BSEC_MAX_STATE_BLOB_SIZE; i++) {
     EEPROM.write(i + 1, bsecState[i]);
-    Serial.print(String(bsecState[i], HEX) + ", ");
+    LOG_INFO(String(bsecState[i], HEX) + ", ");
   }
-  Serial.println();
+  LOG_INFOLN();
 
   EEPROM.write(0, BSEC_MAX_STATE_BLOB_SIZE);
   EEPROM.commit();
