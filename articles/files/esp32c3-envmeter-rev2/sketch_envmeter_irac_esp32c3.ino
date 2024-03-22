@@ -813,12 +813,12 @@ bool loadState(Bsec2 bsec)
   if (EEPROM.read(0) == BSEC_MAX_STATE_BLOB_SIZE) {
     // Existing state in EEPROM
     LOG_INFOLN("Reading state from EEPROM");
-    LOG_INFO("State file: ");
+    //LOG_INFO("State file: ");
     for (uint8_t i = 0; i < BSEC_MAX_STATE_BLOB_SIZE; i++) {
       bsecState[i] = EEPROM.read(i + 1);
-      LOG_INFO(String(bsecState[i], HEX) + ", ");
+      //LOG_INFO(String(bsecState[i], HEX) + ", ");
     }
-    LOG_INFOLN();
+    //LOG_INFOLN();
 
     if (!bsec.setState(bsecState)) {
       return false;
@@ -844,13 +844,12 @@ bool saveState(Bsec2 bsec)
   }
 
   LOG_INFOLN("Writing state to EEPROM");
-  LOG_INFO("State file: ");
-
+  //LOG_INFO("State file: ");
   for (uint8_t i = 0; i < BSEC_MAX_STATE_BLOB_SIZE; i++) {
     EEPROM.write(i + 1, bsecState[i]);
-    LOG_INFO(String(bsecState[i], HEX) + ", ");
+    //LOG_INFO(String(bsecState[i], HEX) + ", ");
   }
-  LOG_INFOLN();
+  //LOG_INFOLN();
 
   EEPROM.write(0, BSEC_MAX_STATE_BLOB_SIZE);
   EEPROM.commit();
