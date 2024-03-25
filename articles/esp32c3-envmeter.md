@@ -482,7 +482,7 @@ https://twitter.com/k_takata/status/1762877441364869551
 
 Ambientにデータを送信するには、Arduino向けの純正ライブラリである[Ambient_ESP8266_lib](https://github.com/AmbientDataInc/Ambient_ESP8266_lib)を使います。
 
-本来は、Arduino IDEのライブラリマネージャーで "Ambient_ESP8266_lib" を検索してインストールすればいいのですが、Arduino IDE 2.2.1でコンパイルしたところ以下のようなエラーが出てしまいました。
+本来は、Arduino IDEのライブラリマネージャーで "Ambient ESP32 ESP8266 lib" を検索してインストールすればいいのですが、Arduino IDE 2.2.1でコンパイルしたところ以下のようなエラーが出てしまいました。
 
 ```
 error: variable 'inChar' set but not used [-Werror=unused-but-set-variable]
@@ -504,6 +504,11 @@ $ git switch fix-compilation-errors
 ```
 
 これで、上記のPRが適用されたコードが使用できます。
+
+:::message
+2024-03-25 追記  
+上記のPRは無事マージされ、1.0.4としてリリースされました。今後は "Ambient ESP32 ESP8266 lib" の1.0.4以降をライブラリマネージャからインストールすればそのまま使うことができます。
+:::
 
 Ambientで環境データを表示した例です。
 [![ambient](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/ambient.png)](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/ambient.png)
