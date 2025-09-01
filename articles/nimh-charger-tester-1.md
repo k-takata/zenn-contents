@@ -10,16 +10,26 @@ published: false
 
 以前、[USB NiMH ゆっくり充電器](https://github.com/k-takata/PCB_USB_NiMH_Charger/tree/batt-4)というものを作ってみたのですが、ニッケル水素電池の劣化度合いを定量的に見てみたいと思い、容量や内部抵抗を測定できる充電器を作ってみることにしました。
 
+機能や特徴としては以下のようになります。
+
+* USB NiMH ゆっくり充電器を踏襲し、USB Type-Cで電源供給。
+* USB NiMH ゆっくり充電器を踏襲し、0.1C程度でゆっくりと充電。
+* 単3または単4を1本充電・測定。
+* OLEDディスプレイに表示。
+
 作成に当たっては、以下の書籍を参考にしました。
 
-1. [トランジスタ技術SPECIAL No.135 Liイオン/鉛/NiMH蓄電池の充電&電源技術](https://shop.cqpub.co.jp/hanbai/books/46/46751.html) 「第4章　研究！ ニッケル水素蓄電池の耐久テスト」
-2. [トランジスタ技術SPECIAL No.170 教科書付き 小型バッテリ電源回路](https://www.cqpub.co.jp/trs/trsp170.htm) 「Appendix 1　充放電回数の限界…サイクル耐久特性の実測」
+1. [トランジスタ技術SPECIAL No.135 Liイオン/鉛/NiMH蓄電池の充電&電源技術](https://shop.cqpub.co.jp/hanbai/books/46/46751.html) 「第4章　研究！ ニッケル水素蓄電池の耐久テスト」 下間 憲行著
+2. [トランジスタ技術SPECIAL No.170 教科書付き 小型バッテリ電源回路](https://www.cqpub.co.jp/trs/trsp170.htm) 「Appendix 1　充放電回数の限界…サイクル耐久特性の実測」 下間 憲行著
 3. [電池応用ハンドブック](https://www.cqpub.co.jp/hanbai/books/34/34461.htm)
 
 
 ## ハードウェア
 
 回路図と基板は[PCB_NiMH_Charger_Tester](https://github.com/k-takata/PCB_NiMH_Charger_Tester)で公開しています。
+
+いくつかの部品については、部品の入手状況によってどちらかを選択するようになっています。
+例えばUSBコネクターについては、[通常のUSB Type-Cコネクター](https://akizukidenshi.com/catalog/g/g114356/)か、[電源供給用のコネクター](https://akizukidenshi.com/catalog/g/g116438/)を選択できるようになっています。
 
 [AVR64DD28](https://akizukidenshi.com/catalog/g/g118314/)を使って充電・放電制御を行います。
 
@@ -28,7 +38,7 @@ published: false
 
 ## PCBWayでの発注
 
-PCBWayへの発注方法は、[IoT環境メーター/スマートリモコン](https://zenn.dev/k_takata/articles/esp32c3-envmeter-rev2-1)に記載した内容から大きな変更はありません。
+PCBWayへの発注方法は、[IoT環境メーター/スマートリモコン](https://zenn.dev/k_takata/articles/esp32c3-envmeter-rev2-1)に記載した内容から大きな変更はありませんので、基本的には前回の記載内容を参照してください。ここでは、前回からの変更点を中心に説明します。
 
 
 ### ガーバーファイルの作成
@@ -37,11 +47,11 @@ KiCadでPCBWay用のガーバーファイルを作成するには、専用のプ
 
 前回はKiCad 7.0を使用していましたが、今回はKiCad 9.0を使用したため、プラグインのインストール方法に少しだけ変更がありました。
 
+KiCadのプラグイン＆コンテンツ マネージャーを開いてから、「製造プラグイン」タブに切り替えます。そこで "PCBWay" で検索すると、2つのプラグインが見つかります。
 
+![KiCad plugins](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway2/kicad-plugins.png)
 
-KiCadのプラグイン＆コンテンツ マネージャーで "PCBWay" で検索すると、2つのプラグインが見つかります。
-
-![KiCad plugins](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway/kicad-plugins.png)
+プラグインの機能や使い方は前回から変わりありません。
 
 * [PCBWay Plug-in for KiCad](https://www.pcbway.com/blog/News/PCBWay_Plug_In_for_KiCad_3ea6219c.html)  
   ボタン一発で、PCBWay向けのガーバーファイルの作成から、ブラウザで注文画面を開いてガーバーファイルのアップロードまでできてしまいます。ただし、注文画面は[英語画面](https://www.pcbway.com/orderonline.aspx)が開くようになっており、[日本語画面](https://www.pcbway.jp/orderonline.aspx)は開けません。  
@@ -51,72 +61,34 @@ KiCadのプラグイン＆コンテンツ マネージャーで "PCBWay" で検�
   ガーバーファイルは、KiCadプロジェクトディレクトリの下に `pcbway_production` というディレクトリが作成され、その下に作成されます。
 
 ボタン一発で注文画面まで行ける方がよく、英語も苦にならない場合は、前者がよいでしょう。
-一方、発注前にガーバーファイルの内容を確認したい場合や、日本語画面から注文したい場合は後者がよいでしょう。
+一方、発注前にガーバーファイルの内容を確認したい場合や、日本語画面から注文したい場合は後者がよいでしょう。(私は後者を利用しています。)
 
 
 ### 注文画面
 
-前回の注文時からは1か所だけ変更がありました。
+前回の注文時からは数か所変更がありました。
 
-FR4-TG(ガラス転移温度)の選択欄の注意を見ると、2層基板の基材は無料で自動的にS1000H TG150にアップグレードされるとの記載がありました。
-高温環境下で動かす基板を作成したい場合は嬉しいかもしれません。
+1. FR4-TG(ガラス転移温度)の選択欄の注意を見ると、2層基板の基材は無料で自動的にS1000H TG150にアップグレードされるとの記載がありました。
+通常使用においてはあまり効果はないかもしれませんが、高温環境下で動かす基板を作成したい場合などは嬉しいかもしれません。
+[PCBWay Upgrades PCB Material to ShengYi Material - News - PCBway](https://www.pcbway.com/blog/News/PCBWay_Upgrades_Multi_Layers_PCB_Material_to_ShengYi_Material_d4ba6d1c.html)
+
+2. 板材の厚みは最大で8.0mmが選択できるようになっていました。(前回は最大で6.0mm)
+
+3. UV printing Multi-colorというものが選択できるようになっていました。
+[Unlock Color PCB Printing with PCBWay! - News - PCBway](https://www.pcbway.com/blog/News/Unlock_Color_PCB_Printing_with_PCBWay_0939d559.html)
+
+4. 「チェックマークは、追加料金なしで当社の裁量で「HASL」を「ENIG」に変更することがあることに同意することを意味します。」のチェックマークが無くなっていました。
 
 なお、JLCPCBではしばらく前に発注番号の削除が無料でできるようになりましたが、PCBWayでは引き続き有料となっていました。
 
 
 
-![PCBWay order](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway/order.png)
-*PCBWayの注文画面*
+### 配送方法
 
-スタンダード基板の注文画面で選択できる項目について、PCBWayとJLCPCBで違う点を挙げてみました。
+配送方法は前回から変更は無いようです。
 
-* 5枚と10枚で値段が変わらない
-  - PCBWay: 5 ~ 10枚で$5.00
-  - JLCPCB: 5枚で通常価格$4.00のところ割引で$2.00、10枚で$5.00
-* 基板の層の選択肢が多い
-  - PCBWay: 1 ~ 14層 (ただし4層以上は追加料金)
-  - JLCPCB: 1 ~ 4層 (4層でも50x50mm以内なら2層までと同一価格)
-* FR4-TG(ガラス転移温度)の選択ができる
-  - PCBWay: TG 130-140, TG 150-160が同一価格で選択可能。追加料金で他も選択可能。
-  - JLCPCB: TG 135-140のみ
-* PCBの厚さの選択肢が多い
-  - PCBWay: 0.2 ~ 3.2mm
-  - JLCPCB: 0.4 ~ 2.0mm
-* レジストの選択肢が多い
-  - PCBWay: 黒(つや消し)、緑(つや消し)が選べる。ただし、つや消しと紫は追加料金。
-  - JLCPCB: 紫を含め、同一料金。
-* シルクの選択肢が多い
-  - PCBWay: 白、黒、黄色、なしから選択可能。標準以外の組み合わせは追加料金。
-  - JLCPCB: レジストの色により白か黒か自動決定。
-* 表面処理の選択肢が多い
-  - PCBWay: 10種類以上。PCBWayの裁量でHASLをENIGに変更する可能性があることに同意というチェックがある。
-  - JLCPCB: HASL、無鉛HASL、ENIG
-* 銅箔の選択肢が多い
-  - PCBWay: 1 ~ 13 oz
-  - JLCPCB: 1 ~ 2 oz
-* 発注番号の位置指定
-  - PCBWay: `WayWayWay`
-  - JLCPCB: `JLCJLCJLCJLC`
-
-全般的に、スタンダード基板で選択できる幅はPCBWayの方が多いです。価格はオプションにもよりますが、ほぼ同じか若干JCLPCBの方が安いように見えます。
-
-注文画面の操作性の違いについては以下の点が挙げられます。
-
-* リセットボタンがある  
-  JLCPCBとは異なり、リセットボタンがあるので設定を最初からやり直したいときに便利です。
-* ガーバーファイルのアップロード方法  
-  JLCPCBとは異なり、「クイックオーダー基板」のリンクをクリックすることでガーバーファイルがアップロードできるようになり、一手間多いです。
-
-
-
-### 送料
-
-JLCPCBでは、OCS NEPを選択すると1ドル程度、OCS Expressを選択すると2ドル程度(どちらも6 ~ 8営業日)になりますが、PCBWayには同様のOCSの格安サービスはないようです。
-
-![JLCPCB shipping](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway/shipping-jlcpcb.png)
-*JLCPCBの配送方法*
-
-一方PCBWayでは、担当者にOCSを選択することを強く推奨されました。今回は2 ~ 3営業日で$13.04と表示されました。OCSよりも安価な業者もいくつかありますが、配送期間とのバランスを考えると推奨通りOCSが一番よさそうです。
+前回同様、担当者にOCSを選択することを強く推奨されました。今回は2 ~ 3営業日で$9.77と表示されました。前回は$13.07でしたので、少し安くなっていました。
+OCSよりも安価な業者もいくつかありますが、配送期間とのバランスを考えると推奨通りOCSが一番よさそうです。
 
 ![PCBWay shipping](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway/shipping.png)
 *PCBWayの配送方法*
@@ -134,6 +106,12 @@ JLCPCBでは、OCS NEPを選択すると1ドル程度、OCS Expressを選択す�
 支払い方法として、PayPalやクレジットカードを使う場合は、PayPal feeやBank feeとして1ドル程度取られるようでした。
 
 
+なお今回は[PCBWay Ruler](https://www.pcbway.com/project/gifts_detail/PCBWay_Ruler_All_Color.html) 9色セットを購入したいと思って$9.00を支払うつもりでいたところ、こちらも併せてPCBWay様にサポートしていただけることになりました。ありがとうございます。
+
+
+
+
+
 ### 生産追跡
 
 PCBWayも(JLCPCBなどと同様に)生産状況を確認することができます。今回は3/4の昼頃に発注して、3/7の未明に完成しました。黒のレジストを選択したため、元々3 ~ 4日の予定でしたが、思ったより早く完成しました。
@@ -142,20 +120,24 @@ PCBWayも(JLCPCBなどと同様に)生産状況を確認することができま
 生産追跡画面で再生ボタンを押すと、各工程のビデオを見ることができるはずなのですが、pcbway.jpではビデオの画面が生産追跡画面の後ろに表示されてしまい、見れませんでした。pcbway.comでは正しく表示されるので、改善をお願いしたいです。
 
 
+前回は、日本語サイトでは生産追跡画面上のビデオの再生がうまくいかなかったのですが、今回試したところ、問題なく再生できるようになっていました。改善ありがとうございます。
+
+
 
 
 ## 基板到着
 
 元々PCBWayでの基板の製造が3 ~ 4日、OCSでの送付に2 ~ 3日の予定でしたが、実際には3/4に製造開始して、3日後の3/7に完了、同日中にOCSに引き渡され、4日後の3/11に一度配達されたものの自分が不在だったために、3/12に再配達となりました。結局、再配達を除けばちょうど1週間で基板を受け取ることができました。
 
-見慣れたJLCPCBのネコポス用の箱に比べると、かなり大きな箱で届きました。
+製造開始から5日で受け取ることができました。
+
+前回と同じサイズの箱で届きました。
 
 https://twitter.com/k_takata/status/1767352744569111038
 
-左が今回PCBWayで作ったRev. 2、右が前回JLCPCBで作ったRev. 1です。写真では見にくいですが、今回のRev. 2はRev. 1に比べると明らかにつやがあります。
-PCBWayでは、黒と黒(つや消し)が明確に分かれているだけあって、つや消しの黒がよい場合は明示的につや消しを選ぶ必要があります。（価格は上がりますが。）
 
-なお、今回注文したのは10枚でしたが、実際に届いたものを数えると11枚ありました。何らかの理由で1枚余計に作ってしまった方が都合がよかったのでしょうか。よく分かりませんが、ちょっと得した気分です。
+PCBWay Rulerは実際のPCBで使える技術そのままで製造されているので、自分が基板を作成する際の色見本としても便利ですし、PCBの加工精度を確認することもできます。つやあり・つや消しを見比べたり、パターンを眺めているだけでも面白いです。もちろん、名前通り定規として電子部品のサイズを測ったりフットプリントを確認するのにも便利です。
+
 
 
 ### 受領確認
@@ -170,16 +152,14 @@ PCBWayの注文リストを見ると、基板が到着したのに配達状態�
 1回の注文ごとに10ポイント、さらに$1の支払いにつき1ポイントで、合計28ポイント加算されていました。
 
 
-### フィードバックを残す
-
-「受け確認」ボタンの下にあった「フィードバックを残す」ボタンを押すと、以下のような画面になりました。
-
-![feedback](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway/feedback.png)
-
-（英語で）50語以上のフィードバックを送るとクーポンをもらえるチャンスがあるようです。気が向いたらフィードバックを送ってみたいと思います。
-
-
 ## 組み立て
+
+チップ部品は熱に弱いので、注意して取り付けてください。私は温度センサーICを1つ壊してしまいました。
+
+
+
+## 反省点
+
 
 
 ## 続き
