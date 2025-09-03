@@ -19,8 +19,10 @@ published: false
 
 作成に当たっては、以下の書籍を参考にしました。
 
-1. [トランジスタ技術SPECIAL No.135 Liイオン/鉛/NiMH蓄電池の充電&電源技術](https://shop.cqpub.co.jp/hanbai/books/46/46751.html) 「第4章　研究！ ニッケル水素蓄電池の耐久テスト」 下間 憲行著
-2. [トランジスタ技術SPECIAL No.170 教科書付き 小型バッテリ電源回路](https://www.cqpub.co.jp/trs/trsp170.htm) 「Appendix 1　充放電回数の限界…サイクル耐久特性の実測」 下間 憲行著
+1. [トランジスタ技術SPECIAL No.135 Liイオン/鉛/NiMH蓄電池の充電&電源技術](https://shop.cqpub.co.jp/hanbai/books/46/46751.html)   
+   「第4章　研究！ ニッケル水素蓄電池の耐久テスト」 下間 憲行著
+2. [トランジスタ技術SPECIAL No.170 教科書付き 小型バッテリ電源回路](https://www.cqpub.co.jp/trs/trsp170.htm)   
+   「Appendix 1　充放電回数の限界…サイクル耐久特性の実測」 下間 憲行著
 3. [電池応用ハンドブック](https://www.cqpub.co.jp/hanbai/books/34/34461.htm)
 
 
@@ -90,12 +92,11 @@ KiCadのプラグイン＆コンテンツ マネージャーを開いてから�
 
 4. 「チェックマークは、追加料金なしで当社の裁量で「HASL」を「ENIG」に変更することがあることに同意することを意味します。」のチェックマークが無くなっていました。
 
-ところで、前回もそうでしたが、注文画面に表示される製造時間が24horasとtypoされているのが気になります。
+ところで、前回もそうでしたが、注文画面に表示される製造時間が24horasとtypoされているのが気になります。改善を期待したいです。
 ![PCBWay order: typo](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway2/pcbway-order-typo.png)
 
 なお、JLCPCBではしばらく前に発注番号の削除が無料でできるようになりましたが、PCBWayでは引き続き有料となっていました。
 ![PCBWay order: remove product no](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway2/pcbway-order-remove-product-no.png)
-
 
 
 ### 配送方法
@@ -237,7 +238,7 @@ OLEDのコネクターの位置が1mm程度内側にずれていました。
 
 ブリッジダイオードも、チップ部品とスルーホール部品を選択できるようにしておきたかったです。
 
-修正したRev. 2をリポジトリにコミットしてありますが、実際に発注するかは未定です。
+修正したRev. 2を[リポジトリ](https://github.com/k-takata/PCB_NiMH_Charger_Tester)にコミットしてありますが、実際に発注するかは未定です。
 
 
 ## 続き
