@@ -105,9 +105,6 @@ KiCadのプラグイン＆コンテンツ マネージャーを開いてから�
 前回同様、担当者にOCSを選択することを強く推奨されました。今回は2 ~ 3営業日で$9.77と表示されました。前回は$13.07でしたので、少し安くなっていました。
 OCSよりも安価な業者もいくつかありますが、配送期間とのバランスを考えると推奨通りOCSが一番よさそうです。
 
-![PCBWay shipping](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway/shipping.png)
-*PCBWayの配送方法*
-
 
 ### 支払い
 
@@ -152,8 +149,6 @@ https://x.com/k_takata/status/1957424703951540463
 「受け確認」と書かれたボタンを押すと「受け確認?」とだけ表示されたポップアップが現れ、OKすると受け取り確認が完了します。
 
 ボタンは「受取確認」、質問メッセージは「製品を受け取りましたか？」になっていると分かりやすいと思いました。引き続き、日本語訳の改善に期待したいです。
-
-![confirm received](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway/confirm-received.png)
 
 今回も受取確認を行ったことで、[PCBWayリワード画面](https://member.pcbway.jp/specials/rewards)でポイントとBeansが加算されていることが確認できました。
 1回の注文ごとに10ポイント、さらに$1の支払いにつき1ポイントで、合計33ポイント加算されていました。
