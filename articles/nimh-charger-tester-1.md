@@ -57,9 +57,9 @@ KiCadでPCBWay用のガーバーファイルを作成するには、専用のプ
 
 前回はKiCad 7.0を使用していましたが、今回はKiCad 9.0を使用したため、プラグインのインストール方法に少しだけ変更がありました。
 
-KiCadのプラグイン＆コンテンツ マネージャーを開いてから、「製造プラグイン」タブに切り替えます。そこで "PCBWay" で検索すると、2つのプラグインが見つかります。
+KiCadのプラグイン＆コンテンツ マネージャーを開いてから、「基板製造用プラグイン」タブに切り替えます。そこで "PCBWay" で検索すると、2つのプラグインが見つかります。
 
-![KiCad plugins](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway2/kicad-plugins.png)
+![KiCad 9.0 plugins](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway2/kicad90-plugins.png)
 
 プラグインの機能や使い方は前回から変わりありません。
 
@@ -79,17 +79,22 @@ KiCadのプラグイン＆コンテンツ マネージャーを開いてから�
 前回の注文時からは数か所変更がありました。
 
 1. FR4-TG(ガラス転移温度)の選択欄の注意を見ると、2層基板の基材は無料で自動的にS1000H TG150にアップグレードされるとの記載がありました。
-通常使用においてはあまり効果はないかもしれませんが、高温環境下で動かす基板を作成したい場合などは嬉しいかもしれません。
-[PCBWay Upgrades PCB Material to ShengYi Material - News - PCBway](https://www.pcbway.com/blog/News/PCBWay_Upgrades_Multi_Layers_PCB_Material_to_ShengYi_Material_d4ba6d1c.html)
+   ![PCBWay order: base material](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway2/pcbway-order-base-material.png)
+   通常使用においてはあまり効果はないかもしれませんが、高温環境下で動かす基板を作成したい場合などは嬉しいかもしれません。
+   [PCBWay Upgrades PCB Material to ShengYi Material - News - PCBway](https://www.pcbway.com/blog/News/PCBWay_Upgrades_Multi_Layers_PCB_Material_to_ShengYi_Material_d4ba6d1c.html)
 
 2. 板材の厚みは最大で8.0mmが選択できるようになっていました。(前回は最大で6.0mm)
 
 3. UV printing Multi-colorというものが選択できるようになっていました。
-[Unlock Color PCB Printing with PCBWay! - News - PCBway](https://www.pcbway.com/blog/News/Unlock_Color_PCB_Printing_with_PCBWay_0939d559.html)
+   [Unlock Color PCB Printing with PCBWay! - News - PCBway](https://www.pcbway.com/blog/News/Unlock_Color_PCB_Printing_with_PCBWay_0939d559.html)
 
 4. 「チェックマークは、追加料金なしで当社の裁量で「HASL」を「ENIG」に変更することがあることに同意することを意味します。」のチェックマークが無くなっていました。
 
+ところで、前回もそうでしたが、注文画面に表示される製造時間が24horasとtypoされているのが気になります。
+![PCBWay order: typo](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway2/pcbway-order-typo.png)
+
 なお、JLCPCBではしばらく前に発注番号の削除が無料でできるようになりましたが、PCBWayでは引き続き有料となっていました。
+![PCBWay order: remove product no](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway2/pcbway-order-remove-product-no.png)
 
 
 
@@ -108,10 +113,9 @@ OCSよりも安価な業者もいくつかありますが、配送期間との�
 
 今回もPCBWay様のご厚意により、基板製作費と送料を負担していただけることになりました。
 注文画面からガーバーファイルをアップロードし、レジスト色と注文番号の位置指定のオプションを選んでカートに追加すると、製造番号が発行されましたので、それを担当者に連絡したところ、製作費とOCS前提の送料が自分のアカウントの残高として追加されました。
-![message](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway/message.png)
 
 支払い時に、配送業者としてOCSを選択し、クーポン選択欄でAccount Balance (アカウント残高)にチェックを入れたところ、無事$0.0で発注ができました。
-![payment](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway/payment.png)
+![payment](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway2/payment.png)
 
 支払い方法として、PayPalやクレジットカードを使う場合は、PayPal feeやBank feeとして1ドル程度取られるようですので、留意が必要です。
 
@@ -122,8 +126,8 @@ PCBWayの[ギフトページ](https://www.pcbway.com/project/gifts.html)の検�
 
 ### 生産追跡
 
-PCBの生産状況はメンバーページから確認することができます。今回は8/13の朝に発注して、8/16の朝に完成しました。青のレジストを選択して、3 ~ 4日の予定でしたので、予定通りと言えます。
-![production tracking](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway/production-tracking.png)
+PCBの生産状況は[メンバーページ](https://member.pcbway.jp/)から確認することができます。今回は8/13の朝に発注して、8/16の朝に完成しました。青のレジストを選択して、3 ~ 4日の予定でしたので、予定通りと言えます。
+![production tracking](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway2/production-tracking.png)
 
 前回は、日本語サイトでは生産追跡画面上のビデオの再生がうまくいかなかったのですが、今回試したところ、問題なく再生できるようになっていました。改善ありがとうございます。
 
@@ -134,10 +138,11 @@ PCBの生産状況はメンバーページから確認することができま�
 
 前回と同じサイズの箱で届きました。PCBWay Rulerも一緒に入っています。
 
-https://twitter.com/k_takata/status/1767352744569111038
-
+https://x.com/k_takata/status/1957249028413890592
 
 PCBWay Rulerは実際のPCBで使える技術そのままで製造されているので、自分が基板を作成する際の色見本としても便利ですし、PCBの加工精度を確認することもできます。つやあり・つや消しを見比べたり、パターンを眺めているだけでも面白いです。もちろん、名前通り定規として電子部品のサイズを測ったりフットプリントを確認するのにも便利です。
+
+https://x.com/k_takata/status/1957424703951540463
 
 
 ### 受取確認
@@ -170,9 +175,13 @@ PCBWay Rulerは実際のPCBで使える技術そのままで製造されてい�
 
 前述の通りUSBコネクターは、[通常のUSB Type-Cコネクター](https://akizukidenshi.com/catalog/g/g114356/)か、[電源供給用のコネクター](https://akizukidenshi.com/catalog/g/g116438/)を選択できるようになっています。
 
+https://x.com/k_takata/status/1957421486320538038
+
 電源供給用のコネクターを使う場合は、基板から少し飛び出すように取り付けます。
 
 通常のコネクターを使う場合は、コネクターの先端と基板の縁を合わせるように取り付けます。その際、コネクターのシェル(金属部分)と電源供給用コネクター用のパッド(6個)が接触しないよう、ポリイミドテープ等でパッドを絶縁しておきます。
+
+![polyimide](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/nimh-charger-tester/polyimide.jpg)
 
 端子とパッドにフラックスを塗り、半田ごての先端には少量の半田を乗せ、端子とパッドに半田を染み込ませるように半田付けします。
 
@@ -202,6 +211,10 @@ U5(とU3)で使用している温度センサーIC [MCP9700BT-E/TT](https://akiz
 
 ### 完成品
 
+U5が壊れてしまった完成品です。OLEDは取り外した状態になっています。
+
+https://x.com/k_takata/status/1958694681119772762
+
 
 ## 反省点
 
@@ -229,7 +242,7 @@ OLEDのコネクターの位置が1mm程度内側にずれていました。
 
 ブリッジダイオードも、チップ部品とスルーホール部品を選択できるようにしておきたかったです。
 
-一部を修正したRev. 2をアップロードしてありますが、実際に発注するかは未定です。
+修正したRev. 2をリポジトリにコミットしてありますが、実際に発注するかは未定です。
 
 
 ## 続き
