@@ -1,5 +1,5 @@
 ---
-title: "NiMH水素充電器&測定器の作成 (その1)"
+title: "NiMH充電器&測定器の作成 (その1)"
 emoji: "🔋"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["電子工作", "avr", "pcbway"]
