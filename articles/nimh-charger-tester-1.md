@@ -34,7 +34,7 @@ published: false
 
 基本的な回路は参考文献\[1\]の回路をベースとし、以下のような変更を行っています。
 
-* 電源をUSB Type-Cに変更し、それに合わせて電源電圧を5Vとした回路に変更。
+* 電源をUSB Type-Cに変更。
 * 参考文献\[2\]のブロック図を参考に、充電電流の制御にはP型MOSFETを使用し、放電電流の制御にはN型MOSFETを使用するように変更。
 * 充放電電流は0.1C程度の比較的小さい電流とするため、それに合わせて抵抗値を調整。
 * AVRマイコンを[AVR64DD28](https://akizukidenshi.com/catalog/g/g118314/)に変更し、マイコンへのプログラミングにはUPDI (Unified Program and Debug Interface)を使うように変更。
