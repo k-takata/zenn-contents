@@ -291,6 +291,4 @@ PWM出力が不定な状態でもMOSFETをオフにできるようにしつつ�
 ## 続き
 
 ソフトウェアは現在作成中です。出来上がり次第、続きを公開する予定です。
-<!--
-* [NiMH充電器&測定器の作成 (その2)](https://zenn.dev/k_takata/articles/nimh-charger-tester-2)
--->
+<!-- [NiMH充電器&測定器の作成 (その2)](https://zenn.dev/k_takata/articles/nimh-charger-tester-2) -->
