@@ -88,7 +88,7 @@ KiCadのプラグイン＆コンテンツ マネージャーを開いてから�
 
 1. FR4-TG(ガラス転移温度)の選択欄の注意を見ると、2層基板の基材は無料で自動的にS1000H TG150にアップグレードされるとの記載がありました。
    ![PCBWay order: base material](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/pcbway2/pcbway-order-base-material.png)
-   通常使用においてはあまり効果はないかもしれませんが、高温環境下で動かす基板を作成したい場合などは嬉しいかもしれません。
+   通常使用においてはあまり恩恵はないかもしれませんが、高温環境下で動かす基板を作成したい場合などは嬉しいかもしれません。
    [PCBWay Upgrades PCB Material to ShengYi Material - News - PCBway](https://www.pcbway.com/blog/News/PCBWay_Upgrades_Multi_Layers_PCB_Material_to_ShengYi_Material_d4ba6d1c.html)
 
 2. 基板の厚みは最大で8.0mmが選択できるようになっていました。(前回は最大で6.0mm)
