@@ -265,7 +265,7 @@ UPDIコネクターは、手持ち部品の兼ね合いもあり、[SerialUPDI](
 
 OLEDのコネクターの位置が1mm程度内側にずれていました。OLEDを取り付けると、シルクに描いた外形線より実際の位置が下にずれてしまいます。(本来はOLEDのフットプリントを作成すべきなのでしょうが、手抜きのため、ピンソケットを配置したあと外形線は別に描いています。)
 
-ピンヘッダーやピンソケットのドリル径はデフォルトの1.0mmを使っていましたが、0.9mmにした方がブレが少なくなって良さそうです。
+ピンヘッダーやピンソケットのドリル径はデフォルトの1.0mmを使っていましたが、0.8 ~ 0.9mmにした方がぐらつきが少なくなって良さそうです。
 
 単3電池の "+" マークのシルクの位置が(なぜか)ずれていました。(操作ミス?)
 
@@ -292,3 +292,12 @@ PWM出力が不定な状態でもMOSFETをオフにできるようにしつつ�
 
 ソフトウェアは現在作成中です。出来上がり次第、続きを公開する予定です。
 <!-- [NiMH充電器&測定器の作成 (その2)](https://zenn.dev/k_takata/articles/nimh-charger-tester-2) -->
+
+
+## 2025-09-11 追記: PCBWay 8th Project Design Contestについて
+
+現在PCBWayでは、[PCBWay 8th Project Design Contest](https://www.pcbway.com/activity/8th-project-design-contest.html)を開催しています。
+応募期間は2026年1月31日までで、Electronic Project, Mechanical Project, AIoT Projectの3分野があります。
+優勝賞品は$1500やNVIDIA Jetsonなど、参加賞はRaspberry Pi Pico 2が当たります。
+
+興味のある方はぜひサイトを見てみてください。
