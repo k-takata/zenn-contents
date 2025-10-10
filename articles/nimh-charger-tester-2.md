@@ -310,7 +310,7 @@ void setDisCurrent(float ma)
 
 そこで、PCBに2か所改造を行い、充放電電流を測定できるようにしました。
 
-*写真*
+![PCB patch](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/nimh-charger-tester/pcb-patch.jpg)
 
 TP2 (Vchg)とPF0ピンを接続し、TP3 (Vdis)とPF1ピンを接続しています。
 
@@ -460,11 +460,11 @@ SMAを取っているのは、1回の電圧測定では、数mV程度のぶれ�
 
 試してみたところ、一部の電池では-ΔVが検出され、正常に充電が停止しました。その際、電池の温度は40℃程度とほんのり発熱していました。
 
-*グラフ*
+![Minus Delta V graph](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/nimh-charger-tester/minus-delta-v.png)
 
 しかし、別のかなり劣化した電池では-ΔVが検出されず、ダラダラと電圧が上がり続け、最終的には14時間タイマーで充電が停止しました。
 
-*グラフ*
+![No Minus Delta V graph](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/nimh-charger-tester/no-minus-delta-v.png)
 
 より確実な充電停止を行うようにするため、さらに次の方法を実装してみることにしました。
 
@@ -484,7 +484,7 @@ SMAを取っているのは、1回の電圧測定では、数mV程度のぶれ�
 
 試してみたところ、-ΔVが検出されなかった電池でも、10分間の電圧の上昇停止が検出され、正しく充電が停止されました。電池の発熱も、-ΔV検出に比べて抑えられていました。
 
-*グラフ*
+![Zero Delta V graph](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/nimh-charger-tester/zero-delta-v.png)
 
 
 ### 温度監視による充電停止 (未実装)
@@ -548,7 +548,7 @@ Modeボタンを押すと表示が切り替わります。(後述)
 
 v\_disが放電終止電圧を下回っていても、v\_idleが放電終止電圧に達していない限り放電を続けるので、電池の内部抵抗が無視できるような低消費電力機器でどれだけの容量を使用できるかが分かります。
 
-*グラフ*
+![Discharge graph](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/nimh-charger-tester/discharge.png)
 
 
 ## その他の機能
@@ -577,16 +577,7 @@ Modeボタンで以下の表示を順に切り替えられるようになって�
 * 温度
 
 放電中の例:
-```
-Vdd: 5.168 V
-BT2: 1.031 V
-Dis: 0.360 V
-Dis:  47.9 mA
-Res: 14.01 Ω
-Cap:   493 mAh
-Time: 10:20:41
-Temp: 29.5 ℃
-```
+![Detail Mode Display](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/nimh-charger-tester/display-detail.jpg)
 
 この例では、放電一時停止中の電圧は1.031Vですが、47.9mAで放電中の電圧は0.360Vまで下がっており、内部抵抗は14.01Ωと相当劣化した電池だということが分かります。(通常は悪くとも200mΩ程度)
 10時間20分41秒放電した状態で、それまでの積算容量は493mAh。まだ放電は完了していませんが、そろそろ完了に近づいています。この電池の公称容量は750mAhでしたから、新品の2/3程度の容量になってしまっていることが分かります。
@@ -603,12 +594,9 @@ Temp: 29.5 ℃
 * 充放電開始からの積算時間
 
 例:
-```
-Vdd: 5.168 V
-BT2: 1.031 V
-Cap:   493 mAh
-Time: 10:20:41
-```
+![Simple Mode Display](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/nimh-charger-tester/display-simple.jpg)
+
+放電を開始したばかりの状況です。
 
 フォントは、「[ESP32-C3とBME680でIoT環境メーターを作る](https://zenn.dev/k_takata/articles/esp32c3-envmeter)」で実装した方法と同じように、[Anonymous Pro](https://www.marksimonson.com/fonts/view/anonymous-pro)を使用し、一部の文字は手動で字形を調整しています。
 
@@ -618,6 +606,12 @@ Time: 10:20:41
 充放電電圧をグラフ表示します。
 
 一番下の線が1.0Vで、そこから0.1V刻みで目盛りが引いてあります。
+
+充電完了時のグラフ表示の例:
+![Charge Graph Display](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/nimh-charger-tester/graph-charge.jpg)
+
+放電完了時のグラフ表示の例:
+![Discharge Graph Display](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/nimh-charger-tester/graph-discharge.jpg)
 
 充放電時の電圧等のデータは、AVRのRAM 8KBのうち、5KB程の領域を確保してそこに保存しています。
 
@@ -648,8 +642,25 @@ Chg/↑ボタンとDis/↓ボタンでカーソル(`>`)を移動し、Mode/OKボ
 
 ホストPCから `send` と送信すると、ログがCSV形式で返ってきます。
 
+以下は、充電時のログの例です。
+
 ```CSV
-実際の例
+Chg/min,Volt,Ohm,Temp,Capacity,Reason
+0,1.148,0.335,27.4,
+1,1.159,0.335,27.2,
+2,1.167,0.335,27.2,
+3,1.173,0.330,27.3,
+4,1.178,0.330,27.5,
+5,1.183,0.330,27.5,
+
+    ...
+
+571,1.520,0.870,25.4,
+572,1.520,0.870,25.4,
+573,1.520,0.875,25.4,
+574,1.520,0.875,25.4,
+575,1.520,0.875,25.5,
+576,1.520,0.870,25.4,1914,ZeroDeltaV
 ```
 
 
