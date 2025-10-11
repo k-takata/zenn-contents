@@ -308,7 +308,7 @@ void setDisCurrent(float ma)
 当初は、前述の設定機能で設定した電流が流れるものと想定していましたが、実際に試してみたところ、設定した電流と実際の電流が大きく食い違う場合がありました。
 特に、電池の内部抵抗が大きい状態で、放電電流を大きく設定した場合に、放電電流が設定値を大きく下回る場合がありました。
 
-そこで、PCBに2か所改造を行い、充放電電流を測定できるようにしました。
+そこで、基板に2か所改造を行い、充放電電流を測定できるようにしました。
 
 ![PCB patch](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/nimh-charger-tester/pcb-patch.jpg)
 
@@ -595,7 +595,7 @@ Modeボタンで以下の表示を順に切り替えられるようになって�
 * 充放電開始からの積算容量
 * 充放電開始からの積算時間
 
-例:
+放電中の例:
 ![Simple Mode Display](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/nimh-charger-tester/display-simple.jpg)
 
 放電を開始したばかりの状況です。
