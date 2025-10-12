@@ -10,7 +10,7 @@ published: false
 
 本記事は、以下の記事の続きとなります。
 
-* [NiMH充電器&測定器の作成 (その1、ハードウェア編)](https://zenn.dev/k_takata/articles/nimh-charger-tester-1.md)
+* [NiMH充電器&測定器の作成 (その1、ハードウェア編)](https://zenn.dev/k_takata/articles/nimh-charger-tester-1)
 
 その1では[PCBWay](https://www.pcbway.jp/)様のスポンサーで基板を作成しましたが、今回はその基板上で動くソフトウェアの作成について記載します。
 
