@@ -38,7 +38,7 @@ published: false
 
 開発には[Arduino IDE](https://www.arduino.cc/en/software/) 2.3.6を使用します。
 
-マイコンには[AVR64DD28](https://akizukidenshi.com/catalog/g/g118314/)を使用していますので、対応するボードパッケージとして[DxCore](https://github.com/SpenceKonde/DxCore)を使用します。[DxCore Installation](https://github.com/SpenceKonde/DxCore/blob/master/Installation.md)にしたがってボードマネージャ経由でインストールを行います。
+マイコンには[AVR64DD28-I/SP](https://akizukidenshi.com/catalog/g/g118314/)を使用していますので、対応するボードパッケージとして[DxCore](https://github.com/SpenceKonde/DxCore)を使用します。[DxCore Installation](https://github.com/SpenceKonde/DxCore/blob/master/Installation.md)にしたがってボードマネージャ経由でインストールを行います。
 
 コンパイルに当たっては、以下の項目の設定を変更しています。
 
@@ -374,7 +374,9 @@ float getTemp2()
 
 AVR自身にも温度センサーが内蔵されており、それを使って温度を測定することもできます。
 
-ただ、実際に試してみたところ、値のぶれが大きかったため、今回は使用しないことにしました。
+温度の計算方法は、[AVR64DD28](https://www.microchip.com/en-us/product/AVR64DD28)の[データシートに記載](https://onlinedocs.microchip.com/oxy/GUID-C313CAB3-6FEE-4BE7-B44A-43F360220F96-en-US-17/GUID-7886FC26-9F09-417B-9EBF-42BDB3B2AB7D.html)されていますので、それを元に実装します。データシートには内蔵の2.048Vリファレンスを使う方法が記載されていますが、電圧リファレンスを切り替える手間を省くため、今回はVddをリファレンスとしています。
+
+実際に試してみたところ、値のぶれが大きかったため、今回は使用しないことにしました。
 
 ```CPP
 // AVRの温度を取得する
@@ -714,11 +716,13 @@ Chg/min,Volt,Ohm,Temp,Capacity,Reason
 また、当初予定していなかったピーク検出や-ΔV検出による安全な充電停止が実現でき、それが相当劣化した電池でも有効に動作することが確認できました。
 さらに、グラフ表示機能により、充放電状況が視覚的に把握できるようになりました。
 
-結果的に当初の予定を上回るものができあがりました。
+結果的に当初の予定を上回るものができあがりました。(温度監視機能を除く)
 
 
 ## 今後に向けて
 
-その1では基板にいくつかの課題が見つかっており、ソフトウェア作成中にも追加の課題が見つかったため、それらの修正を行った基板(Rev. 2)を既に発注しています。(スポンサーしていただいたPCBWay様ではなく、今回はJLCPCBに発注中です。)
+その1では基板にいくつかの課題が見つかっており、ソフトウェア作成中にも前述の通り修正が必要な点が見つかったため、それらの修正を行った基板(Rev. 2)を既に発注しています。(スポンサーしていただいたPCBWay様ではなく、今回はJLCPCBに発注中です。)
 
 0.1C充電では、ピーク検出や-ΔV検出が上手く動作することが確認できましたが、0.2C充電や0.05C充電など、充電電流を変えた時の動作も検証したいです。
+
+温度センサーを直して、温度監視の動作も検証したいです。
