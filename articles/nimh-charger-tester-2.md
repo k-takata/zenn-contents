@@ -213,6 +213,8 @@ PWMの制御はAVRのTCA0 (16-bit Timer Counter Type A)を使用しますが、`
 
 TCA0には比較チャンネルが3つありますが、今回はそのうちの2つを使用します。
 
+TCA0にはSplitモードというものがあり、これを使うと1つの16bitカウンターを2つの8bitカウンターとして扱うことができます。`analogWrite()` はこのSplitモードを使って実装されていますが、今回は10bitを扱いたいので、当然Splitモードは使わずに通常モードを使用しています。通常モードのレジスターは `TCA0.SINGLE.xxx` という名前でアクセスします。
+
 ```CPP
 #define PWM_MAX_VAL 1023  // PWM値の最大値(10bit)
 
