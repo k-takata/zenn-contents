@@ -95,7 +95,7 @@ const float mdv_threshold = 0.004;
 #define MDV_COUNT 20
 
 // 0 dV/dt detection count
-#define ZDV_COUNT 600
+#define ZDV_COUNT 180
 
 
 enum LogEndReason { EndNone, EndMdv, EndZdv, EndVolt, EndTime };
@@ -436,6 +436,7 @@ bool checkButtonStatus(int n)
 
 enum State { Idle, Charging, Discharging };
 State state = Idle;
+State last_state = Idle;
 
 enum DispMode { Detail = 0, Simple, Graph, NumModes };
 DispMode disp_mode = Detail;
@@ -1072,8 +1073,6 @@ void setCurrent(bool chg, int bt)
 // Start charging/discharging
 void startOperation(bool chg)
 {
-  static State last_state = Idle;
-
   int bt = checkBtConnection();
   if (bt == 1 || bt == 2) {
     if (chg) {
@@ -1354,6 +1353,19 @@ void loop()
             }
             if (disp_mode == Detail) {
               display.printf(F("Temp: %4.1f \xF8""C\n" /* U+00B0 */), getTemp1());
+              if ((last_state != Idle) && (log_reason != EndNone)) {
+                const char *reason_str;
+                switch (log_reason) {
+                  case EndMdv:  reason_str = "-dv";   break;
+                  case EndZdv:  reason_str = "0dv";   break;
+                  case EndVolt: reason_str = "Volt";  break;
+                  case EndTime: reason_str = "Time";  break;
+                  default:      reason_str = nullptr; break;
+                }
+                display.printf(F("%s end: %s\n"),
+                    (last_state == Charging) ? "Chg" : "Dis",
+                    reason_str);
+              }
             }
           }
         }

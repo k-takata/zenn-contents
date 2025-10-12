@@ -1,5 +1,5 @@
 ---
-title: "NiMH充電器&測定器の作成 (その1)"
+title: "NiMH充電器&測定器の作成 (その1、ハードウェア編)"
 emoji: "🔋"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["電子工作", "avr", "pcbway"]
@@ -291,7 +291,7 @@ PWM出力が不定な状態でもMOSFETをオフにできるようにしつつ�
 ## 続き
 
 ソフトウェアは現在作成中です。出来上がり次第、続きを公開する予定です。
-<!-- [NiMH充電器&測定器の作成 (その2)](https://zenn.dev/k_takata/articles/nimh-charger-tester-2) -->
+<!-- [NiMH充電器&測定器の作成 (その2、ソフトウェア編)](https://zenn.dev/k_takata/articles/nimh-charger-tester-2) -->
 
 
 ## 2025-09-11 追記: PCBWay 8th Project Design Contestについて
