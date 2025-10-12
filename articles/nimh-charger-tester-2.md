@@ -209,7 +209,7 @@ PWMを使ってオペアンプに入力する電圧を生成し、それによ�
 
 #### PWMの初期化
 
-PWMの制御はAVRのTCA0 (16-bit Timer Counter Type A)を使用しますが、`takeOverTCA0()` を呼ぶことで、TCA0の制御権を取得できます。
+PWMの制御はAVRの[TCA0 (16-bit Timer Counter Type A)](https://onlinedocs.microchip.com/oxy/GUID-C313CAB3-6FEE-4BE7-B44A-43F360220F96-en-US-17/GUID-6A2FF641-E7E5-49B1-A1EB-1540AAB70BF4.html)を使用しますが、`takeOverTCA0()` を呼ぶことで、TCA0の制御権を取得できます。
 
 TCA0には比較チャンネルが3つありますが、今回はそのうちの2つを使用します。
 
