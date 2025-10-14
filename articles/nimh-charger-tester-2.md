@@ -2,7 +2,7 @@
 title: "NiMH充電器&測定器の作成 (その2、ソフトウェア編)"
 emoji: "🔋"
 type: "tech" # tech: 技術記事 / idea: アイデア
-topics: ["電子工作", "avr", "pcbway"]
+topics: ["電子工作", "avr", "pcbway", "arduino"]
 published: true
 ---
 
@@ -635,14 +635,17 @@ Modeボタンで以下の表示を順に切り替えられるようになって�
 
 #### グラフ表示
 
-当初は予定していなかった機能ですが、充放電電圧をグラフ表示できるようにしました。。
+当初は予定していなかった機能ですが、充放電電圧をグラフ表示できるようにしました。
 
-一番下の線が1.0Vで、そこから0.1V刻みで目盛りが引いてあり、一番上の線が1.5V、画面上端が1.6Vです。
+一番下の線が1.0Vで、そこから0.1V刻みで目盛りが引いてあり、一番上の線が1.5V、画面上端が1.6Vです。OLEDディスプレイの縦は64ピクセルですので、1ピクセルがおよそ0.01Vとなります。
+横方向は、128ピクセルに収まるように自動で縮尺が調節されます。
 
 グラフを見やすくするため、グラフと目盛り線が交わる部分では、目盛り線を消して線が重ならないようにしています。
 
 充電完了時のグラフ表示の例:
 ![Charge Graph Display](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/nimh-charger-tester/graph-charge.jpg)
+
+充電開始時が約1.18Vで、充電完了時が約1.49Vであることが読み取れます。
 
 放電完了時のグラフ表示の例:
 ![Discharge Graph Display](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/nimh-charger-tester/graph-discharge.jpg)
