@@ -762,7 +762,7 @@ String tostrMillis(unsigned long millis)
   t /= 60;
   unsigned m = t % 60;
   unsigned h = t / 60;
-  snprintf(buf, sizeof(buf), "%02u:%02u:%02u", h, m, s);
+  snprintf_P(buf, sizeof(buf), PSTR("%02u:%02u:%02u"), h, m, s);
   return String(buf);
 }
 
