@@ -16,7 +16,7 @@
 #include <Adafruit_SSD1306.h>
 #include "AnonymousPro8pt7b.h"
 
-#define SPLASH_MESSAGE  "\nNiMH Charger & Tester\n\nVer. 1.00"
+#define SPLASH_MESSAGE  "\nNiMH Charger & Tester\n\nVer. 1.01"
 
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
@@ -26,6 +26,10 @@
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire);
 
 constexpr int baseline_Anonymous_Pro8pt = 11;
+
+
+// Use the temperature sensor near the battery.
+//#define USE_TEMP2
 
 
 //////////////////////////////
@@ -68,6 +72,8 @@ constexpr int baseline_Anonymous_Pro8pt = 11;
 
 // Actual voltage of TP1 (VREFA, TL431). Ideally, 2.495 V.
 const float vrefa_calib = 2.483;
+//const float vrefa_calib = 2.474;
+//const float vrefa_calib = 2.480;
 
 // Load resistor for charging: 10 Ω
 const float r_charge = 10.0;
@@ -87,7 +93,7 @@ const float v_discharge_end_default = 1.00;
 #define V_DISCHARGE_END_MIN  0.90
 
 // -ΔV detection start voltage
-const float mdv_start = 1.38;
+const float mdv_start = 1.42;
 
 // -ΔV threshold voltage
 const float mdv_threshold = 0.004;
@@ -442,25 +448,21 @@ enum DispMode { Detail = 0, Simple, Graph, NumModes };
 DispMode disp_mode = Detail;
 
 #define CURR_LEVEL_MAX  2
-const float current_table[2][2][CURR_LEVEL_MAX + 1] = {
-  // Charging current
-  {
-    // For UM3 (AA)
-    // 0.2C, 0.1C, 0.05C
-    {400.0, 200.0, 100.0},
-    // For UM4 (AAA)
-    // 0.2C, 0.1C, 0.05C
-    {140.0, 70.0, 35.0},
-  },
-  // Discharging current
-  {
-    // For UM3 (AA)
-    // 0.5C, 0.1C, 0.05C
-    {1000.0, 200.0, 100.0},
-    // For UM4 (AAA)
-    // 0.5C, 0.1C, 0.05C
-    {350.0, 70.0, 35.0},
-  },
+const float chg_current_table[2][CURR_LEVEL_MAX + 1] = {
+  // For UM3 (AA)
+  // 0.2C, 0.1C, 0.05C
+  {400.0, 200.0, 100.0},
+  // For UM4 (AAA)
+  // 0.2C, 0.1C, 0.05C
+  {140.0, 70.0, 35.0},
+};
+const float dis_current_table[2][CURR_LEVEL_MAX + 1] = {
+  // For UM3 (AA)
+  // 0.5C, 0.1C, 0.05C
+  {1000.0, 200.0, 100.0},
+  // For UM4 (AAA)
+  // 0.5C, 0.1C, 0.05C
+  {350.0, 70.0, 35.0},
 };
 
 int chg_curr_level = 1;
@@ -699,7 +701,7 @@ float getBtInternalResChg(int bt, int curr_level=1)
   float vbt_idle = getBtVolt(bt);
   chgctl(true);
 
-  setChgCurrent(current_table[0][bt - 1][curr_level]);
+  setChgCurrent(chg_current_table[bt - 1][curr_level]);
   float chg_curr = getChgCurrent();
   delay(10);
   float vbt_chg = getBtVolt(bt);
@@ -727,7 +729,7 @@ float getBtInternalResDis(int bt, int curr_level=1)
   float vbt_idle = getBtVolt(bt);
   disctl(true);
 
-  setDisCurrent(current_table[1][bt - 1][curr_level]);
+  setDisCurrent(dis_current_table[bt - 1][curr_level]);
   float dis_curr = getDisCurrent();
   delay(100);
   float vbt_dis = getBtVolt(bt);
@@ -745,19 +747,15 @@ float getBtInternalResDis(int bt, int curr_level=1)
 //    curr [mA]: (Dis)charging current
 float calcBtInternalRes(bool chg, float vbt_idle, float vbt_now, float curr)
 {
-  if (chg) {
-    return (vbt_now - vbt_idle) / curr * 1000;
-  }
-  else {
-    return (vbt_idle - vbt_now) / curr * 1000;
-  }
+  float val = (vbt_now - vbt_idle) / curr * 1000;
+  return (chg) ? val : -val;
 }
 
 
-String tostrMillis(unsigned long millis)
+String tostrMillis(unsigned long ms)
 {
   char buf[20];
-  unsigned long t = millis / 1000;
+  unsigned long t = ms / 1000;
   unsigned s = t % 60;
   t /= 60;
   unsigned m = t % 60;
@@ -1051,7 +1049,7 @@ static unsigned long last_bt_millis = 0;
 static unsigned long start_millis = 0;
 static unsigned long prev_millis = 0;
 static unsigned long skip_total = 0;
-static double cap_mas = 0.0;  // Capacity in mA * sec
+static float cap_mas = 0.0;  // Capacity in mA * sec
 static float prev_curr = 0.0;
 static float mdv_max = 0.0;
 static bool mdv_enable = false;
@@ -1059,14 +1057,14 @@ static int mdv_count = 0;
 static int zdv_max = 0;
 static int zdv_count = 0;
 
-// Set charging/discharging current
+// Set charging/discharging current based on the current settings
 void setCurrent(bool chg, int bt)
 {
   if (chg) {
-    setChgCurrent(current_table[0][bt - 1][chg_curr_level]);
+    setChgCurrent(chg_current_table[bt - 1][chg_curr_level]);
   }
   else {
-    setDisCurrent(current_table[1][bt - 1][dis_curr_level]);
+    setDisCurrent(dis_current_table[bt - 1][dis_curr_level]);
   }
 }
 
@@ -1134,7 +1132,11 @@ void operate(bool chg, unsigned long now, float vbt_idle)
   float vbt_now = getBtVolt(last_bt);
   float curr = getCurrent(chg);
   float res = calcBtInternalRes(chg, vbt_idle, vbt_now, curr);
-  float temp_now = getTemp1();  // TODO: Use getTemp2()
+#ifdef USE_TEMP2
+  float temp_now = getTemp2();
+#else
+  float temp_now = getTemp1();
+#endif
   unsigned long op_time = t - start_millis - skip_total;
   if (disp_mode == Graph) {
     showVoltGraph(op_time);
@@ -1352,7 +1354,12 @@ void loop()
               display.println(String(F("Time: ")) + tostrMillis(t));
             }
             if (disp_mode == Detail) {
-              display.printf(F("Temp: %4.1f \xF8""C\n" /* U+00B0 */), getTemp1());
+#ifdef USE_TEMP2
+              float temp_now = getTemp2();
+#else
+              float temp_now = getTemp1();
+#endif
+              display.printf(F("Temp: %4.1f \xF8""C\n" /* U+00B0 */), temp_now);
               if ((last_state != Idle) && (log_reason != EndNone)) {
                 const char *reason_str;
                 switch (log_reason) {
