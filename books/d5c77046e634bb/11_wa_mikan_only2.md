@@ -400,7 +400,7 @@ Wait 1min before next round...
 ```
 
 このように、SlackからのデータはJSON形式で返ってきます。
-このSlackからのレスポンスを [`slack_response.json`](https://github.com/k-takata/zenn-contents/tree/master/books/d5c77046e634bb/src/slack_response.json) というファイルに保存してしたうえでjqコマンドを使えば、以下のようにしてメッセージのテキストを抽出することができます。
+このSlackからのレスポンスを [`slack_response.json`](https://github.com/k-takata/zenn-contents/tree/master/books/d5c77046e634bb/src/slack_response.json) というファイルに保存したうえでjqコマンドを使えば、以下のようにしてメッセージのテキストを抽出することができます。
 
 ```shell-session
 $ cat slack_response.json | jq '.messages[0].text'
