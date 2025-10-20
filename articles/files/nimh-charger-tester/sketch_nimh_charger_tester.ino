@@ -16,7 +16,7 @@
 #include <Adafruit_SSD1306.h>
 #include "AnonymousPro8pt7b.h"
 
-#define SPLASH_MESSAGE  "\nNiMH Charger & Tester\n\nVer. 1.01"
+#define SPLASH_MESSAGE  "\nNiMH Charger & Tester\n\nVer. 1.02"
 
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
@@ -93,7 +93,7 @@ const float v_discharge_end_default = 1.00;
 #define V_DISCHARGE_END_MIN  0.90
 
 // -ΔV detection start voltage
-const float mdv_start = 1.42;
+const float mdv_start = 1.44;
 
 // -ΔV threshold voltage
 const float mdv_threshold = 0.004;
@@ -1125,6 +1125,7 @@ void operate(bool chg, unsigned long now, float vbt_idle)
   unsigned long t = millis();
   unsigned long skip = t - now;
   cap_mas += (t - prev_millis - skip) / 1000.0 * prev_curr;
+  int cap = int(cap_mas / 3600.0);
   skip_total += skip;
   prev_millis = t;
 
@@ -1132,10 +1133,12 @@ void operate(bool chg, unsigned long now, float vbt_idle)
   float vbt_now = getBtVolt(last_bt);
   float curr = getCurrent(chg);
   float res = calcBtInternalRes(chg, vbt_idle, vbt_now, curr);
+  float temp1 = getTemp1();
+  float temp2 = getTemp2();
 #ifdef USE_TEMP2
-  float temp_now = getTemp2();
+  float temp_now = temp2;
 #else
-  float temp_now = getTemp1();
+  float temp_now = temp1;
 #endif
   unsigned long op_time = t - start_millis - skip_total;
   if (disp_mode == Graph) {
@@ -1154,12 +1157,13 @@ void operate(bool chg, unsigned long now, float vbt_idle)
         display.printf(F("Res: %5.3f \xEA\n" /* Ω */), res);
       }
     }
-    display.printf(F("Cap:  %4d mAh\n"), int(cap_mas / 3600.0));
+    display.printf(F("Cap:  %4d mAh\n"), cap);
     display.println(String(F("Time: ")) + tostrMillis(op_time));
     if (disp_mode == Detail) {
       display.printf(F("Temp: %4.1f \xF8""C\n" /* U+00B0 */), temp_now);
     }
   }
+  Serial.printf(F("time: %s, vbt_idle: %5.3f, vbt_now: %5.3f, curr: %5.1f, res: %5.3f, cap: %d, temp1: %4.1f, temp2: %4.1f\n"), tostrMillis(op_time).c_str(), vbt_idle, vbt_now, curr, res, cap, temp1, temp2);
   prev_curr = curr;
 
   float v_sma = updateSma(vbt_idle);
