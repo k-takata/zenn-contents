@@ -139,7 +139,7 @@ WA-MIKANの時の[赤外線送信](https://zenn.dev/k_takata/books/d5c77046e634b
   - ESP8266: `ESP8266WiFi.h`, `ESP8266HTTPClient.h`
   - ESP32: `WiFi.h`, `HTTPClient.h`
 * ルートCA設定方法  
-  使う関数名と、引数が少し異なります。`cert_Root_xxxx`はpem形式のルート証明書で、[`tools/cert.py`](https://github.com/esp8266/Arduino/tree/master/tools)で取得できます。（あるいは、Webブラウザーから手動で取得する方法もあります。）
+  使う関数名と、引数が少し異なります。`cert_Root_xxxx`はpem形式のルート証明書です。ESP8266とESP32で同じものが使用でき、[`tools/cert.py`](https://github.com/esp8266/Arduino/tree/master/tools)で取得できます。（あるいは、Webブラウザーから手動で取得する方法もあります。）
   - ESP8266:
     ```C
     X509List cert(cert_Root_xxxx);
