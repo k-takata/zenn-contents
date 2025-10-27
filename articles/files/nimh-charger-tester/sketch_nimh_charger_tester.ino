@@ -16,7 +16,7 @@
 #include <Adafruit_SSD1306.h>
 #include "AnonymousPro8pt7b.h"
 
-#define SPLASH_MESSAGE  "\nNiMH Charger & Tester\n\nVer. 1.02"
+#define SPLASH_MESSAGE  "\nNiMH Charger & Tester\n\nVer. 1.03"
 
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
@@ -92,8 +92,11 @@ const float v_discharge_end_default = 1.00;
 #define V_DISCHARGE_END_MAX  1.10
 #define V_DISCHARGE_END_MIN  0.90
 
-// -ΔV detection start voltage
-const float mdv_start = 1.44;
+// Default -ΔV detection start voltage
+const float v_mdv_start_default = 1.44;
+
+#define V_MDV_START_MAX 1.55
+#define V_MDV_START_MIN 1.35
 
 // -ΔV threshold voltage
 const float mdv_threshold = 0.004;
@@ -105,6 +108,7 @@ const float mdv_threshold = 0.004;
 
 
 enum LogEndReason { EndNone, EndMdv, EndZdv, EndVolt, EndTime };
+enum VoltageSetting { ChgEndV, DisEndV, MdvStartV };
 
 //////////////////////////////
 
@@ -470,6 +474,7 @@ int dis_curr_level = 1;
 
 float v_charge_end = v_charge_end_default;
 float v_discharge_end = v_discharge_end_default;
+float v_mdv_start = v_mdv_start_default;
 
 const unsigned long chg_time_table[CURR_LEVEL_MAX + 1] = {
   7 * 3600UL * 1000UL,  // 0.2C
@@ -771,6 +776,7 @@ struct Settings {
   int8_t dis_curr_level;
   float v_charge_end;
   float v_discharge_end;
+  float v_mdv_start;
   uint8_t key;
 };
 #define EEPROM_KEY  123
@@ -788,6 +794,7 @@ void loadSettings()
     settings.dis_curr_level = 1;
     settings.v_charge_end = v_charge_end_default;
     settings.v_discharge_end = v_discharge_end_default;
+    settings.v_mdv_start = v_mdv_start_default;
   }
   else {
     // Validate
@@ -803,11 +810,15 @@ void loadSettings()
     if (settings.v_discharge_end < V_DISCHARGE_END_MIN || settings.v_discharge_end > V_DISCHARGE_END_MAX) {
       v_discharge_end = v_discharge_end_default;
     }
+    if (settings.v_mdv_start < V_MDV_START_MIN || settings.v_mdv_start > V_MDV_START_MAX) {
+      v_mdv_start = v_mdv_start_default;
+    }
   }
   chg_curr_level = settings.chg_curr_level;
   dis_curr_level = settings.dis_curr_level;
   v_charge_end = settings.v_charge_end;
   v_discharge_end = settings.v_discharge_end;
+  v_mdv_start = settings.v_mdv_start;
 }
 
 // Save settings to EEPROM
@@ -819,6 +830,7 @@ void saveSettings()
   settings.dis_curr_level = dis_curr_level;
   settings.v_charge_end = v_charge_end;
   settings.v_discharge_end = v_discharge_end;
+  settings.v_mdv_start = v_mdv_start;
   settings.key = EEPROM_KEY;
   EEPROM.put(EEPROM_ADDR, settings);
 }
@@ -826,20 +838,21 @@ void saveSettings()
 // Main settings menu
 void showMainMenu()
 {
-  const int num_item = 5;
-  int cursor = 4;
+  const int num_item = 6;
+  int cursor = 5;
 
   while (true) {
     display.clearDisplay();
     display.setFont(nullptr);
     display.setCursor(0, 0);
     display.println(F("Main settings:"));
-    display.printf(F("%c Chg current\n"),  (cursor == 0) ? '>' : ' ');
-    display.printf(F("%c Dis current\n"),  (cursor == 1) ? '>' : ' ');
-    display.printf(F("%c Chg end volt\n"), (cursor == 2) ? '>' : ' ');
-    display.printf(F("%c Dis end volt\n"), (cursor == 3) ? '>' : ' ');
+    display.printf(F("%c Chg current\n"),    (cursor == 0) ? '>' : ' ');
+    display.printf(F("%c Dis current\n"),    (cursor == 1) ? '>' : ' ');
+    display.printf(F("%c Chg end volt\n"),   (cursor == 2) ? '>' : ' ');
+    display.printf(F("%c Dis end volt\n"),   (cursor == 3) ? '>' : ' ');
+    display.printf(F("%c -dV start volt\n"), (cursor == 4) ? '>' : ' ');
     display.println();
-    display.printf(F("%c Close\n"),        (cursor == 4) ? '>' : ' ');
+    display.printf(F("%c Close\n"),          (cursor == 5) ? '>' : ' ');
     display.display();
 
     if (checkButtonStatus(1)) { // UP button
@@ -852,8 +865,9 @@ void showMainMenu()
       switch (cursor) {
         case 0: showCurrMenu(true);   break;
         case 1: showCurrMenu(false);  break;
-        case 2: showVoltMenu(true);   break;
-        case 3: showVoltMenu(false);  break;
+        case 2: showVoltMenu(ChgEndV);    break;
+        case 3: showVoltMenu(DisEndV);    break;
+        case 4: showVoltMenu(MdvStartV);  break;
         default:
           saveSettings();
           return;
@@ -911,27 +925,36 @@ void showCurrMenu(bool chg)
 }
 
 // Show charging/discharging voltage settings menu
-void showVoltMenu(bool chg)
+void showVoltMenu(VoltageSetting vs)
 {
   const int num_item = 3;
   int cursor = 0;
   bool focus = false;
-  float &v_end = (chg) ? v_charge_end : v_discharge_end;
-  float volt = v_end;
+  float &v_set =
+    (vs == ChgEndV) ? v_charge_end :
+    (vs == DisEndV) ? v_discharge_end : v_mdv_start;
+  float volt = v_set;
   const float v_scale = 100.0;
   int ivolt = int(volt * v_scale);
-  const int ivolt_max = (chg) ? int(V_CHARGE_END_MAX * v_scale) : int(V_DISCHARGE_END_MAX * v_scale);
-  const int ivolt_min = (chg) ? int(V_CHARGE_END_MIN * v_scale) : int(V_DISCHARGE_END_MIN * v_scale);
+  const int ivolt_max =
+    (vs == ChgEndV) ? int(V_CHARGE_END_MAX * v_scale) :
+    (vs == DisEndV) ? int(V_DISCHARGE_END_MAX * v_scale) : int(V_MDV_START_MAX * v_scale);
+  const int ivolt_min =
+    (vs == ChgEndV) ? int(V_CHARGE_END_MIN * v_scale) :
+    (vs == DisEndV) ? int(V_DISCHARGE_END_MIN * v_scale) : int(V_MDV_START_MIN * v_scale);
 
   while (true) {
     display.clearDisplay();
     display.setFont(nullptr);
     display.setCursor(0, 0);
-    if (chg) {
+    if (vs == ChgEndV) {
       display.println(F("Chg end volt:"));
     }
-    else {
+    else if (vs == DisEndV) {
       display.println(F("Dis end volt:"));
+    }
+    else {
+      display.println(F("-dV start volt:"));
     }
     display.println();
     display.printf(F("%c %c %4.2f V %c\n"), (cursor == 0) ? '>' : ' ', (focus) ? '+' : ' ', volt, (focus) ? '-' : ' ');
@@ -967,7 +990,7 @@ void showVoltMenu(bool chg)
       }
       else {  // OK or Cancel
         if (cursor == 1) {  // OK
-          v_end = volt;
+          v_set = volt;
         }
         return;
       }
@@ -1173,7 +1196,7 @@ void operate(bool chg, unsigned long now, float vbt_idle)
   // Check finish of operation
   if (chg) {
     // Detect -ΔV and 0 dV/dt
-    if (v_sma >= mdv_start) {
+    if (v_sma >= v_mdv_start) {
       mdv_enable = true;
     }
     if (mdv_enable) {

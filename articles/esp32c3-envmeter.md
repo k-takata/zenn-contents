@@ -8,9 +8,11 @@ published: true
 
 ## 概要
 
-以前、作成した[GR-CITRUS + WA-MIKAN + BME680によるIoT環境メーター](https://zenn.dev/k_takata/books/d5c77046e634bb/viewer/06_wa_mikan_wifi)を基に、[ESP32-C3](https://akizukidenshi.com/catalog/g/g117493/)を使ったIoT環境メーターを作ってみました。
+以前作成した[GR-CITRUS + WA-MIKAN + BME680によるIoT環境メーター](https://zenn.dev/k_takata/books/d5c77046e634bb/viewer/06_wa_mikan_wifi)を基に、[ESP32-C3](https://akizukidenshi.com/catalog/g/g117493/)を使ったIoT環境メーターを作ってみました。
 
 GR-CITRUSではBosch純正の[BSEC](https://www.bosch-sensortec.com/software-tools/software/bme680-software-bsec/)ライブラリが使用できませんでしたが、今回BSECが対応しているESP32-C3を使うことで、測定項目が大幅に増えました。
+
+また、前回はユニバーサル基板上に実装していましたが、今回は専用基板を作成しています。ディスプレイもLCDからOLEDディスプレイに変更することで、表示内容も増えています。
 
 
 ## 仕様
