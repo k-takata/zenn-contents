@@ -1,0 +1,241 @@
+---
+title: "Vimのインストーラーを作り直してみた"
+emoji: "📦"
+type: "tech" # tech: 技術記事 / idea: アイデア
+topics: ["Vim", "NSIS", "インストーラー"]
+published: false
+---
+
+## 概要
+
+かつて、[新しいWindows用Vimのインストーラーを作っている話 #Vim - Qiita](https://qiita.com/k-takata/items/343c5ee6abbe34e85571)で書いたようにVimの新しいインストーラーを作ったわけですが、それから8年が経ち、いろいろと不満な点が出てきました。そこで今回、インストーラーを再度作り直すことにしました。
+
+
+## 機能
+
+今回対応した機能や改善は以下の通りです。
+
+* 全ユーザーに対するインストール (per-machine) に加え、現在のユーザーに対するインストール (per-user) に対応
+* フォルダー構成の変更
+* コマンドラインサポートの改善
+* コマンドラインオプション対応
+
+これらの対応にあたり、インストーラーシステム自体を[NSIS](https://nsis.sourceforge.io/)から他のもの (例えば[WiX Toolset](https://www.firegiant.com/wixtoolset/) (MSI)) に移行することも検討しましたが、今回はそのままNSISを使うこととしました。
+
+これらを以下のプルリクエストで実装しました。<br>
+[Rework the NSIS installer by k-takata · Pull Request #457 · vim/vim-win32-installer](https://github.com/vim/vim-win32-installer/pull/457)
+
+
+### 現在のユーザーに対するインストール
+
+従来のインストーラーは、全ユーザーに対するインストールのみに対応しており、インストールには管理者権限が必須でした。これに対しては以前から何度も指摘があり、これを改善することが今回の最大の目的でした。
+
+今回は、[NsisMultiUser](https://github.com/Drizin/NsisMultiUser)というプラグインを使用して、全ユーザーに対するインストールと現在のユーザーに対するインストールに対応することにしました。これを使うことで次のような動作を行うことができます。
+
+* UACによる昇格をせずに、通常権限でインストーラーを実行開始
+* インストーラーの画面上で、全ユーザーに対するインストールか現在のユーザーに対するインストールかを選択
+  - 全ユーザーが選択された場合、UACによる昇格後、インストールを続行
+  - 現在のユーザーが選択された場合、UACによる昇格をせずにインストールを続行
+
+NSIS本体には、MultiUserという類似のプラグインが含まれていますが、このような動的なUAC昇格はできないため、NsisMultiUserを使うこととしました。
+
+なお、従来のインストーラーでは、レジストリの更新やショートカットアイコンの登録は `install.exe` を介して行っていましたが、今回は `install.exe` への依存を廃し[^1]、NSIS単体で登録を行うように変更しています。
+
+[^1]: 前回の改修時は[二重管理を避けたい](https://qiita.com/k-takata/items/343c5ee6abbe34e85571#%E5%8F%96%E3%82%8A%E8%BE%BC%E3%81%BE%E3%82%8C%E3%81%AA%E3%81%8B%E3%81%A3%E3%81%9F%E5%8E%9F%E5%9B%A0)という理由で、`install.exe` に依存させていましたが、今回、現在のユーザーに対するインストールの対応とフォルダー構成の変更の影響で `install.exe` の更新が難しくなったため、`install.exe` は更新しないことにしました。
+
+
+### フォルダー構成の変更
+
+`gvim.exe` を格納するフォルダーを、バージョン番号を含まないフォルダー名にしてほしいとの要望があったため、フォルダー構成を変更することにしました。
+
+変更前:
+```
+C:\Program Files\
+└── Vim\                     ($VIM)
+    ├── _vimrc
+    ├── vim92\               ($VIMRUNTIME)
+    │   ├── GvimExt32\
+    │   ├── GvimExt64\
+    │   ├── autoload\
+    │   ├── ...
+    │   ├── LICENSE.txt
+    │   ├── README.txt
+    │   ├── gvim.exe
+    │   ├── uninstall-gui.exe
+    │   └── vim.exe
+    └── vimfiles\
+```
+
+変更後:
+```
+C:\Program Files\
+└── Vim\                     ($VIM)
+    ├── _vimrc
+    ├── lang\
+    │   ├── LICENSE.??.txt
+    │   └── README.??.txt
+    ├── runtime\             ($VIMRUNTIME)
+    │   ├── GvimExt32\
+    │   ├── GvimExt64\
+    │   ├── autoload\
+    │   └── ...
+    ├── LICENSE.txt
+    ├── README.txt
+    ├── gvim.exe
+    ├── uninstall-gui.exe
+    ├── vim.exe
+    ├── ...
+    └── vimfiles\
+```
+
+変更前は、`gvim.exe` は `C:\Program Files\Vim\vim92\` に格納されていましたが、1階層上の `C:\Program Files\Vim\` に格納するように変更し、ランタイムファイルの格納先も `vim92` から `runtime` に変更しました。
+
+元々、バージョン番号がフォルダー名に含まれていたのは、複数の異なるバージョンを同時にインストールできるようにするための仕組みですが、現在のインストーラーはそもそも異なるバージョンを同時にインストールできるようにはなっていません。（古いバージョンはアンインストールされるようになっています。） そのため、ランタイムディレクトリーの名前からバージョン番号を除いても問題ないと判断しました。
+
+
+#### ZIP形式について
+
+[vim-win32-installer](https://github.com/vim/vim-win32-installer)では、NSISインストーラーとZIP形式の配布を行っていますが、ユーザーへの影響を考慮し、ZIP形式は従来通りのフォルダー構成を維持しています。
+ZIP形式を使った場合は、同梱の `install.exe` を使って対話形式でインストールできるようになっていますが、こちらは従来通り管理者権限が必要になっています。
+
+
+### コマンドラインサポートの改善
+
+従来のインストーラーには、コマンドラインからVimを使いやすくするという目的で、`gvim.bat` や `vim.bat` というバッチファイルを `C:\Windows` に作成するという機能がありました。これを使うと、PATHを変更することなく、コマンドラインから `gvim` や `vim` というコマンドが使えるようになります。
+ただ、この機能にはバッチファイル固有の使いづらさがあったため、この機能は廃止し、別の機能を2つ用意することとしました。
+
+
+#### Vim launcher
+
+1つ目は、Vim launcherという、Vimを起動するための小さな実行ファイルを `C:\Windows` に配置するという機能です。
+従来のバッチファイルとほぼ同じ機能ですが、本物の実行ファイルになっているので、バッチファイル固有の罠などはありません。
+
+何らかの理由で、Vimのインストール先をPATHに追加したくない場合は、この方法が使えます。
+
+`C:\Windows` にファイルを配置することから、この機能は全ユーザーに対するインストール時のみ使用可能です。
+
+
+#### PATHへの追加
+
+2つ目は、インストーラーでVimのインストール先をPATHに追加できるようにするというものです。
+
+コマンドラインからVimを呼び出しやすくする方法としては、この方法が最も素直と言えるでしょう。
+
+全ユーザーに対するインストール時にはシステムの環境変数を変更し、現在のユーザーに対するインストール時にはユーザーの環境変数を変更するようになっています。
+
+この機能の実装には、[EnVar plug-in](https://nsis.sourceforge.io/EnVar_plug-in)[^2]を使用しています。
+
+[^2]: NSISの標準機能には、[一定の長さを超える環境変数を扱えないという大問題](https://nsis.sourceforge.io/Setting_Environment_Variables)がありますが、EnVar plug-inを使うことでこの問題を回避できます。
+
+
+### コマンドラインオプション対応
+
+サイレントインストールでインストールする際に、インストールするコンポーネントを選択できるようにしてほしいという要望があったため、それに対応しました。
+
+インストーラーのコマンドラインオプションとして `/?` を指定して実行すると、以下のようなヘルプが表示されます。
+
+```
+Usage:
+
+/allusers   - (un)install for all users (*1)
+/currentuser - (un)install for current user only (*2)
+/uninstall  - run uninstaller, requires *1 or *2
+/S          - silent mode, requires *1 or *2
+/D=path     - set install directory, must be last parameter, w/o quotes
+/?          - display this message
+
+Component selection:
+/console={1,0}      install vim.exe
+/launcher={1,0}     install Vim launcher to C:\Windows
+/addpath={1,0}      add the Vim directory to PATH
+/desktop={1,0}      create desktop icons
+/startmenu={1,0}    create startmenu icons
+/editwith={1,0}     install editwith menu
+/vimrc={1,0}        create _vimrc
+/pluginhome={1,0}   create plugin dirs in home dir
+/pluginvim={1,0}    create plugin dirs in Vim dir
+/nls={1,0}          install multilingual support
+/compat={vi,vim,defaults,all}   Vi compatibility
+/keymap={default,windows}       key mappings
+/mouse={default,windows,xterm}  mouse behavior
+```
+
+`/S` と `/D=path` は、NSISインストーラーの標準のオプションですが、`/S` を使ってサイレントインストールを行うには、`/allusers` または `/currentuser` のどちらかのオプションを指定して、全ユーザーに対するインストールか現在のユーザーに対するインストールかを明示する必要があります。
+
+インストールするコンポーネントは、`/コンポーネント名={1 または 0}` で指定します。`1` ならインストールし、`0` ならインストールしません。<br>
+例えば、デスクトップにショートカットを作成しないなら `/desktop=0` を指定します。<br>
+デフォルトは、`/console=1 /launcher=0 /addpath=0 /desktop=1 /startmenu=1 /editwith=1 /vimrc=1 /pluginhome=1 /pluginvim=0 /nls=1` となっています。
+
+上記ヘルプの最後の3項目は `_vimrc` 作成時の設定です。こちらも `/設定名=選択` で指定します。<br>
+デフォルトは、`/compat=all /keymap=default /mouse=default` となっています。
+
+一度インストールしたあと、新しいバージョンを上書きインストールする際には、前回の選択がデフォルト値として引き継がれます。
+
+
+## その他
+
+### MSI/MSIX形式
+
+今回の改修に先立ち、[vim-msi](https://github.com/jcasale/vim-msi)で開発されているMSI形式のインストーラーを使えるか試してみました。これは、[WiX Toolset](https://www.firegiant.com/wixtoolset/)を使用してインストーラーを作成するようになっています。
+
+調査の結果、以下のような課題が見つかったため、今回はMSIへの移行は見送りました。
+
+* per-machine と per-user インストールへの対応<br>
+  技術的には可能なはずだが、vim-msi自体は現時点では対応していない。<br>
+  (AIを使った作りかけブランチ: [dual-purpose](https://github.com/k-takata/vim-msi/tree/dual-purpose))
+* 多言語への対応<br>
+  メッセージを翻訳することは可能だが、WiX Toolsetは多言語に対応したインストーラーを作成することは現時点ではできない。各言語に個別対応したインストーラーを作成することになってしまう。(WiXで作成した個別インストーラーを別ツールで統合することは可能？)<br>
+  (AIを使った作りかけブランチ: [agents/wix-toolset-multilingual-ui](https://github.com/k-takata/vim-msi/tree/agents/wix-toolset-multilingual-ui))
+* 32bit版/64bit版GvimExtの同時インストール<br>
+  現状のインストーラーのように、`C:\Program Files` 以下に両方を同時インストールするのは難しそう。`C:\Program Files` と `C:\Program Files (x86)` に分けてインストールするのは可能と思われるが、管理が煩雑。  
+
+さらに最近はMSIXという新しい形式もありますが、こちらはGvimExtのようなシェルエクステンションのインストールには使えないということですので、こちらも採用は見送りました。
+
+
+### AIレビュー
+
+今回のPRでは、GitHub Copilotによるレビューも活用しています。自分では、実装はほぼ完璧だと思った段階でレビューを掛けてみたのですが、14件もの指摘が出ました。
+
+|分類                             |件数|
+|---------------------------------|----|
+|バグとなりうる重要な指摘         |5件 |
+|typoや英文の表記に関する指摘     |4件 |
+|今回は必須ではないが採用したもの |4件 |
+|不要で採用しなかったもの         |1件 |
+
+重要な指摘が5件もあり、それを含めて13件を採用しました。
+ただし、AIの修正提案のうち2件はミスがあり、`endif` が消えてしまっていました。1件はマージ前に気づきましたが、1件は気づかずマージしてしまい、コンパイルが通らずしばらく悩みました。
+
+いくつか問題はあったものの、予想以上に的確な指摘で驚きました。
+
+
+### winget対応
+
+今回の改修により、winget経由のインストールでも現在のユーザーに対するインストールができるようになりました。
+デフォルトは現在のユーザーになっており、`--scope` オプションを使うことで、全ユーザーに対するインストールに切り替えることができます。
+
+例:
+
+```
+winget install vim.vim.nightly --scope machine
+```
+
+
+### アイコンファイルサイズの削減
+
+Vim launcherは、実行ファイルのサイズを極限まで小さくしてみようと思い、Cランタイムを使用せずに作成しています。これにより、実行ファイルのサイズはわずか35KBほどになっています。しかし、実はこのうちアイコンが27KBほどを占めています。
+
+アイコンファイルのサイズを削減できないものかと考え、AIを使って、[optico](https://github.com/k-takata/optico)というツールを作成してみました。これにより1KB弱の削減に成功しました。
+
+
+### リポジトリの移動
+
+従来のインストーラーのソースコードは、[vim/vim](https://github.com/vim/vim)リポジトリで管理されていましたが、今回、[vim/vim-win32-installer](https://github.com/vim/vim-win32-installer)リポジトリに移動しました。これは、インストーラーのソースコードは、インストーラーパッケージ作成のためのCIのコードとまとめて管理した方が手間が少ないだろうという考えからです。
+
+
+## まとめ
+
+現在のユーザーに対するインストールなどに対応したVimの新インストーラーを紹介しました。<br>
+今回の新NSISインストーラーは[v9.2.0699](https://github.com/vim/vim-win32-installer/releases/tag/v9.2.0699)から採用されています。
+
+もし何かありましたら、[vim-win32-installer](https://github.com/vim/vim-win32-installer)にissueを立てるなどして連絡をお願いします。
