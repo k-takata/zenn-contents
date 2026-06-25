@@ -8,6 +8,9 @@ published: false
 
 ## 概要
 
+この記事は[Vim駅伝](https://vim-jp.org/ekiden/)の2026-06-29の記事です。
+Vim駅伝は常に参加者を募集しています。詳しくは[こちらのページ](https://vim-jp.org/ekiden/about/)をご覧ください。
+
 かつて、[新しいWindows用Vimのインストーラーを作っている話 #Vim - Qiita](https://qiita.com/k-takata/items/343c5ee6abbe34e85571)で書いたようにVimの新しいインストーラーを作ったわけですが、それから8年が経ち、いろいろと不満な点が出てきました。そこで今回、インストーラーを再度作り直すことにしました。
 
 
