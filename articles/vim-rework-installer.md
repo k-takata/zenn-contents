@@ -3,7 +3,8 @@ title: "Vimのインストーラーを作り直してみた"
 emoji: "📦"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["Vim", "NSIS", "インストーラー"]
-published: false
+published: true
+published_at: 2026-06-29 00:00
 ---
 
 :::message
