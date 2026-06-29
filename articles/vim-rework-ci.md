@@ -16,13 +16,12 @@ published: false
 
 ## 歴史
 
-vim-win32-installerは2016年に提供を開始しました。当時は、AppVeyorがWindowsを使えるほぼ唯一のCIサービスだったため、必然的にWindows版インストーラーの作成にはAppVeyorを使うことになりました。
-しかしそれから10年が経ち、状況は大きく変化しました。
+vim-win32-installerは2016年に提供を開始しました。当時は、AppVeyorがWindowsを使えるほぼ唯一のCIサービスだったため、必然的にWindows版インストーラーの作成にはAppVeyorを使うことになりました。しかしそれから10年が経ち、状況は大きく変化しました。
 
 2019年にGitHub自体がCIサービス(GitHub Actions)を提供し、しかもWindowsランナーも使えます。GitHubが提供していることから、GitHubリポジトリとの親和性も高く、AppVeyorよりも使いやすいです。さらに速度の点でもGitHub Actionsの方が有利です。AppVeyorの無料プランではジョブの並列実行はできませんが、GitHub Actionsではユーザーあるいは組織当たり20ジョブまでの並列実行が可能です。
 
-AppVeyorよりGitHub Actionsの方がよさそうに見えるわけですが、GitHub Actionsに移行できるかというと、かつてはそうではありませんでした。vim-win32-installerでは、2019年から実行ファイルの署名に[SignPath](https://signpath.org/)を使い始めましたが、当時はGitHub ActionsからSignPathを使うことはできなかったためです。
-しかし2年ほど前から[公式のaction](https://github.com/SignPath/github-action-submit-signing-request)が提供されるようになり、GitHub Actionsからも簡単に使えるようになりました。1年前にARM64版の要望を受けて[chrisbra氏](https://github.com/chrisbra)が対応した際に、ARM64版はGitHub Actionsでビルドするように実装され、SignPathもGitHub Actionsから呼び出しています。
+明らかにAppVeyorよりGitHub Actionsの方がよさそうに見えるわけですが、すぐにGitHub Actionsに移行できるかというと、そうではありませんでした。vim-win32-installerでは、2019年から実行ファイルの署名に[SignPath](https://signpath.org/)を使い始めましたが、当時はGitHub ActionsからSignPathを使うことはできなかったためです。
+しかし2年ほど前から[公式のaction](https://github.com/SignPath/github-action-submit-signing-request)が提供されるようになり、GitHub Actionsからも簡単に使えるようになりました。1年前にARM64版の要望を受けて[chrisbra](https://github.com/chrisbra)氏が対応した際に、ARM64版はGitHub Actionsでビルドするように実装され、SignPathもGitHub Actionsから呼び出しています。
 
 このような形で、GitHub Actionsへ移行できる環境が整ってきました。
 また、私自身は2019年から[vim-kt](https://github.com/k-takata/vim-kt)という独自ビルドのVimパッケージを、GitHub Actionsを使って公開していました。
@@ -146,10 +145,12 @@ permissions:
 
 jobs:
   job1:
+    # contents: read は有効
 
   job2:
     permissions:
       actions: write
+    # contents: read は無効
 ```
 
 
@@ -282,7 +283,7 @@ echo VARIABLE_NAME= 0>> "%GITHUB_ENV%"
 これを防ぐには、echoコマンドを括弧でくくる必要があります。
 
 ```batch
-(echo VARIABLE_NAME=%VALUE%)>> "%GITHUB_ENV%"
+(echo VARIABLE_NAME=%VALUE%) >> "%GITHUB_ENV%"
 ```
 
 あるいは、少しわかりにくいですが、リダイレクトを最初に持ってきてもよいです。
