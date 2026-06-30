@@ -81,7 +81,7 @@ https://github.com/vim/vim-win32-installer/pull/421
 [^2]: 現在のNSISインストーラーのパッケージは、インストーラーの実行ファイルには署名されていますが、その中に含まれる実行ファイルには署名がされていません。
 
 
-### Attestation
+### Attestation (構成証明)
 
 GitHubには[Attestation](https://docs.github.com/ja/actions/concepts/security/artifact-attestations)という機能があります。
 [GitHub CLI](https://docs.github.com/ja/github-cli/github-cli)の `gh attestation verify` コマンドを使うことで、入手したファイルが本当にその組織あるいはリポジトリで作成されたものかどうかを確認することができます。
@@ -126,8 +126,20 @@ GitHub ActionsからAttestation情報を登録するには、[actions/attest](ht
 
 早速、この機能を使ってテストを書き直してみました。これを使うことでGitHubの画面上から、gvim/vim双方のテスト状況を確認できるようになり、また自前のwait処理などが不要となったため、かなり使いやすくなりました。
 
+`steps:` の下に `- parallel:` を書き、その下にステップを記述すれば、それらを並列実行してくれます。
 
-## 補足
+```yaml
+    steps:
+    - parallel:
+      # Run gvim tests and vim tests in parallel
+
+      - name: Test gvim
+
+      - name: Test vim
+```
+
+
+## トラブル集
 
 今回の実装で、いくつか苦労した点があったので、メモとして残しておきます。
 
@@ -229,7 +241,7 @@ jobs:
     - shell: cmd
       run: |
         call msys2 do-something.sh    # msys2はバッチファイルなのでcallが必須
-        echo After msys2              # ← callを忘れると実行されない
+        echo msys2 実行完了           # ← callを忘れると実行されない
 ```
 
 `msys2` コマンドは実際にはバッチファイルなので、`call` コマンドを忘れると、それ以降のコマンドがスキップされてしまいます。
@@ -278,7 +290,7 @@ echo VARIABLE_NAME=0>> "%GITHUB_ENV%"
 echo VARIABLE_NAME= 0>> "%GITHUB_ENV%"
 ```
 
-ファイルディスクリプタ0の内容が `%GITHUB_ENV%` に追記されますが、結果的に何も起きず、`VARIABLE_NAME` を設定したつもりが設定されません。
+ファイルディスクリプタ0 (=標準入力) の内容が `%GITHUB_ENV%` に追記されますが、結果的に何も起きず、`VARIABLE_NAME` を設定したつもりが設定されません。
 
 これを防ぐには、echoコマンドを括弧でくくる必要があります。
 
@@ -293,6 +305,70 @@ echo VARIABLE_NAME= 0>> "%GITHUB_ENV%"
 ```
 
 こちらも残念ながらGitHub CopilotのExplain error機能では解決できませんでした。
+
+
+### バッチファイルの罠3
+
+バッチファイルは、行末に `^` を置くことで行継続ができます。しかし好きなように行を分割できるわけではありません。
+を
+例えば、次のような行を分割することを考えます。
+
+```batch
+echo aaa | findstr "aaa"
+```
+
+パイプの後で分割して、
+
+```batch
+echo aaa | ^
+  findstr "aaa"
+```
+
+とすると、コマンドが見つからないとのエラーが出て動きません。(行頭のスペースがコマンド扱いされてしまうようです。)
+
+パイプの前で分割して、
+
+```batch
+echo aaa ^
+  | findstr "aaa"
+```
+
+とするなら動きます。
+
+あるいは、パイプの後で分割しても、行頭にスペースを入れなければ動きます。
+
+```batch
+echo aaa | ^
+findstr "aaa"
+```
+
+バッチファイルにはこのような奇妙な罠がたくさんあるので、特別な理由がない限り、pwshやbashを使うのがよいでしょう[^5]。
+
+[^5]: 自分自身はpwshよりcmdの方が慣れているので、ついcmdを使ってしまいますが。
+
+
+### robocopyコマンドの罠
+
+Windowsでは、ディレクトリや複数ファイルのコピーにrobocopyコマンドを使うことができます。
+robocopyコマンドは戻り値が特殊で、エラーの時は8以上の値を返し、成功の時は8未満の値を返します[^6]。普通のコマンドと同じつもりで使うと、コピーが成功してもエラーになってしまうので注意が必要です。
+
+[^6]: [Robocopy ユーティリティで使用されるリターン コード - Windows Server | Microsoft Learn](https://learn.microsoft.com/ja-jp/troubleshoot/windows-server/backup-and-storage/return-codes-used-robocopy-utility)
+
+`shell: cmd` で使う場合は、例えば次のようにします。
+
+```batch
+robocopy src dest /E /NP /NFL /NDL
+if ERRORLEVEL 8 exit 1
+rem コピー成功、残りの処理を実行
+```
+
+`robocopy`がステップ内の最後のコマンドの場合、そのまま抜けるとエラーになってしまうので、`exit 0`が必要です。
+
+```batch
+robocopy src dest /E /NP /NFL /NDL
+if ERRORLEVEL 8 exit 1
+exit 0
+```
 
 
 ### PRのマージ
