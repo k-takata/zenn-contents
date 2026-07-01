@@ -138,6 +138,8 @@ GitHub ActionsからAttestation情報を登録するには、[actions/attest](ht
       - name: Test vim
 ```
 
+![ステップの並列実行](https://raw.githubusercontent.com/k-takata/zenn-contents/master/articles/images/gha-parallel.png)
+
 
 ## トラブル集
 
