@@ -71,14 +71,18 @@ https://github.com/vim/vim-win32-installer/pull/421
 
 [^1]: SignPath自体は全自動でのコード署名もできるようですが、現状、vim-win32-installerの署名は手動承認が必須です。
 
-署名の完全自動化ができるのであれば以下のようにしたいところですが、今後の課題としておきます[^2]。
+これに加えて、wingetで提供しているVimの安定版 (`vim.vim`) は、署名済みパッケージを使うようになりました[^2]。wingetへの登録も、リリースへの登録後に自動で行われるようになっています。
+
+[^2]: nightly版 (`vim.vim.nightly`) は従来通り、非署名パッケージを使用しています。
+
+署名の完全自動化ができるのであれば以下のようにしたいところですが、今後の課題としておきます[^3]。
 
 1. SignPathでZIPパッケージ内の実行ファイルの署名を実行
 2. それをダウンロードして、NSISインストーラーを作成
 3. SignPathでNSISインストーラーの実行ファイルの署名を実行
 4. それをダウンロードしてリリースにアップロード
 
-[^2]: 現在のNSISインストーラーのパッケージは、インストーラーの実行ファイルには署名されていますが、その中に含まれる実行ファイルには署名がされていません。
+[^3]: 現在のNSISインストーラーのパッケージは、インストーラーの実行ファイルには署名されていますが、その中に含まれる実行ファイルには署名がされていません。
 
 
 ### Attestation (構成証明)
@@ -112,9 +116,9 @@ The following 1 attestation matched the policy criteria
 
 `✓ Verification succeeded!` と表示されており、Build repoとして `vim/vim-win32-installer` が表示されていることから、これが確かに `vim/vim-win32-installer` リポジトリでビルドされたファイルであることが分かります。
 
-GitHub ActionsからAttestation情報を登録するには、[actions/attest](https://github.com/actions/attest)を使用します[^3]。
+GitHub ActionsからAttestation情報を登録するには、[actions/attest](https://github.com/actions/attest)を使用します[^4]。
 
-[^3]: 移行前は、ARM64版のビルドで[actions/attest-build-provenance](https://github.com/actions/attest-build-provenance)を使用していましたが、現在はactions/attestの方が推奨されているので、こちらを使うように変更しています。
+[^4]: 移行前は、ARM64版のビルドで[actions/attest-build-provenance](https://github.com/actions/attest-build-provenance)を使用していましたが、現在はactions/attestの方が推奨されているので、こちらを使うように変更しています。
 
 
 ### Stepの並列実行
@@ -252,9 +256,9 @@ jobs:
 
 ### バッチファイルの罠2
 
-GitHub Actionsで環境変数を次のステップに渡すには、環境変数 `GITHUB_ENV` が指し示すファイルに `変数名=値` という形式で行を追加します[^4]。
+GitHub Actionsで環境変数を次のステップに渡すには、環境変数 `GITHUB_ENV` が指し示すファイルに `変数名=値` という形式で行を追加します[^5]。
 
-[^4]: <https://docs.github.com/ja/actions/reference/workflows-and-actions/workflow-commands#setting-an-environment-variable>
+[^5]: <https://docs.github.com/ja/actions/reference/workflows-and-actions/workflow-commands#setting-an-environment-variable>
 
 bashであれば、素直に
 
@@ -345,17 +349,17 @@ type aaa.txt | ^
 findstr "bbb"
 ```
 
-バッチファイルにはこのような奇妙な罠がたくさんあるので、特別な理由がない限り、pwshやbashを使うのがよいでしょう[^5]。
+バッチファイルにはこのような奇妙な罠がたくさんあるので、特別な理由がない限り、pwshやbashを使うのがよいでしょう[^6]。
 
-[^5]: 自分自身はpwshよりcmdの方が慣れているので、ついcmdを使ってしまいますが。
+[^6]: 自分自身はpwshよりcmdの方が慣れているので、ついcmdを使ってしまいますが。
 
 
 ### robocopyコマンドの罠
 
 Windowsでは、ディレクトリや複数ファイルのコピーにrobocopyコマンドを使うことができます。
-robocopyコマンドは戻り値が特殊で、エラーの時は8以上の値を返し、成功の時は8未満の値を返します[^6]。普通のコマンドと同じつもりで使うと、コピーが成功してもエラーになってしまうので注意が必要です。
+robocopyコマンドは戻り値が特殊で、エラーの時は8以上の値を返し、成功の時は8未満の値を返します[^7]。普通のコマンドと同じつもりで使うと、コピーが成功してもエラーになってしまうので注意が必要です。
 
-[^6]: [Robocopy ユーティリティで使用されるリターン コード - Windows Server | Microsoft Learn](https://learn.microsoft.com/ja-jp/troubleshoot/windows-server/backup-and-storage/return-codes-used-robocopy-utility)
+[^7]: [Robocopy ユーティリティで使用されるリターン コード - Windows Server | Microsoft Learn](https://learn.microsoft.com/ja-jp/troubleshoot/windows-server/backup-and-storage/return-codes-used-robocopy-utility)
 
 `shell: cmd` で使う場合は、例えば次のようにします。
 
