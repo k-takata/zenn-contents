@@ -3,8 +3,14 @@ title: "Vimのインストーラー用CIを作り直してみた"
 emoji: "🕰️"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["Vim", "CI", "GitHub Actions"]
-published: false
+published: true
+published_at: 2026-07-06 00:00
 ---
+
+:::message
+この記事は[Vim駅伝](https://vim-jp.org/ekiden/)の2026-07-06の記事です。
+Vim駅伝は常に参加者を募集しています。詳しくは[こちらのページ](https://vim-jp.org/ekiden/about/)をご覧ください。
+:::
 
 ## 概要
 
