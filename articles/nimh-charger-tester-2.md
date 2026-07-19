@@ -80,7 +80,7 @@ Failed programming: uploading error: exit status 2
 
 適当なUSBシリアルアダプターと、470Ω抵抗、ショットキーバリアダイオードがあれば簡単に書き込みツールが作成できます。
 
-今回は、USBシリアルには秋月電子の[AE-CH9102F-TYPEC-BO](https://akizukidenshi.com/catalog/g/g129505/)を使用し、それと組み合わせるためのUPDIアダプターとして、[UPDI Adaper for AE-CH9102F](https://github.com/k-takata/PCB_UPDI_for_AE-CH9102F)というものを作成しました。
+今回は、USBシリアルには秋月電子の[AE-CH9102F-TYPEC-BO](https://akizukidenshi.com/catalog/g/g129505/)を使用し、それと組み合わせるためのUPDIアダプターとして、[UPDI Adapter for AE-CH9102F](https://github.com/k-takata/PCB_UPDI_for_AE-CH9102F)というものを作成しました。
 
 
 ## ソフトウェア作成方針(当初案)
