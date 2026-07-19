@@ -38,16 +38,40 @@ published: true
 
 ### Arduino IDE
 
-開発には[Arduino IDE](https://www.arduino.cc/en/software/) 2.3.6を使用します。
+開発には[Arduino IDE](https://www.arduino.cc/en/software/) 2.3.6(あるいはそれ以降)を使用します。
 
 マイコンには[AVR64DD28-I/SP](https://akizukidenshi.com/catalog/g/g118314/)を使用していますので、対応するボードパッケージとして[DxCore](https://github.com/SpenceKonde/DxCore)を使用します。[DxCore Installation](https://github.com/SpenceKonde/DxCore/blob/master/Installation.md)にしたがってボードマネージャ経由でインストールを行います。
 
-コンパイルに当たっては、以下の項目の設定を変更しています。メニューの「ツール」から設定します。
+:::message
+2026-07-19現在、[DxCore Installation](https://github.com/SpenceKonde/DxCore/blob/master/Installation.md)に記載されている下記のボードマネージャーURLは使用できません。
 
+```
+http://drazzy.com/package_drazzy.com_index.json
+```
+
+代わりに以下のURLを指定します。(参考: [Drazzy.com SSL certificate expired (X509 error in arduino-cli) · Issue #928 · SpenceKonde/ATTinyCore](https://github.com/SpenceKonde/ATTinyCore/issues/928))
+```
+https://raw.githubusercontent.com/SpenceKonde/ReleaseScripts/refs/heads/master/package_drazzy.com_index.json
+```
+
+また、DxCore 1.6.2は以下のエラーが出て書き込みができませんでした。DxCore 1.5.11を使う必要があります。
+
+```
+prog.py: error: unrecognized arguments: -Ufuse5:w:0b1101101:m 6:0b00010100 7:0x00 8:0x00
+Failed programming: uploading error: exit status 2
+```
+:::
+
+コンパイルに当たっては、以下の項目を選択、あるいは設定を変更しています。メニューの「ツール」から設定します。
+
+* ボード: DxCore → "AVR DD-series (no bootloader)"
+* ポート: 次節の書き込みツールのポートを選択
+* Chip: "AVR64DD28"
 * MultiVoltage I/O (MVIO): "Disabled"
   PC0 ~ PC3ピンをアナログ入力できるようにするため。
 * printf(): "Full 2.6k, prints floats"
   printfで浮動小数を扱えるようにするため。(フラッシュメモリー使用量は増えるが許容範囲内。2.6kの部分はバージョンによって値が変わる可能性あり)
+* 書き込み装置: "Serial UPDI" で始まる項目のいずれか。(通常は "Serial UPDI - 230400 baud" あるいは "Serial UPDI - Fast: 345600 baud")
 
 
 ### 書き込みツール
