@@ -16,7 +16,10 @@
 #include <Adafruit_SSD1306.h>
 #include "AnonymousPro8pt7b.h"
 
-#define SPLASH_MESSAGE  "\nNiMH Charger & Tester\n\nVer. 1.03"
+// If defined use thermistor instead of MCP9700BT-E/TT
+//#define USE_THERMISTOR
+
+#define SPLASH_MESSAGE  "\nNiMH Charger & Tester\n\nVer. 1.04"
 
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
@@ -109,6 +112,24 @@ const float mdv_threshold = 0.004;
 
 enum LogEndReason { EndNone, EndMdv, EndZdv, EndVolt, EndTime };
 enum VoltageSetting { ChgEndV, DisEndV, MdvStartV };
+
+//////////////////////////////
+
+#ifdef USE_THERMISTOR
+#include <SHthermistor.h>
+
+// Divider resistors
+constexpr float r_temp1 = 9.97 * 1000;
+constexpr float r_temp2 = 10.00 * 1000;
+
+// Registances of NCP15XH103F03RC
+constexpr float r_25 = 10.0 * 1000;
+constexpr float r_50 = 4160.13888;
+constexpr float r_80 = 1668.52526;
+
+SHthermistor th1 = SHthermistor(25.0, 50.0, 80.0, r_25, r_50, r_80, r_temp1, PIN_VTEMP1, NTC_EXCITE, -1, 0.0, 4096);
+SHthermistor th2 = SHthermistor(25.0, 50.0, 80.0, r_25, r_50, r_80, r_temp2, PIN_VTEMP2, NTC_EXCITE, -1, 0.0, 4096);
+#endif
 
 //////////////////////////////
 
@@ -290,18 +311,26 @@ float getCurrent(bool chg)
 // Get the temperature of the board
 float getTemp1()
 {
+#ifdef USE_THERMISTOR
+  return th1.readTemp();
+#else
   // MCP9700BT-E/TT
   // Offset: 500 mV at 0 ℃, Coef: 10.0 mV/℃
   // V = 0.5 + 0.01 T  ->  T = 100 V - 50
   int vtemp = analogReadEnh(PIN_VTEMP1, 14);
   return vtemp * getVddVolt() / 40.96 / 4 - 50.0;
+#endif
 }
 
 // Get the temperature near the batteries
 float getTemp2()
 {
+#ifdef USE_THERMISTOR
+  return th2.readTemp();
+#else
   int vtemp = analogReadEnh(PIN_VTEMP2, 14);
   return vtemp * getVddVolt() / 40.96 / 4 - 50.0;
+#endif
 }
 
 // Get the temperature of AVR
