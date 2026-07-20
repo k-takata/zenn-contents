@@ -74,9 +74,9 @@ constexpr int baseline_Anonymous_Pro8pt = 11;
 // Calibration settings
 
 // Actual voltage of TP1 (VREFA, TL431). Ideally, 2.495 V.
-const float vrefa_calib = 2.483;
-//const float vrefa_calib = 2.474;
-//const float vrefa_calib = 2.480;
+const float vrefa_calib = 2.483;  // Rev.1 #1, Rev.2 #2
+//const float vrefa_calib = 2.474;  // Rev.2 #1
+//const float vrefa_calib = 2.480;  // Rev.2 #3
 
 // Load resistor for charging: 10 Ω
 const float r_charge = 10.0;
