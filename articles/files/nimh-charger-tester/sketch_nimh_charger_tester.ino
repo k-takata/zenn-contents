@@ -16,9 +16,6 @@
 #include <Adafruit_SSD1306.h>
 #include "AnonymousPro8pt7b.h"
 
-// If defined use thermistor instead of MCP9700BT-E/TT
-//#define USE_THERMISTOR
-
 #define SPLASH_MESSAGE  "\nNiMH Charger & Tester\n\nVer. 1.04"
 
 
@@ -115,6 +112,9 @@ enum VoltageSetting { ChgEndV, DisEndV, MdvStartV };
 
 //////////////////////////////
 
+// If defined use thermistor instead of MCP9700BT-E/TT
+//#define USE_THERMISTOR
+
 #ifdef USE_THERMISTOR
 #include <SHthermistor.h>
 
@@ -124,6 +124,7 @@ constexpr float r_temp2 = 10.00 * 1000;
 
 // Registances of NCP15XH103F03RC
 // https://pim.murata.com/ja-jp/pim/details/?partNum=NCP15XH103F03RC
+// B(25/50℃) = 3380 K, B(25/80℃) = 3428 K
 constexpr float r_25 = 10.0 * 1000;
 constexpr float r_50 = 4160.13888; // r_25 * exp(3380 * (1/(273.15 + 50) - 1/(273.15 + 25)))
 constexpr float r_80 = 1668.52526; // r_25 * exp(3428 * (1/(273.15 + 80) - 1/(273.15 + 25)))
