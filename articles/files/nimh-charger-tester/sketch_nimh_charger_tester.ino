@@ -129,8 +129,8 @@ constexpr float r_25 = 10.0 * 1000;
 constexpr float r_50 = 4160.13888; // r_25 * exp(3380 * (1/(273.15 + 50) - 1/(273.15 + 25)))
 constexpr float r_80 = 1668.52526; // r_25 * exp(3428 * (1/(273.15 + 80) - 1/(273.15 + 25)))
 
-SHthermistor th1 = SHthermistor(25.0, 50.0, 80.0, r_25, r_50, r_80, r_temp1, PIN_VTEMP1, NTC_EXCITE, -1, 0.0, 4096);
-SHthermistor th2 = SHthermistor(25.0, 50.0, 80.0, r_25, r_50, r_80, r_temp2, PIN_VTEMP2, NTC_EXCITE, -1, 0.0, 4096);
+SHthermistor th1 = SHthermistor(25.0, 50.0, 80.0, r_25, r_50, r_80, r_temp1, PIN_VTEMP1, NTC_EXCITE, -1, 0.0, ADC_12BIT_VALUE);
+SHthermistor th2 = SHthermistor(25.0, 50.0, 80.0, r_25, r_50, r_80, r_temp2, PIN_VTEMP2, NTC_EXCITE, -1, 0.0, ADC_12BIT_VALUE);
 #endif
 
 //////////////////////////////
