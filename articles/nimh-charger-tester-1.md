@@ -257,7 +257,7 @@ U5は電池の温度を測定するために電池のそばに配置している
 AVRマイコン(U1)とオペアンプ(U2)をかなり近づけて配置してしまったことにより、ICの取り外しが困難になってしまいました。IC取り外し工具を差し込めるようにもう少し離して配置すべきでした。
 
 UPDIコネクターは、手持ち部品の兼ね合いもあり、[SerialUPDI](https://github.com/SpenceKonde/AVR-Guidance/blob/master/UPDI/jtag2updi.md)の記載を参考に3pinコネクターのピンソケットとしましたが、AVRのマニュアル等を確認したところ、UPDI v2と呼ばれる4pinコネクターのピンヘッダーが正式なもののようです。(UPDI v1と呼ばれる6pinコネクターもありますが、今回は割愛します。)
-[AVR Programming Adaptor](https://www.microchip.com/en-us/development-tool/AC31S18A)を見ると以下のようになっていました。
+[AVR Programming Adapter](https://www.microchip.com/en-us/development-tool/AC31S18A)を見ると以下のようになっていました。
 
 | Pin | 機能  | 色 |
 |-----|-------|----|
@@ -266,7 +266,7 @@ UPDIコネクターは、手持ち部品の兼ね合いもあり、[SerialUPDI](
 |   3 | GND   | 黒 |
 |   4 | UPDI  | 緑 |
 
-高電圧プログラミング(HVP)を行わなければRESETピンの接続は不要ですが、できれば正式なコネクターに合わせておきたいところです。(RESETピンやUPDIピンをGPIOとして使う場合は、HVP対応が必要。)
+高電圧プログラミング(HVP)を行わなければRESETピンの接続は不要ですが、できれば正式なコネクターに合わせておきたいところです。(UPDIピンをGPIOとして使う場合は、HVP対応が必要。)
 
 OLEDのコネクターの位置が1mm程度内側にずれていました。OLEDを取り付けると、シルクに描いた外形線より実際の位置が下にずれてしまいます。(本来はOLEDのフットプリントを作成すべきなのでしょうが、手抜きのため、ピンソケットを配置したあと外形線は別に描いています。)
 
