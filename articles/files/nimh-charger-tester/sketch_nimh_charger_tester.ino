@@ -112,7 +112,7 @@ enum VoltageSetting { ChgEndV, DisEndV, MdvStartV };
 
 //////////////////////////////
 
-// If defined use thermistor instead of MCP9700BT-E/TT
+// If defined, use thermistor instead of MCP9700BT-E/TT
 //#define USE_THERMISTOR
 
 #ifdef USE_THERMISTOR
@@ -122,7 +122,7 @@ enum VoltageSetting { ChgEndV, DisEndV, MdvStartV };
 constexpr float r_temp1 = 9.97 * 1000;
 constexpr float r_temp2 = 10.00 * 1000;
 
-// Registances of NCP15XH103F03RC
+// Resistances of NCP15XH103F03RC
 // https://pim.murata.com/ja-jp/pim/details/?partNum=NCP15XH103F03RC
 // B(25/50℃) = 3380 K, B(25/80℃) = 3428 K
 constexpr float r_25 = 10.0 * 1000;
